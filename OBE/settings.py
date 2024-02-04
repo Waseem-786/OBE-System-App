@@ -159,12 +159,13 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
     'SLIDING_TOKEN_LIFETIME': timedelta(minutes=60),
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
+    'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
 
 DJOSER = {
-    
-}
-SIMPLE_JWT = {
-   'AUTH_HEADER_TYPES': ('JWT',),
+    'USER_ID_FIELD': 'email',
+    'SERIALIZERS': {
+        'user_create': 'user_management.serializers.CustomUserCreateSerializer',
+    },
 }
