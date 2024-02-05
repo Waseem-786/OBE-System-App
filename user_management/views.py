@@ -19,9 +19,13 @@ class AddUserToGroupView(APIView):
     permission_classes = [IsAdminUser]
 
     def get(self, request, group):
-        users_in_group = User.objects.filter(groups__name=group)
-        serialized_data = UserSerializer(users_in_group, many=True)
-        return Response(serialized_data.data, status=status.HTTP_200_OK)
+        group = get_object_or_404(Group,name=group)
+        if group:
+            users_in_group = User.objects.filter(groups__name=group)
+            serialized_data = UserSerializer(users_in_group, many=True)
+            return Response(serialized_data.data, status=status.HTTP_200_OK)
+        else:
+            return Response({"message":f"{group} Group not exist"},status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, group):
         required_fields = ['username']
@@ -56,7 +60,7 @@ class AddUserToGroupView(APIView):
 
         # Check if the user is in any group
         if user.groups.exists():
-            user.groups.clear
+            user.groups.clear()
             return Response({"message": f"User removed from group"}, status=status.HTTP_200_OK)
         else:
             return Response({"message": f"User is not in any group"}, status=status.HTTP_204_NO_CONTENT)
