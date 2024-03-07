@@ -136,8 +136,13 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTStatelessUserAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ],
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ],
     'DEFAULT_THROTTLE_RATES': {
-        # 'user': '5/min',
+        'anon': '2/min',
+        'user': '5/min'
     }
 }
 
@@ -191,5 +196,5 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'w4w.w4me@gmail.com'
-EMAIL_HOST_PASSWORD = 'pynb dhwp piuy onpj'
+EMAIL_HOST_USER = 'your gmail address'
+EMAIL_HOST_PASSWORD = 'your password'
