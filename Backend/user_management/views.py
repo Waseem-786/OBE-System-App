@@ -2,26 +2,33 @@ from rest_framework.response import Response
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
-from django.contrib.auth.models import Group, User
+from django.contrib.auth.models import Group
+from .models import CustomUser
 from .serializers import RoleSerializer, UserSerializer
-from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 class Roles(generics.ListCreateAPIView):
     queryset = Group.objects.all()
     serializer_class = RoleSerializer
+    authentication_classes = [JWTAuthentication]
+    pagination_class = [IsAdminUser]
     
 class SingleRole(generics.RetrieveUpdateDestroyAPIView):
     queryset = Group.objects.all()
     serializer_class = RoleSerializer
+    authentication_classes = [JWTAuthentication]
+    pagination_class = [IsAdminUser]
 
 
 class AddUserToGroupView(APIView):
     permission_classes = [IsAdminUser]
+    authentication_classes = [JWTAuthentication]
 
     def get(self, request, group):
         group = get_object_or_404(Group,name=group)
         if group:
-            users_in_group = User.objects.filter(groups__name=group)
+            users_in_group = CustomUser.objects.filter(groups__name=group)
             serialized_data = UserSerializer(users_in_group, many=True)
             return Response(serialized_data.data, status=status.HTTP_200_OK)
         else:
@@ -36,7 +43,7 @@ class AddUserToGroupView(APIView):
         group = get_object_or_404(Group,name=group)
         # Check if the user is already in a group
         user_name = request.data['username']
-        user = get_object_or_404(User, username=user_name)
+        user = get_object_or_404(CustomUser, username=user_name)
         
         # Check if the user is already in any group
         if user.groups.exists():
@@ -56,7 +63,7 @@ class AddUserToGroupView(APIView):
             return Response(errors, status=status.HTTP_400_BAD_REQUEST)
 
         user_name = request.data['username']
-        user = get_object_or_404(User, username=user_name)
+        user = get_object_or_404(CustomUser, username=user_name)
 
         # Check if the user is in any group
         if user.groups.exists():
@@ -74,7 +81,7 @@ class AddUserToGroupView(APIView):
         group = get_object_or_404(Group,name=group)
         # Check if the user is already in a group
         user_name = request.data['username']
-        user = get_object_or_404(User, username=user_name)
+        user = get_object_or_404(CustomUser, username=user_name)
         
         # Check if the user is already in any group
         if user.groups.exists():

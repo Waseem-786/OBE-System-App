@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
+import os
 from datetime import timedelta
 from pathlib import Path
 
@@ -37,11 +38,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'djoser',
+    'university_management',
     'user_management',
+    'djoser',
     'rest_framework',
     'rest_framework_simplejwt',
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -127,6 +130,9 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+
+AUTH_USER_MODEL = 'user_management.CustomUser'
+
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
@@ -141,8 +147,8 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.UserRateThrottle'
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '2/min',
-        'user': '5/min'
+        'anon': '15/min',
+        'user': '15/min'
     }
 }
 
@@ -168,9 +174,6 @@ SIMPLE_JWT = {
 }
 
 DJOSER = {
-    'SERIALIZERS': {
-        'user_create': 'user_management.serializers.CustomUserCreateSerializer',
-    },
     'PASSWORD_RESET_CONFIRM_URL': 'password-reset/{uid}/{token}',
     'USERNAME_RESET_CONFIRM_URL': 'username-reset/{uid}/{token}',
     'SEND_ACTIVATION_EMAIL': True,
@@ -196,5 +199,5 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'your email address'
-EMAIL_HOST_PASSWORD = 'your password'
+EMAIL_HOST_USER = 'w4w.w4me@gmail.com'
+EMAIL_HOST_PASSWORD = 'tgnd ncry qhyw wbek'
