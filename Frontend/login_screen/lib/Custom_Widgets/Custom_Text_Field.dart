@@ -8,6 +8,7 @@ class CustomTextFormField extends StatelessWidget {
   final IconData? prefixIcon;
   final String? label;
   final String? hintText;
+  final Color? borderColor;
 
   const CustomTextFormField({
     Key? key,
@@ -15,6 +16,8 @@ class CustomTextFormField extends StatelessWidget {
     this.prefixIcon,
     this.label,
     this.hintText,
+    this.borderColor
+
   }) : super(key: key);
 
   @override
@@ -38,14 +41,15 @@ class CustomTextFormField extends StatelessWidget {
         hintText: hintText ?? 'Enter Email',
         hintStyle: CustomTextStyles.bodyStyle(color: Colors.grey),
         border: OutlineInputBorder(
-          borderSide: const BorderSide(
-            color: Colors.black12, // Default border color
+          borderSide: BorderSide(
+            color:  borderColor ??   Colors.black12, // Default border
+            // color
           ),
           borderRadius: BorderRadius.circular(10),
         ),
         enabledBorder: OutlineInputBorder(
-          borderSide: const BorderSide(
-            color: Colors.black12, // Default border color
+          borderSide: BorderSide(
+            color: borderColor??  Colors.black12, // Default border color
           ),
           borderRadius: BorderRadius.circular(10),
         ),
