@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-import os
+import socket
 from datetime import timedelta
 from pathlib import Path
 
@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'user_management',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,10 +40,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'university_management',
-    'user_management',
     'djoser',
     'rest_framework',
     'rest_framework_simplejwt',
+    'corsheaders',
 ]
 
 
@@ -54,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'OBE.urls'
@@ -174,6 +176,10 @@ SIMPLE_JWT = {
 }
 
 DJOSER = {
+    'SERIALIZERS': {
+            'user_create': 'user_management.serializers.UserSerializer',
+            'user': 'user_management.serializers.UserSerializer',
+    },
     'PASSWORD_RESET_CONFIRM_URL': 'password-reset/{uid}/{token}',
     'USERNAME_RESET_CONFIRM_URL': 'username-reset/{uid}/{token}',
     'SEND_ACTIVATION_EMAIL': True,
@@ -201,3 +207,10 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'w4w.w4me@gmail.com'
 EMAIL_HOST_PASSWORD = 'tgnd ncry qhyw wbek'
+
+
+CORS_ALLOW_ALL_ORIGINS = True
+hostname = socket.gethostname()
+
+ipv4_address = socket.gethostbyname(hostname)
+ALLOWED_HOSTS = [ipv4_address, '127.0.0.1']

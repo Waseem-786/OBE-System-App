@@ -17,3 +17,4 @@ POST --> auth/jwt/refresh --> Creating Access token from Refresh token
 
 GET --> auth/users/ --> Getting User Data
 POST --> auth/users/ --> Creating a User
+GET --> api/users/ --> Getting All Users Data

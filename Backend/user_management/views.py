@@ -5,25 +5,27 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import Group
 from .models import CustomUser
 from .serializers import RoleSerializer, UserSerializer
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
-from rest_framework_simplejwt.authentication import JWTAuthentication
+# from rest_framework.permissions import IsAdminUser
+from .permissions import IsSuperUser
+from rest_framework_simplejwt.authentication import JWTStatelessUserAuthentication
 
 class Roles(generics.ListCreateAPIView):
     queryset = Group.objects.all()
     serializer_class = RoleSerializer
-    authentication_classes = [JWTAuthentication]
-    pagination_class = [IsAdminUser]
+    authentication_classes = [JWTStatelessUserAuthentication]
+    permission_classes = [IsSuperUser]
     
 class SingleRole(generics.RetrieveUpdateDestroyAPIView):
     queryset = Group.objects.all()
     serializer_class = RoleSerializer
-    authentication_classes = [JWTAuthentication]
-    pagination_class = [IsAdminUser]
+    authentication_classes = [JWTStatelessUserAuthentication]
+    permission_classes = [IsSuperUser]
+
 
 
 class AddUserToGroupView(APIView):
-    permission_classes = [IsAdminUser]
-    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsSuperUser]
+    authentication_classes = [JWTStatelessUserAuthentication]
 
     def get(self, request, group):
         group = get_object_or_404(Group,name=group)
@@ -95,3 +97,11 @@ class AddUserToGroupView(APIView):
                             status=status.HTTP_200_OK)
         else:
             return Response({"message": f"User not present in any group"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class AllUsers(generics.ListAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = UserSerializer
+    authentication_classes = [JWTStatelessUserAuthentication]
+    permission_classes = [IsSuperUser]
