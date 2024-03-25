@@ -1,7 +1,9 @@
-from django.db import models
-from django.contrib.auth.models import AbstractUser
 from university_management.models import University
+from djongo import models
+from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import PermissionsMixin
+from django.utils.translation import gettext_lazy as _
 
-class CustomUser(AbstractUser):
-    email = models.EmailField(unique=True)  # Define email field as required and unique
+class CustomUser(AbstractUser, PermissionsMixin, models.Model):
+    email = models.EmailField(_("email address"), unique=True)
     university = models.ForeignKey(University, on_delete=models.CASCADE, null=True, blank=True)
