@@ -73,7 +73,7 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(35),
                         child: Image.asset(
-                          "assets/images/sd.jpg",
+                          "assets/images/MyProfile.jpeg",
                         ),
                       ),
                       radius: 35,

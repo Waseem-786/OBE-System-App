@@ -9,6 +9,7 @@ class CustomTextFormField extends StatelessWidget {
   final String? label;
   final String? hintText;
   final Color? borderColor;
+  final bool? passField;
 
   const CustomTextFormField({
     Key? key,
@@ -16,7 +17,8 @@ class CustomTextFormField extends StatelessWidget {
     this.prefixIcon,
     this.label,
     this.hintText,
-    this.borderColor
+    this.borderColor,
+    this.passField
 
   }) : super(key: key);
 
@@ -24,6 +26,7 @@ class CustomTextFormField extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextFormField(
       controller: controller,
+      obscureText: passField ?? false,
       validator: (value) {
         if (value == null || value.isEmpty) {
           return 'Please Enter ${label}';

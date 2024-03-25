@@ -85,7 +85,7 @@ class User_Management_State extends State<User_Management>{
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(25),
                         child: Image.asset(
-                          "assets/images/sd.jpg",
+                          "assets/images/MyProfile.jpeg",
                         ),
                       ),
                       radius: 30,
