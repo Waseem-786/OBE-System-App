@@ -15,6 +15,13 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   var loggedin;
+  var isLoading = false;
+  //variable to show the error when the wrong credentials are entered or the
+  // fields are empty
+  String? errorMessage;
+
+  // color of text fields when the error is not occurred
+  Color errorColor = Colors.black12;
 
   // For encryption of tokens
   final storage = FlutterSecureStorage(
@@ -48,43 +55,47 @@ class _LoginPageState extends State<LoginPage> {
     await storage.write(key: "refresh_token", value: tokens['refresh']);
   }
 
-  //variable to show the error when the wrong credentials are entered or the
-  // fields are empty
-  String? errorMessage;
-
-  // color of text fields when the error is not occurred
-  Color errorColor = Colors.black12;
-
   // function to post the request to the server to get tokens by passing
   // username and password
   Future<String?> getToken(String username, String password) async {
-    final response = await http.post(
-      Uri.parse('http://192.168.0.112:8000/auth/jwt/create'),
-      body: {
-        'username': username,
-        'password': password,
-      },
-    );
+    try {
+      final response = await http.post(
+        Uri.parse('http://192.168.0.112:8000/auth/jwt/create'),
+        body: {
+          'username': username,
+          'password': password,
+        },
+      );
 
-    if (response.statusCode == 200) {
-      final responseData = jsonDecode(response.body);
-      print(responseData);
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        print(responseData);
 
-      // function call to store tokens
-      await storeTokens(responseData);
-    } else {
+        // function call to store tokens
+        await storeTokens(responseData);
+      } else {
+        setState(() {
+          if (username == '' && password == '') {
+            errorColor = Colors.red;
+            errorMessage = 'Please Enter Credentials';
+          } else {
+            errorMessage = '*Incorrect Username & Password';
+            errorColor = Colors.red;
+          }
+        });
+        throw Exception('Failed to load token');
+      }
+    } catch (e) {
       setState(() {
-        if (username == '' && password == '') {
-          errorColor = Colors.red;
-          errorMessage = 'Please Enter Credentials';
-        } else {
-          errorMessage = '*Incorrect Username & Password';
-          errorColor = Colors.red;
-        }
+        errorMessage = "Something went wrong. Server Error";
+        errorColor = Colors.red;
       });
-      throw Exception('Failed to load token');
+
+      // print('Bad response here: $e');
+      throw Exception('Bad response');
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -173,6 +184,10 @@ class _LoginPageState extends State<LoginPage> {
                         String username = EmailController.text;
                         String password = PasswordController.text;
 
+                        setState(() {
+                          isLoading = true; // Ensure isLoading is set to true before the request
+                        });
+
                         getToken(username, password).then((token) {
                           Navigator.push(
                               context,
@@ -182,21 +197,30 @@ class _LoginPageState extends State<LoginPage> {
                           // Use the token for further requests or save it for later use
                         }).catchError((error) {
                           print('Error: $error');
+                        }).whenComplete(() {
+                          setState(() {
+                            isLoading = false; // Ensure isLoading is set back to false after request completes
+                          });
                         });
                       },
                       ButtonText: 'Login',
                     ),
 
+
                     SizedBox(
                       height: 10,
                     ),
 
+                    Visibility(
+                      visible: isLoading,
+                      child: CircularProgressIndicator(),
+                    ),
+
                     errorMessage != null
                         ? Text(
-                            errorMessage!,
-                            style:
-                                CustomTextStyles.bodyStyle(color: Colors.red),
-                          )
+                      errorMessage!,
+                      style: CustomTextStyles.bodyStyle(color: Colors.red),
+                    )
                         : SizedBox(),
                   ],
                 ),
@@ -207,4 +231,5 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+
 }
