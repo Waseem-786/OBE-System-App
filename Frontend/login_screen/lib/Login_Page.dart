@@ -14,14 +14,11 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  var loggedin;
-  var isLoading = false;
-  //variable to show the error when the wrong credentials are entered or the
-  // fields are empty
-  String? errorMessage;
+  var isLoading = false; // variable for use the functionality of loading while request is processed to server
+  Color errorColor = Colors.black12; // color of border of text fields when the error is not occurred
+  var loggedin; // check if the user is already logged in by checking the token stored in storage
+  String? errorMessage; //variable to show the error when the wrong credentials are entered or the fields are empty
 
-  // color of text fields when the error is not occurred
-  Color errorColor = Colors.black12;
 
   // For encryption of tokens
   final storage = FlutterSecureStorage(
@@ -161,7 +158,7 @@ class _LoginPageState extends State<LoginPage> {
                       prefixIcon: Icons.lock,
                       hintText: 'Enter Password',
                       borderColor: errorColor,
-                      passField: true,
+                      passField: true, // for obscure text of password
                     ),
 
                     SizedBox(height: 40.0),
@@ -188,6 +185,7 @@ class _LoginPageState extends State<LoginPage> {
                           isLoading = true; // Ensure isLoading is set to true before the request
                         });
 
+                        // function call to get a token by passing username and password to the server to get token
                         getToken(username, password).then((token) {
                           Navigator.push(
                               context,
@@ -205,12 +203,9 @@ class _LoginPageState extends State<LoginPage> {
                       },
                       ButtonText: 'Login',
                     ),
-
-
                     SizedBox(
                       height: 10,
                     ),
-
                     Visibility(
                       visible: isLoading,
                       child: CircularProgressIndicator(),
@@ -231,5 +226,4 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-
 }

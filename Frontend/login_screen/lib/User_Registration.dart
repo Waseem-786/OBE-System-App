@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Field.dart';
 import 'package:http/http.dart' as http;
-
 import 'Custom_Widgets/Custom_Text_Style.dart';
 
 class User_Registration extends StatefulWidget {
@@ -13,12 +12,13 @@ class User_Registration extends StatefulWidget {
 }
 
 class _User_RegistrationState extends State<User_Registration> {
-  //variable to show the error when the wrong credentials are entered or the
-  String? errorMessage;
-  Color colorMessage = Colors.red;
-  var isLoading = false;
-  // color of text fields when the error is not occurred
-  Color errorColor = Colors.black12;
+  String?
+      errorMessage; //variable to show the error when the wrong credentials are entered or the fields are empty
+  Color colorMessage = Colors.red; // color of the message when the error occurs
+  var isLoading =
+      false; // variable for use the functionality of loading while request is processed to server
+  Color errorColor = Colors
+      .black12; // color of border of text fields when the error is not occurred
 
   final TextEditingController FirstNameController = TextEditingController();
   final TextEditingController LastNameController = TextEditingController();
@@ -28,8 +28,10 @@ class _User_RegistrationState extends State<User_Registration> {
       TextEditingController();
   final TextEditingController UserName = TextEditingController();
 
-  Future<void> registerUser(String firstName, String lastName,String email, String password,String confirmPassword, String userName) async {
 
+  // function to send the post request to the server to create a user by passing user fields
+  Future<void> registerUser(String firstName, String lastName, String email,
+      String password, String confirmPassword, String userName) async {
     setState(() {
       isLoading = true; // Ensure isLoading is set to true before the request
     });
@@ -65,21 +67,19 @@ class _User_RegistrationState extends State<User_Registration> {
         });
         print('Registration successful');
         // You can navigate to another screen or show a success message here
-      }
- else {
+      } else {
         setState(() {
           if (firstName == '' &&
               lastName == '' &&
               email == '' &&
               password == '' &&
               confirmPassword == '' &&
-              userName == '')
-          {
+              userName == '') {
             errorColor = Colors.red;
             errorMessage = 'Please Enter all Fields';
           }
         });
-        throw Exception('Failed create user ${response.body}' );
+        throw Exception('Failed create user ${response.body}');
       }
     } catch (e) {
       // Handle any errors that occurred during the request
@@ -157,6 +157,7 @@ class _User_RegistrationState extends State<User_Registration> {
                     label: 'Password',
                     hintText: 'Enter Password',
                     borderColor: errorColor,
+                    passField: true,
                   ),
                   SizedBox(
                     height: 20,
@@ -166,6 +167,7 @@ class _User_RegistrationState extends State<User_Registration> {
                     label: 'Confirm Password',
                     hintText: 'Enter Password Again',
                     borderColor: errorColor,
+                    passField: true,
                   ),
                   SizedBox(
                     height: 20,
@@ -188,8 +190,9 @@ class _User_RegistrationState extends State<User_Registration> {
                       String confirmPassword = ConfirmPasswordController.text;
                       String userName = UserName.text;
 
-                      // calling of function
-                      registerUser(firstName,lastName,email,password,confirmPassword,userName);
+                      // calling of function to create user by pressing button
+                      registerUser(firstName, lastName, email, password,
+                          confirmPassword, userName);
                     },
                     ButtonText: 'Register',
                   ),
@@ -203,7 +206,8 @@ class _User_RegistrationState extends State<User_Registration> {
                   errorMessage != null
                       ? Text(
                           errorMessage!,
-                          style: CustomTextStyles.bodyStyle(color: colorMessage),
+                          style:
+                              CustomTextStyles.bodyStyle(color: colorMessage),
                         )
                       : SizedBox(),
                 ],
