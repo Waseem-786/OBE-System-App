@@ -1,7 +1,9 @@
+
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:login_screen/Create_Role.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Field.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Style.dart';
 import 'package:login_screen/Dashboard.dart';
@@ -156,7 +158,11 @@ class _LoginPageState extends State<LoginPage> {
                     SizedBox(height: 40.0),
                     // Forget Password
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>Create_Role()));
+
+                      },
                       child: Text(
                         'Forget Password?',
                         style: CustomTextStyles.bodyStyle(
