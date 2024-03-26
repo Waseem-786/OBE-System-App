@@ -1,9 +1,12 @@
 // import 'dart:ffi';
 import 'dart:convert';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:login_screen/Custom_Widgets/Custom_Button.dart';
+import 'package:login_screen/User_Profile.dart';
 import 'User_Registration.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
 
@@ -65,82 +68,97 @@ class User_Management_State extends State<User_Management>{
         // ],
 
 
-        actions: [
-          PopupMenuButton<String>(
-            icon: Icon(Icons.more_vert),
-            onSelected: (String result) {
-
-              if(result=='add'){
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>User_Registration()));
-              }
-              setState(() {
-                _selectedOption = result;
-              });
-            },
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-              PopupMenuItem<String>(
-                value: 'add',
-                child: Text('Add'),
-              ),
-              // PopupMenuItem<String>(
-              //   value: 'update',
-              //   child: Text('Update'),
-              // ),
-              // Add more PopupMenuItems for other options as needed
-            ],
-          ),
-        ],
+        // actions: [
+        //   PopupMenuButton<String>(
+        //     icon: Icon(Icons.more_vert),
+        //     onSelected: (String result) {
+        //
+        //       if(result=='add'){
+        //         Navigator.push(context, MaterialPageRoute(builder: (context)=>User_Registration()));
+        //       }
+        //       setState(() {
+        //         _selectedOption = result;
+        //       });
+        //     },
+        //     itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+        //       PopupMenuItem<String>(
+        //         value: 'add',
+        //         child: Text('Add'),
+        //       ),
+        //       // PopupMenuItem<String>(
+        //       //   value: 'update',
+        //       //   child: Text('Update'),
+        //       // ),
+        //       // Add more PopupMenuItems for other options as needed
+        //     ],
+        //   ),
+        // ],
 
       ),
 
-      body: Container(
-        margin: EdgeInsets.only(top: 10),
-        child: ListView.builder(
-          itemCount: 5, // Assuming there are 10 users,
-          itemBuilder: (context, index) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0,
-                  vertical: 5.0),
-              child: Card(
-                // margin: EdgeInsets.only(top: 20),
-                color: Colors.white,
-                elevation: 3,
-                child: Container(
-                  height: 100,
-                  child: ListTile(
-                    contentPadding: EdgeInsets.symmetric(vertical: 10,
-                        horizontal: 10),
-                    leading: CircleAvatar(
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(25),
-                        child: Image.asset(
-                          "assets/images/sd.jpg",
+      body: Column(
+        children: [
+          Container(
+            color: Colors.grey.shade200,
+            height: 650,
+            child: ListView.builder(
+              itemCount: 8, // Assuming there are 10 users,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0,
+                      vertical: 5.0),
+                  child: Card(
+                    // margin: EdgeInsets.only(top: 20),
+                    color: Colors.white,
+                    elevation: 5,
+                    child: Container(
+                      // color: Colors.grey.shade200,
+                      height: 100,
+                      child: InkWell(
+                        onTap: (){
+                          // Navigator.push(context, MaterialPageRoute(builder: (context) => User_Profile(),));
+                        },
+                        child: ListTile(
+                          contentPadding: EdgeInsets.symmetric(vertical: 10,
+                              horizontal: 10),
+                          leading: CircleAvatar(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(25),
+                              child: Image.asset(
+                                "assets/images/sd.jpg",
+                              ),
+                            ),
+                            radius: 30,
+                          ),
+                          trailing: Padding(
+                            padding: const EdgeInsets.all(18.0),
+                            child: Icon(Icons.edit_square),
+                          ),
+                          title: Text(
+                            'User Name',
+                            style: CustomTextStyles.headingStyle(fontSize: 20),
+
+                            // style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          subtitle: Text('User ID: ABC123',style: CustomTextStyles.bodyStyle(),),
+                          onTap: () {
+                            // Handle tap on user tile
+                          },
                         ),
                       ),
-                      radius: 30,
                     ),
-
-
-                    title: Text(
-                      'User Name',
-                      style: CustomTextStyles.headingStyle(fontSize: 20),
-
-                      // style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text('User ID: ABC123',style: CustomTextStyles.bodyStyle(),),
-                    onTap: () {
-                      // Handle tap on user tile
-                    },
                   ),
-                ),
-              ),
-            );
-          },
-        ),
+                );
+              },
+            ),
+
+          ),
+          SizedBox(height: 20,),
+          Custom_Button(onPressedFunction: (){
+            Navigator.push(context, MaterialPageRoute(builder: (context)=>User_Registration()));
+          }, ButtonText: 'Add',ButtonWidth: 100,)
+        ],
       ),
-
-
     );
-
   }
 }

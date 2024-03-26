@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 
 class CustomTextStyles {
-  static TextStyle headingStyle({
-    double? fontSize,
-    Color? color,
-    FontWeight? fontWeight,
-  }) {
+  static TextStyle headingStyle({double? fontSize, Color? color, FontWeight? fontWeight,}) {
     return TextStyle(
       fontSize: fontSize ?? 30,
       fontWeight: fontWeight ?? FontWeight.bold,
@@ -14,11 +10,7 @@ class CustomTextStyles {
     );
   }
 
-  static TextStyle bodyStyle({
-    double? fontSize,
-    Color? color,
-    FontWeight? fontWeight,
-  }) {
+  static TextStyle bodyStyle({double? fontSize, Color? color, FontWeight? fontWeight}) {
     return TextStyle(
       fontSize: fontSize ?? 16,
       fontWeight: fontWeight ?? FontWeight.normal,
