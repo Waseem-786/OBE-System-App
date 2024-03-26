@@ -1,16 +1,48 @@
 // import 'dart:ffi';
+import 'dart:convert';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:login_screen/User_Registration.dart';
-
+import 'User_Registration.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
 
 class User_Management extends StatefulWidget{
   @override
   State<User_Management> createState() => User_Management_State();
 }
-
 class User_Management_State extends State<User_Management>{
+
+  final storage = FlutterSecureStorage(
+    aOptions: AndroidOptions(
+      encryptedSharedPreferences: true,
+    ),
+  );
+  @override
+  void initState() {
+    super.initState();
+    storage.read(key: "access_token").then((accessToken) {
+      getUsers(accessToken!);
+    });
+  }
+
+  Future<void> getUsers(String accessToken) async {
+    final response = await http.get(
+      Uri.parse('http://192.168.0.112:8000/auth/users/'),
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = jsonDecode(response.body);
+      // Handle the response data
+      print(responseData);
+    } else {
+      throw Exception('Failed to load users');
+    }
+  }
+
 
   String _selectedOption = '';
 
@@ -82,7 +114,7 @@ class User_Management_State extends State<User_Management>{
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(25),
                         child: Image.asset(
-                          "assets/images/MyProfile.jpeg",
+                          "assets/images/sd.jpg",
                         ),
                       ),
                       radius: 30,
@@ -111,6 +143,4 @@ class User_Management_State extends State<User_Management>{
     );
 
   }
-
-
 }
