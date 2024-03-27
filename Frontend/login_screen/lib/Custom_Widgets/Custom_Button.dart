@@ -8,6 +8,7 @@ class Custom_Button extends StatelessWidget{
  final Color? BackgroundColor ;
  final String? ButtonText;
  final VoidCallback onPressedFunction;
+ final double ButtonWidth;
 
 
  const Custom_Button({
@@ -15,15 +16,16 @@ class Custom_Button extends StatelessWidget{
    this.ForegroundColor,
    this.BackgroundColor,
    this.ButtonText,
-   required this.onPressedFunction
+   required this.onPressedFunction,
+   this.ButtonWidth = double.infinity,
  }):super(key: key);
 
 
 
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
       height: 50,
+      width : ButtonWidth,
       child: ElevatedButton(
         onPressed: onPressedFunction,
         style: ElevatedButton.styleFrom(
