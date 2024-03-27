@@ -5,7 +5,9 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:login_screen/User_Profile.dart';
 import 'package:login_screen/User_Registration.dart';
+import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
 
 class User_Management extends StatefulWidget{
@@ -114,7 +116,10 @@ class User_Management_State extends State<User_Management>{
                       height: 100,
                       child: InkWell(
                         onTap: (){
-                          // Navigator.push(context, MaterialPageRoute(builder: (context) => User_Profile(),));
+
+                          print("Clicked");
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>User_Profile()));
+
                         },
                         child: ListTile(
                           contentPadding: EdgeInsets.symmetric(vertical: 10,
@@ -141,6 +146,8 @@ class User_Management_State extends State<User_Management>{
                           subtitle: Text('User ID: ABC123',style: CustomTextStyles.bodyStyle(),),
                           onTap: () {
                             // Handle tap on user tile
+                            print("Clicked");
+                            Navigator.push(context, MaterialPageRoute(builder: (context)=>User_Profile()));
                           },
                         ),
                       ),
