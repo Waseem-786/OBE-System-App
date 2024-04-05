@@ -33,13 +33,13 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'user_management',
+    'university_management',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'university_management',
+    'django.contrib.staticfiles', 
     'djoser',
     'rest_framework',
     'rest_framework_simplejwt',
@@ -134,6 +134,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 AUTH_USER_MODEL = 'user_management.CustomUser'
+AUTH_GROUP_MODEL = 'user_management.CustomGroup'
 
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
@@ -156,8 +157,8 @@ REST_FRAMEWORK = {
 
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=3),
     'ROTATE_REFRESH_TOKENS': False, # Will Think about it
     'BLACKLIST_AFTER_ROTATION': True,
     'UPDATE_LAST_LOGIN': False, # Warning: Updating last_login will dramatically increase the number of database transactions. People abusing the views could slow the server and this could be a security vulnerability. If you really want this, throttle the endpoint with DRF at the very least.
@@ -177,13 +178,14 @@ SIMPLE_JWT = {
 
 DJOSER = {
     'SERIALIZERS': {
-            'user_create': 'user_management.serializers.UserSerializer',
-            'user': 'user_management.serializers.UserSerializer',
+            'user_create': 'user_management.serializers.CustomUserCreateSerializer',
+            'user': 'user_management.serializers.CustomUserCreateSerializer',
+            'current_user': 'user_management.serializers.CustomUserCreateSerializer',
     },
     'PASSWORD_RESET_CONFIRM_URL': 'password-reset/{uid}/{token}',
     'USERNAME_RESET_CONFIRM_URL': 'username-reset/{uid}/{token}',
-    'SEND_ACTIVATION_EMAIL': True,
-    'SEND_CONFIRMATION_EMAIL': True,
+    'SEND_ACTIVATION_EMAIL': False,
+    'SEND_CONFIRMATION_EMAIL': False,
     'SET_PASSWORD_RETYPE': True,
     'PASSWORD_CHANGED_EMAIL_CONFIRMATION': True,
     'USERNAME_CHANGED_EMAIL_CONFIRMATION': True,

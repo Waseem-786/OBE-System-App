@@ -1,0 +1,228 @@
+id,name
+1,Riphah International University
+2,Capital University of Science & Technology
+3,Quaid-i-Azam University
+4,Pakistan Institute of Engineering and Applied Sciences
+5,"National Defence University, Pakistan"
+6,Allama Iqbal Open University
+7,"International Islamic University, Islamabad"
+8,"National University of Sciences and Technology, Pakistan"
+9,COMSATS University
+10,National University of Computer and Emerging Sciences
+11,Bahria University
+12,Sir Syed CASE Institute of Technology
+13,"Federal Urdu University of Arts, Science and Technology"
+14,Institute of Space Technology
+15,"Foundation University, Islamabad"
+16,National University of Modern Languages
+17,"Air University, Islamabad"
+18,Shifa Tameer-e-Millat University
+19,Shaheed Zulfiqar Ali Bhutto Medical University
+20,Muslim Youth University
+21,National University of Technology
+22,Pakistan Institute of Development Economics
+23,National Skills University
+24,Ibadat International University
+25,University of Balochistan
+26,Balochistan University of Engineering and Technology
+27,Al-Hamd Islamic University
+28,"Balochistan University of Information Technology, Engineering and Management Sciences"
+29,Sardar Bahadur Khan Women's University
+30,"Lasbela University of Agriculture, Water and Marine Sciences"
+31,University of Turbat
+32,University of Loralai
+33,Mir Chakar Khan Rind University
+34,University of Gwadar
+35,Islamia College University
+36,Pakistan Military Academy
+37,Pakistan Air Force Academy
+38,University of Peshawar
+39,Gomal University
+40,"University of Engineering and Technology, Peshawar"
+41,"University of Agriculture, Peshawar"
+42,Preston University
+43,CECOS University of Information Technology and Emerging Sciences
+44,Ghulam Ishaq Khan Institute of Engineering Sciences and Technology
+45,Kohat University of Science and Technology
+46,University of Malakand
+47,Qurtuba University
+48,Sarhad University of Science and Information Technology
+49,"City University of Science and Information Technology, Peshawar"
+50,Hazara University
+51,Gandhara University
+52,"Northern University, Nowshera"
+53,Institute of Management Sciences Peshawar
+54,University of Science and Technology Bannu
+55,Shaheed Benazir Bhutto Women University
+56,Khyber Medical University
+57,Abasyn University
+58,Abdul Wali Khan University Mardan
+59,"Shaheed Benazir Bhutto University, Sheringal"
+60,University of Swat
+61,Bacha Khan University
+62,University of Haripur
+63,IQRA National University
+64,Khushal Khan Khattak University
+65,University of Swabi
+66,University of Buner
+67,Abbottabad University of Science and Technology
+68,Women University Mardan
+69,Women University Swabi
+70,"University of Technology, Nowshera"
+71,FATA University
+72,University of Chitral
+73,"University of Engineering and Technology, Mardan"
+74,"University of Agriculture, Dera Ismail Khan"
+75,University of Lakki Marwat
+76,Pak-Austria Fachhochschule: Institute of Applied Sciences and Technology
+77,University of Dir
+78,King Edward Medical University
+79,"University of Engineering and Technology, Lahore"
+80,Forman Christian College
+81,National College of Arts
+82,University of Veterinary and Animal Sciences
+83,University of the Punjab
+84,Punjab Tianjin University of Technology
+85,"University of Agriculture, Faisalabad"
+86,Namal Institute
+87,Kinnaird College for Women University
+88,"Government College University, Lahore"
+89,Lahore College for Women University
+90,"Government College University, Faisalabad"
+91,Fatima Jinnah Medical University
+92,National Textile University
+93,Pir Mehr Ali Shah Arid Agriculture University
+94,Bahauddin Zakariya University
+95,The Islamia University of Bahawalpur
+96,"University of Engineering and Technology, Taxila"
+97,Lahore University of Management Sciences
+98,NFC Institute of Engineering and Technology
+99,"Institute of Management Sciences, Lahore"
+100,"University of Management and Technology, Lahore"
+101,National College of Business Administration and Economics
+102,University of Central Punjab
+103,Fatima Jinnah Women University
+104,University of Sargodha
+105,"University of Health Sciences, Lahore"
+106,University of Education
+107,GIFT University
+108,Hajvery University
+109,Faisalabad Medical University
+110,University of Faisalabad
+111,University of Lahore
+112,Beaconhouse National University
+113,University of South Asia
+114,University of Gujrat
+115,Superior University
+116,"Minhaj University, Lahore"
+117,HITEC University
+118,University of Wah
+119,Pakistan Institute of Fashion and Design
+120,Women University Multan
+121,Institute of Southern Punjab
+122,Qarshi University
+123,"Government College Women University, Sialkot"
+124,Government Sadiq College Women University
+125,Ghazi University
+126,"Government College Women University, Faisalabad"
+127,Information Technology University (Lahore)
+128,Muhammad Nawaz Sharif University of Agriculture
+129,Muhammad Nawaz Sharif University of Engineering and Technology
+130,Virtual University of Pakistan
+131,Lahore Garrison University
+132,Cholistan University of Veterinary and Animal Sciences
+133,Khawaja Fareed University of Engineering and Information Technology
+134,"University of Engineering and Technology, Rasul"
+135,University of Sahiwal
+136,University of Okara
+137,University of Jhang
+138,NUR International University
+139,University of Sialkot
+140,Lahore School of Economics
+141,Rawalpindi Medical University
+142,Nishtar Medical University
+143,National University of Medical Sciences
+144,University of Home Economics Lahore
+145,Mir Chakar Khan Rind University of Technology
+146,Rawalpindi Women University
+147,Institute for Art and Culture
+148,University of Narowal
+149,Al-Qadir University
+150,Baba Guru Nanak University
+151,University of Chakwal
+152,University of Mianwali
+153,Thal University
+154,Green International University
+155,Kohsar University Murree
+156,Lahore Institute of Science and Technology
+157,Grand Asian University Sialkot
+158,Government Viqar-un-Nisa Women University
+159,Liaquat University of Medical and Health Sciences
+160,Sindh Madressatul Islam University
+161,NED University of Engineering and Technology
+162,Dow University of Health Sciences
+163,University of Sindh
+164,University of Karachi
+165,"Institute of Business Administration, Karachi"
+166,Dawood University of Engineering and Technology
+167,Mehran University of Engineering and Technology
+168,Pakistan Naval Academy
+169,Shah Abdul Latif University
+170,"Quaid-e-Awam University of Engineering, Science and Technology"
+171,Sindh Agriculture University
+172,Indus Valley School of Art and Architecture
+173,Baqai Medical University
+174,Hamdard University
+175,Commecs institute of business and emerging sciences
+176,Sir Syed University of Engineering and Technology
+177,Sukkur Institute of Business Administration (IBA) University
+178,Textile Institute of Pakistan
+179,Institute of Business Management
+180,Shaheed Zulfiqar Ali Bhutto Institute of Science and Technology
+181,Isra University
+182,Karachi Institute of Economics and Technology
+183,"Greenwich University, Karachi"
+184,Jinnah University for Women
+185,Iqra University
+186,Dadabhoy Institute of Higher Education
+187,Ilma University
+188,Preston Institute of Management Sciences and Technology
+189,Indus University
+190,University of EAST
+191,Aga Khan University
+192,Shaheed Mohtarma Benazir Bhutto Medical University
+193,Muhammad Ali Jinnah University
+194,Sindh Institute of Medical Sciences
+195,Karachi School for Business and Leadership
+196,Habib University
+197,Benazir Bhutto Shaheed University
+198,"Shaheed Benazir Bhutto University, Benazirabad"
+199,KASB Institute of Technology
+200,Pir Abdul Qadir Shah Jeelani Institute of Medical Sciences
+201,Jinnah Sindh Medical University
+202,Shaheed Zulfiqar Ali Bhutto University of Law
+203,DHA Suffa University
+204,Nazeer Hussain University
+205,Peoples University of Medical and Health Sciences for Women
+206,Shaheed Benazir Bhutto University of Veterinary and Animal Sciences
+207,Newports Institute of Communications and Economics
+208,Shaheed Benazir Bhutto City University
+209,Shaheed Benazir Bhutto Dewan University
+210,"Hyderabad Institute of Arts, Science and Technology"
+211,Qalandar Shahbaz University of Modern Sciences
+212,Benazir Bhutto Shaheed University of Technology and Skill Development
+213,Begum Nusrat Bhutto Women University
+214,University of Sufism and Modern Sciences
+215,Government College University Hyderabad
+216,Shaikh Ayaz University
+217,Ziauddin University
+218,Salim Habib University
+219,Mirpur University of Science and Technology
+220,University of Azad Jammu and Kashmir
+221,University of Poonch
+222,Al-Khair University
+223,Mohi-ud-Din Islamic University
+224,Women University of Azad Jammu and Kashmir Bagh
+225,University of Kotli
+226,Karakoram International University
+227,Baltistan University

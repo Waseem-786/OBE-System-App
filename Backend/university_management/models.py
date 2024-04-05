@@ -15,7 +15,7 @@ class Campus(models.Model):
     university = models.ForeignKey(University, on_delete=models.CASCADE, related_name='campuses')
 
     def __str__(self):
-        return f"{self.name} - {self.university.name}"
+        return f"{self.name}"
     
 class Department(models.Model):
     name = models.CharField(max_length=100)
@@ -32,4 +32,10 @@ class Section(models.Model):
 class Batch(models.Model):
     name = models.CharField(max_length=200)
     department = models.ForeignKey(Department,on_delete=models.CASCADE,related_name='batch')
-    sections = models.ManyToManyField(Section, related_name='batches')
+
+class BatchSection(models.Model):
+    batch = models.ForeignKey(Batch, on_delete=models.CASCADE)
+    section = models.ForeignKey(Section, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('batch', 'section')

@@ -1,0 +1,24 @@
+POST --> auth/jwt/create  --> Token Creation
+POST --> auth/jwt/verify  --> Token Validation
+POST --> auth/jwt/refresh --> Creating Access token from Refresh token
+
+GET  --> auth/users/            --> Getting User Data
+POST --> auth/users/            --> Creating a User
+POST --> auth/users/activation/ --> Activating a user
+GET  --> api/users/             --> Getting All Users Data
+
+GET,POST --> api/university --> Getting and adding university
+GET,POST --> api/campus     --> Getting and adding campus
+GET,POST --> api/department --> Getting and adding department
+
+
+GET,POST --> api/top/role                           --> Getting all roles and adding a role at top level. Like university_admin for all universities. Created by superuser
+GET,POST --> university/role/<str:university_name>  --> Getting all roles and adding a role at university level. Like campus_admin, NUST for all campuses. Created by University Admin
+GET,POST --> campus/role/<str:campus_name>          --> Getting all roles and adding a role at campus level. Like department_admin, DEAN for all departments. Created by Campus Admin.
+GET,POST --> department/role/<str:department_name>  --> Getting all roles and adding a role at department level. Like Faculty for all batches. Created by Department Admin.
+
+
+GET,POST --> api/top/role/assign/<str:group_name>        --> Getting all users which is assigned in given top level group. And assign a role at given group. Handled by Superuser.
+GET,POST --> api/university/role/assign/<str:group_name> --> Getting all users which is assigned in given university level group. And assign a role at given group. Handled by University Admin.
+GET,POST --> api/campus/role/assign/<str:group_name>     --> Getting all users which is assigned in given campus level group. And assign a role at given group. Handled by Campus Admin.
+GET,POST --> api/department/role/assign/<str:group_name> --> Getting all users which is assigned in given department level group. And assign a role at given group. Handled by Department Admin.

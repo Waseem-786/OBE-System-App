@@ -1,8 +1,13 @@
 from django.urls import path
 from . import views
 urlpatterns = [
-    path('role',views.Roles.as_view()),
-    path('role/<int:pk>',views.SingleRole.as_view()),
-    path('user-group/<str:group>', views.AddUserToGroupView.as_view(), name='add_user_to_group'),
+    path('top/role',views.TopLevelRoles.as_view()),
+    path('university/role/<str:university_name>',views.UniversityLevelRoles.as_view()),
+    path('campus/role/<str:campus_name>',views.CampusLevelRoles.as_view()),
+    path('department/role/<str:department_name>',views.DepartmentLevelRoles.as_view()),
+    path('top/role/assign/<str:group_name>',views.AddUserToTopLevelGroupView.as_view()),
+    path('university/role/assign/<str:group_name>',views.AddUserToUniversityLevelGroupView.as_view()),
+    path('campus/role/assign/<str:group_name>',views.AddUserToCampusLevelGroupView.as_view()),
+    path('department/role/assign/<str:group_name>',views.AddUserToDepartmentLevelGroupView.as_view()),
     path('users',views.AllUsers.as_view())
 ]
