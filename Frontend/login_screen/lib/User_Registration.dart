@@ -1,7 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:login_screen/Custom_Widgets/Custom_Button.dart';
+import 'Custom_Widgets/Custom_Text_Field.dart';
+import 'Custom_Widgets/Custom_Text_Style.dart';
 
 class User_Registration extends StatefulWidget {
   @override
