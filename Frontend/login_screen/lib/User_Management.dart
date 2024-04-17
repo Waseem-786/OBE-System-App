@@ -54,7 +54,7 @@ class User_Management_State extends State<User_Management> {
   // function to get the users from the server by passing token of the user who is logged in
   Future<void> getUsers(String accessToken) async {
     final response = await http.get(
-      Uri.parse('http://192.168.0.112:8000/api/users'),
+      Uri.parse('http://192.168.0.103:8000/api/users'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },
@@ -72,7 +72,6 @@ class User_Management_State extends State<User_Management> {
     }
   }
 
-  String _selectedOption = '';
 
   @override
   Widget build(BuildContext context) {
@@ -85,39 +84,7 @@ class User_Management_State extends State<User_Management> {
             style: CustomTextStyles.headingStyle(fontSize: 20),
           ),
         ),
-        // actions: [
-        //   IconButton(
-        //     icon: Icon(Icons.more_vert),
-        //     iconSize: 25,
-        //     onPressed: () {},
-        //   ),
-        // ],
 
-        // actions: [
-        //   PopupMenuButton<String>(
-        //     icon: Icon(Icons.more_vert),
-        //     onSelected: (String result) {
-        //
-        //       if(result=='add'){
-        //         Navigator.push(context, MaterialPageRoute(builder: (context)=>User_Registration()));
-        //       }
-        //       setState(() {
-        //         _selectedOption = result;
-        //       });
-        //     },
-        //     itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-        //       PopupMenuItem<String>(
-        //         value: 'add',
-        //         child: Text('Add'),
-        //       ),
-        //       // PopupMenuItem<String>(
-        //       //   value: 'update',
-        //       //   child: Text('Update'),
-        //       // ),
-        //       // Add more PopupMenuItems for other options as needed
-        //     ],
-        //   ),
-        // ],
       ),
 
       // The users will be shown in the List view builder by getting them from the server so it will work asynchronously
@@ -135,80 +102,82 @@ class User_Management_State extends State<User_Management> {
           } else {
 
             // the UI will start from here when the users are loaded from the server
-            return Column(
-              children: [
-                Container(
-                  color: Colors.grey.shade200,
-                  height: 650,
-                  child: ListView.builder(
-                    itemCount: responseData != null ? responseData.length : 0,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 5.0),
-                        child: Card(
-                          color: Colors.white,
-                          elevation: 5,
-                          child: Container(
-                            height: 100,
-                            child: ListTile(
-                              contentPadding: EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 10),
-                              leading: CircleAvatar(
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(25),
-                                  child: Image.asset("assets/images/sd.jpg"),
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  Container(
+                    color: Colors.grey.shade200,
+                    height: 530,
+                    child: ListView.builder(
+                      itemCount: responseData != null ? responseData.length : 0,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 5.0),
+                          child: Card(
+                            color: Colors.white,
+                            elevation: 5,
+                            child: Container(
+                              height: 100,
+                              child: ListTile(
+                                contentPadding: EdgeInsets.symmetric(
+                                    vertical: 10, horizontal: 10),
+                                leading: CircleAvatar(
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(25),
+                                    child: Image.asset("assets/images/sd.jpg"),
+                                  ),
+                                  radius: 30,
                                 ),
-                                radius: 30,
+                                trailing: Padding(
+                                  padding: const EdgeInsets.all(18.0),
+                                  child: Icon(Icons.edit_square),
+                                ),
+                                title: Text(
+                                  responseData[index]['username'],
+                                  style:
+                                      CustomTextStyles.headingStyle(fontSize: 20),
+                                ),
+                                subtitle: Text(
+                                  'User ID: ${responseData[index]['id']}',
+                                  style: CustomTextStyles.bodyStyle(),
+                                ),
+                                onTap: () {
+                                  // call of a function to get the data of that user whose email is passed and email is
+                                  // passed by tapping the user
+                                  var user = getUserByEmail(
+                                      responseData[index]['email']);
+                                  if (user != null) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              User_Profile(user_data: user)),
+                                    );
+                                  }
+                                },
                               ),
-                              trailing: Padding(
-                                padding: const EdgeInsets.all(18.0),
-                                child: Icon(Icons.edit_square),
-                              ),
-                              title: Text(
-                                responseData[index]['username'],
-                                style:
-                                    CustomTextStyles.headingStyle(fontSize: 20),
-                              ),
-                              subtitle: Text(
-                                'User ID: ${responseData[index]['id']}',
-                                style: CustomTextStyles.bodyStyle(),
-                              ),
-                              onTap: () {
-                                // call of a function to get the data of that user whose email is passed and email is
-                                // passed by tapping the user
-                                var user = getUserByEmail(
-                                    responseData[index]['email']);
-                                if (user != null) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            User_Profile(user_data: user)),
-                                  );
-                                }
-                              },
                             ),
                           ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Custom_Button(
-                  onPressedFunction: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => User_Registration()));
-                  },
-                  ButtonText: 'Add',
-                  ButtonWidth: 100,
-                )
-              ],
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Custom_Button(
+                    onPressedFunction: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => User_Registration()));
+                    },
+                    ButtonText: 'Add',
+                    ButtonWidth: 100,
+                  )
+                ],
+              ),
             );
           }
         },

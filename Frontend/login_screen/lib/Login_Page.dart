@@ -59,7 +59,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<String?> getToken(String username, String password) async {
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.0.112:8000/auth/jwt/create'),
+        Uri.parse('http://192.168.0.103:8000/auth/jwt/create'),
         body: {
           'username': username,
           'password': password,

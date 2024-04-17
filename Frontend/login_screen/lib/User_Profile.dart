@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
 
@@ -23,37 +24,45 @@ class User_Profile extends StatelessWidget {
           ),
         ),
       ),
-      body: Container(
-        color: Colors.grey.shade200,
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Title for user details section.
-              Text("User Details", style: CustomTextStyles.headingStyle()),
-              SizedBox(height: 10),
-
-              // calling of the _buildUserInfoCards() for every field of user data that will be stored on the card
-              ..._buildUserInfoCards(),// Spread operator (...) to unpack the list of user info cards into children.
-              SizedBox(height: 20),
-              // Button for delete functionality.
-              Padding(
+      body: Column(
+        children: [
+          SingleChildScrollView(
+            child: Container(
+              height: 550,
+              color: Colors.grey.shade200,
+              child: Padding(
                 padding: const EdgeInsets.all(20.0),
-                child: Custom_Button(
-                  onPressedFunction: () {
-                    // Implement delete functionality.
-                  },
-                  BackgroundColor: Colors.red,
-                  ForegroundColor: Colors.white,
-                  ButtonText: "Delete",
-                  ButtonWidth: 120,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Title for user details section.
+                      Text("User Details", style: CustomTextStyles.headingStyle()),
+                      SizedBox(height: 10),
+            
+                      // calling of the _buildUserInfoCards() for every field of user data that will be stored on the card
+                      ..._buildUserInfoCards(),// Spread operator (...) to unpack the list of user info cards into children.
+                    ],
+                  ),
                 ),
-              )
-            ],
+              ),
+            ),
           ),
-        ),
-      ),
+          // Button for delete functionality.
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Custom_Button(
+              onPressedFunction: () {
+                // Implement delete functionality.
+              },
+              BackgroundColor: Colors.red,
+              ForegroundColor: Colors.white,
+              ButtonText: "Delete",
+              ButtonWidth: 120,
+            ),
+          )
+        ],
+      )
     );
   }
 

@@ -2,9 +2,11 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:login_screen/Custom_Widgets/Custom_Button.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Field.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
+import 'Custom_Widgets/DropDown.dart';
 
 class User_Registration extends StatefulWidget {
   @override
@@ -13,10 +15,10 @@ class User_Registration extends StatefulWidget {
 
 class _User_RegistrationState extends State<User_Registration> {
   String?
-      errorMessage; //variable to show the error when the wrong credentials are entered or the fields are empty
+  errorMessage; //variable to show the error when the wrong credentials are entered or the fields are empty
   Color colorMessage = Colors.red; // color of the message when the error occurs
   var isLoading =
-      false; // variable for use the functionality of loading while request is processed to server
+  false; // variable for use the functionality of loading while request is processed to server
   Color errorColor = Colors
       .black12; // color of border of text fields when the error is not occurred
 
@@ -25,9 +27,29 @@ class _User_RegistrationState extends State<User_Registration> {
   final TextEditingController EmailController = TextEditingController();
   final TextEditingController PasswordController = TextEditingController();
   final TextEditingController ConfirmPasswordController =
-      TextEditingController();
+  TextEditingController();
   final TextEditingController UserName = TextEditingController();
+  final TextEditingController Campus = TextEditingController();
+  final TextEditingController Role = TextEditingController();
+  final TextEditingController Department = TextEditingController();
 
+  late String token;
+
+  final storage = FlutterSecureStorage(
+    aOptions: AndroidOptions(
+      encryptedSharedPreferences: true,
+    ),
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    storage.read(key: "access_token").then((accessToken) {
+      setState(() {
+        token = accessToken!;
+      });
+    });
+  }
 
   // function to send the post request to the server to create a user by passing user fields
   Future<void> registerUser(String firstName, String lastName, String email,
@@ -52,7 +74,7 @@ class _User_RegistrationState extends State<User_Registration> {
     // Send the POST request
     try {
       http.Response response = await http.post(
-        Uri.parse('http://192.168.0.112:8000/auth/users/'),
+        Uri.parse('http://192.168.43.101:8000/auth/users/'),
         body: requestBody,
         headers: {
           'Content-Type': 'application/json',
@@ -87,12 +109,12 @@ class _User_RegistrationState extends State<User_Registration> {
       setState(() {
         errorColor = Colors.red;
         errorMessage =
-            'Failed to connect to the server. Please try again later.$e';
+        'Failed to connect to the server. Please try again later.$e';
       });
     } finally {
       setState(() {
         isLoading =
-            false; // Ensure isLoading is set back to false after request completes
+        false; // Ensure isLoading is set back to false after request completes
       });
     }
   }
@@ -100,8 +122,6 @@ class _User_RegistrationState extends State<User_Registration> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // resizeToAvoidBottomInset: false,
-
       appBar: AppBar(
         backgroundColor: Color(0xffc19a6b),
         title: Container(
@@ -112,7 +132,6 @@ class _User_RegistrationState extends State<User_Registration> {
           ),
         ),
       ),
-
       body: Container(
         color: Colors.white,
         width: double.infinity,
@@ -131,27 +150,21 @@ class _User_RegistrationState extends State<User_Registration> {
                       label: 'First Name',
                       hintText: 'Enter First Name',
                       borderColor: errorColor),
-                  SizedBox(
-                    height: 20,
-                  ),
+                  SizedBox(height: 20),
                   CustomTextFormField(
                     controller: LastNameController,
                     label: 'Last Name',
                     hintText: 'Enter Last Name',
                     borderColor: errorColor,
                   ),
-                  SizedBox(
-                    height: 20,
-                  ),
+                  SizedBox(height: 20),
                   CustomTextFormField(
                     controller: EmailController,
                     label: 'Email',
                     hintText: 'Enter Email',
                     borderColor: errorColor,
                   ),
-                  SizedBox(
-                    height: 20,
-                  ),
+                  SizedBox(height: 20),
                   CustomTextFormField(
                     controller: PasswordController,
                     label: 'Password',
@@ -159,9 +172,7 @@ class _User_RegistrationState extends State<User_Registration> {
                     borderColor: errorColor,
                     passField: true,
                   ),
-                  SizedBox(
-                    height: 20,
-                  ),
+                  SizedBox(height: 20),
                   CustomTextFormField(
                     controller: ConfirmPasswordController,
                     label: 'Confirm Password',
@@ -169,18 +180,42 @@ class _User_RegistrationState extends State<User_Registration> {
                     borderColor: errorColor,
                     passField: true,
                   ),
-                  SizedBox(
-                    height: 20,
-                  ),
+                  SizedBox(height: 20),
                   CustomTextFormField(
                     controller: UserName,
                     label: 'User Name',
                     hintText: 'Enter Username',
                     borderColor: errorColor,
                   ),
-                  SizedBox(
-                    height: 20,
+                  SizedBox(height: 20),
+                  DropDown(
+                    token: token,
+                    endpoint: 'http://192.168.0.103:8000/api/university',
+                    hintText: "Select University",
+                    label: "University",
                   ),
+                  SizedBox(height: 20),
+                  DropDown(
+                    token: token,
+                    endpoint: 'http://192.168.0.103:8000/api/campus',
+                    hintText: "Select Campus",
+                    label: "Campus",
+                  ),
+                  SizedBox(height: 20),
+                  DropDown(
+                    token: token,
+                    endpoint: 'http://192.168.0.103:8000/api/department',
+                    hintText: "Select department",
+                    label: "department",
+                  ),
+                  SizedBox(height: 20),
+                  CustomTextFormField(
+                    controller: Role,
+                    label: 'User Role',
+                    hintText: 'Enter Role',
+                    borderColor: errorColor,
+                  ),
+                  SizedBox(height: 20),
                   Custom_Button(
                     onPressedFunction: () {
                       String firstName = FirstNameController.text;
@@ -196,19 +231,17 @@ class _User_RegistrationState extends State<User_Registration> {
                     },
                     ButtonText: 'Register',
                   ),
-                  SizedBox(
-                    height: 20,
-                  ),
+                  SizedBox(height: 20),
                   Visibility(
                     visible: isLoading,
                     child: CircularProgressIndicator(),
                   ),
                   errorMessage != null
                       ? Text(
-                          errorMessage!,
-                          style:
-                              CustomTextStyles.bodyStyle(color: colorMessage),
-                        )
+                    errorMessage!,
+                    style:
+                    CustomTextStyles.bodyStyle(color: colorMessage),
+                  )
                       : SizedBox(),
                 ],
               ),
