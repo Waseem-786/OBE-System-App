@@ -4,13 +4,13 @@ from .models import University, Campus, Department, Section, Batch
 class UniversitySerializer(serializers.ModelSerializer):
     class Meta:
         model = University
-        fields = ['name','vision','mission']
+        fields = ['id','name','vision','mission']
 
 class CampusSerializer(serializers.ModelSerializer):
     university_name = serializers.CharField(source='university.name', read_only=True)
     class Meta:
         model = Campus
-        fields = ['name','vision','mission','university', 'university_name']
+        fields = ['id','name','vision','mission','university', 'university_name']
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
@@ -18,7 +18,7 @@ class DepartmentSerializer(serializers.ModelSerializer):
     campus_name = serializers.CharField(source='campus.name', read_only=True)
     class Meta:
         model = Department
-        fields = ['name','vision','mission','university_name','campus','campus_name']
+        fields = ['id','name','vision','mission','university_name','campus','campus_name']
 
 
 class BatchSerializer(serializers.ModelSerializer):
