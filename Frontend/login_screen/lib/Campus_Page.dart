@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:login_screen/Campus_Profile.dart';
 import 'package:login_screen/Create_Campus.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Field.dart';
 
@@ -97,9 +98,15 @@ class _Campus_PageState extends State<Campus_Page> {
                             padding: const EdgeInsets.all(20.0),
                             child: Text(campus['name'], style: CustomTextStyles.bodyStyle(fontSize: 17)),
                           ),
-                          onTap: () {
-                            var campusData = getCampusById(campuses[index]['id']);
+                          onTap: () async {
+                            var campusData = await getCampusById(campuses[index]['id']);
                             if (campusData != null) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        Campus_Profile(campus_data: campusData),
+                              ));
                               // Perform actions with campusData
                             }
                           },

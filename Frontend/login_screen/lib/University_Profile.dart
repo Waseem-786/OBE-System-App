@@ -14,7 +14,7 @@ class University_Profile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Center(child: Text('University Overview')),
+          title: Center(child: Text('University Overview',style: CustomTextStyles.headingStyle(fontSize: 22))),
         ),
         body: Column(
           children: [

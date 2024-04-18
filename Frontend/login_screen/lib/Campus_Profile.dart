@@ -14,7 +14,7 @@ class Campus_Profile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Center(child: Text('Campus Overview')),
+          title:  Center(child: Text('Campus Overview',style: CustomTextStyles.headingStyle(fontSize: 22))),
         ),
         body: Column(
           children: [
