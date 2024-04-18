@@ -14,6 +14,7 @@ class University_Profile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          backgroundColor: Color(0xffc19a6b),
           title: Center(child: Text('University Overview',style: CustomTextStyles.headingStyle(fontSize: 22))),
         ),
         body: Column(
