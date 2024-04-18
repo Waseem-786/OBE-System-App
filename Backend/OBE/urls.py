@@ -23,5 +23,7 @@ urlpatterns = [
     path('auth/',include('djoser.urls.jwt')),
     path('api/',include('user_management.urls')),
     path('api/',include('university_management.urls')),
+    path('api/',include('course_management.urls')),
+    path('api/',include('program_management.urls')),
 ]
 
