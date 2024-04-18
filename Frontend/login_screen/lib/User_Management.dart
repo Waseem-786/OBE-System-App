@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:login_screen/User_Profile.dart';
 import 'package:login_screen/User_Registration.dart';
+import 'package:login_screen/main.dart';
 import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
 
@@ -53,8 +54,9 @@ class User_Management_State extends State<User_Management> {
 
   // function to get the users from the server by passing token of the user who is logged in
   Future<void> getUsers(String accessToken) async {
+    final ipAddress = MyApp.ip;
     final response = await http.get(
-      Uri.parse('http://192.168.0.103:8000/api/users'),
+      Uri.parse('$ipAddress:8000/api/users'),
       headers: {
         'Authorization': 'Bearer $accessToken',
       },

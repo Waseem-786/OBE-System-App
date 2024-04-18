@@ -16,7 +16,10 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  static const String ip = 'http://192.168.0.105';
+
   const MyApp({super.key});
+
 
   // This widget is the root of your application.
   @override
@@ -30,21 +33,16 @@ class MyApp extends StatelessWidget {
       ),
       home: SplashScreen(),
       routes: {
-    '/Program_Management': (context) => Program_Management(),
-    '/Batch_Management': (context) => Batch_Management(),
-    '/Courses': (context) => Courses(),
-    '/Approval_Process': (context) => Approval_Process(),
-    '/Assessments': (context) => Assessments(),
-    '/User_Management': (context) => User_Management(),
-    '/University_Page': (context) => University_Page(),
-    '/Campus_Page': (context) => Campus_Page(),
-    '/Department_Page': (context) => Department_Page(),
-
-
-
-    },
+        '/Program_Management': (context) => Program_Management(),
+        '/Batch_Management': (context) => Batch_Management(),
+        '/Courses': (context) => Courses(),
+        '/Approval_Process': (context) => Approval_Process(),
+        '/Assessments': (context) => Assessments(),
+        '/User_Management': (context) => User_Management(),
+        '/University_Page': (context) => University_Page(),
+        '/Campus_Page': (context) => Campus_Page(),
+        '/Department_Page': (context) => Department_Page(),
+      },
     );
   }
 }
-
-

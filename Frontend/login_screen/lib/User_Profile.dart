@@ -82,7 +82,7 @@ class User_Profile extends StatelessWidget {
   Widget _buildUserDetailCard(String label, String? value) {
     return SizedBox(
       width: double.infinity,
-      height: 90,
+
       child: Card(
         color: Colors.white,
         elevation: 5,

@@ -10,6 +10,8 @@ import 'package:login_screen/Dashboard.dart';
 import 'Custom_Widgets/Custom_Button.dart';
 import 'package:http/http.dart' as http;
 
+import 'main.dart';
+
 class LoginPage extends StatefulWidget {
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -57,9 +59,10 @@ class _LoginPageState extends State<LoginPage> {
   // function to post the request to the server to get tokens by passing
   // username and password
   Future<String?> getToken(String username, String password) async {
+    final ipAddress = MyApp.ip;
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.0.103:8000/auth/jwt/create'),
+        Uri.parse('$ipAddress:8000/auth/jwt/create'),
         body: {
           'username': username,
           'password': password,

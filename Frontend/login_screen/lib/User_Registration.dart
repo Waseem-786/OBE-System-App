@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:login_screen/main.dart';
 import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Field.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
@@ -54,6 +55,8 @@ class _User_RegistrationState extends State<User_Registration> {
   // function to send the post request to the server to create a user by passing user fields
   Future<void> registerUser(String firstName, String lastName, String email,
       String password, String confirmPassword, String userName) async {
+
+    final ipAddress = MyApp.ip;
     setState(() {
       isLoading = true; // Ensure isLoading is set to true before the request
     });
@@ -74,7 +77,7 @@ class _User_RegistrationState extends State<User_Registration> {
     // Send the POST request
     try {
       http.Response response = await http.post(
-        Uri.parse('http://192.168.43.101:8000/auth/users/'),
+        Uri.parse('$ipAddress:8000/auth/users/'),
         body: requestBody,
         headers: {
           'Content-Type': 'application/json',
@@ -121,6 +124,7 @@ class _User_RegistrationState extends State<User_Registration> {
 
   @override
   Widget build(BuildContext context) {
+    final ipAddress = MyApp.ip;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xffc19a6b),
@@ -190,21 +194,21 @@ class _User_RegistrationState extends State<User_Registration> {
                   SizedBox(height: 20),
                   DropDown(
                     token: token,
-                    endpoint: 'http://192.168.0.103:8000/api/university',
+                    endpoint: '$ipAddress:8000/api/university',
                     hintText: "Select University",
                     label: "University",
                   ),
                   SizedBox(height: 20),
                   DropDown(
                     token: token,
-                    endpoint: 'http://192.168.0.103:8000/api/campus',
+                    endpoint: '$ipAddress:8000/api/campus',
                     hintText: "Select Campus",
                     label: "Campus",
                   ),
                   SizedBox(height: 20),
                   DropDown(
                     token: token,
-                    endpoint: 'http://192.168.0.103:8000/api/department',
+                    endpoint: '$ipAddress:8000/api/department',
                     hintText: "Select department",
                     label: "department",
                   ),
