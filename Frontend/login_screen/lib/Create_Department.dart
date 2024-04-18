@@ -17,40 +17,44 @@ class Create_Department extends StatelessWidget
     return Scaffold(
       appBar: AppBar(
         title: Text('Department Page'),
+        backgroundColor: Color(0xffc19a6b),
       ),
-      body: Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            CustomTextFormField(
-              controller: CampusIdController,
-              label: 'Campus Id',
-              hintText: 'Enter Campus Id',
-              borderColor: errorColor,
-            ),
-            SizedBox(height: 20,),
-            CustomTextFormField(
-              controller: DepartmentNameController,
-              label: 'Department Name',
-              hintText: 'Enter Department Name',
-              borderColor: errorColor,
-            ),
-            SizedBox(height: 20,),
-            CustomTextFormField(
-              controller: DepartmentMissionController,
-              label: 'Department Mission',
-              hintText: 'Enter Department Mission',
-              borderColor: errorColor,
-            ),
-            SizedBox(height: 20,),
-            CustomTextFormField(
-              controller: DepartmentVisionController,
-              label: 'Department Vision',
-              hintText: 'Enter Department Vision',
-              borderColor: errorColor,
-            ),
-          ],
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Container(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              CustomTextFormField(
+                controller: CampusIdController,
+                label: 'Campus Id',
+                hintText: 'Enter Campus Id',
+                borderColor: errorColor,
+              ),
+              SizedBox(height: 20,),
+              CustomTextFormField(
+                controller: DepartmentNameController,
+                label: 'Department Name',
+                hintText: 'Enter Department Name',
+                borderColor: errorColor,
+              ),
+              SizedBox(height: 20,),
+              CustomTextFormField(
+                controller: DepartmentMissionController,
+                label: 'Department Mission',
+                hintText: 'Enter Department Mission',
+                borderColor: errorColor,
+              ),
+              SizedBox(height: 20,),
+              CustomTextFormField(
+                controller: DepartmentVisionController,
+                label: 'Department Vision',
+                hintText: 'Enter Department Vision',
+                borderColor: errorColor,
+              ),
+            ],
+          ),
         ),
       ),
     );

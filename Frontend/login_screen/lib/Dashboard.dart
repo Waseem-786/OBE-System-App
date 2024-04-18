@@ -37,8 +37,6 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
     'Assessments',
     'User Management',
     'University',
-    'Campus',
-    'Department'
   ];
   final List<IconData> icons = [
     FontAwesomeIcons.cogs,
@@ -47,8 +45,6 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
     FontAwesomeIcons.thumbsUp,
     FontAwesomeIcons.poll,
     FontAwesomeIcons.users,
-    FontAwesomeIcons.landmark,
-    FontAwesomeIcons.landmark,
     FontAwesomeIcons.landmark,
   ];
 
@@ -60,8 +56,6 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
     'Assessments',
     'User_Management',
     'University_Page',
-    'Campus_Page',
-    'Department_Page',
   ];
   String _selectedOption = '';
 
@@ -211,27 +205,6 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
                                   Color(0xFFC19A6B), // Light brown
                                   Color(0xFF8B5A2B), // Dark brown
                                 ],
-
-                                // begin: Alignment.topLeft,
-                                // end: Alignment.bottomRight,
-                                // colors: [
-                                // Color(0xFFF6D365),
-                                // Color(0xFFFDA085),
-
-                                // Color(0xFFE0C3FC),
-                                // Color(0xFF8EC5FC),
-
-                                // Color(0xFFfdfcfb),
-                                // Color(0xFFfef9d7)
-
-                                // Color(0xFFfeada6),
-                                // Color(0xFFf5efef)
-                                //
-
-                                //   Color(0xFFc19a6b),
-                                //   Color(0xFFc19a6b)
-                                //
-                                // ],
                               ),
                             ),
                             child: Padding(
@@ -265,7 +238,7 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
                       ),
                     );
                   },
-                  itemCount: 9,
+                  itemCount: 7,
                 ),
               ),
             ),

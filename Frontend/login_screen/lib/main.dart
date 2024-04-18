@@ -40,8 +40,6 @@ class MyApp extends StatelessWidget {
         '/Assessments': (context) => Assessments(),
         '/User_Management': (context) => User_Management(),
         '/University_Page': (context) => University_Page(),
-        '/Campus_Page': (context) => Campus_Page(),
-        '/Department_Page': (context) => Department_Page(),
       },
     );
   }

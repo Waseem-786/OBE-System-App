@@ -25,39 +25,42 @@ class Create_Campus extends StatelessWidget{
         ),
 
       ),
-      body: Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            CustomTextFormField(
-              controller: UniversityIdController,
-              label: 'University Id',
-              hintText: 'Enter University Id',
-              borderColor: errorColor,
-            ),
-            SizedBox(height: 20,),
-            CustomTextFormField(
-              controller: CampusNameController,
-              label: 'Campus Name',
-              hintText: 'Enter Campus Name',
-              borderColor: errorColor,
-            ),
-            SizedBox(height: 20,),
-            CustomTextFormField(
-              controller: CampusMissionController,
-              label: 'Campus Mission',
-              hintText: 'Enter Campus Mission',
-              borderColor: errorColor,
-            ),
-            SizedBox(height: 20,),
-            CustomTextFormField(
-              controller: CampusVisionController,
-              label: 'Campus Vision',
-              hintText: 'Enter Campus Vision',
-              borderColor: errorColor,
-            ),
-          ],
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Container(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              CustomTextFormField(
+                controller: UniversityIdController,
+                label: 'University Id',
+                hintText: 'Enter University Id',
+                borderColor: errorColor,
+              ),
+              SizedBox(height: 20,),
+              CustomTextFormField(
+                controller: CampusNameController,
+                label: 'Campus Name',
+                hintText: 'Enter Campus Name',
+                borderColor: errorColor,
+              ),
+              SizedBox(height: 20,),
+              CustomTextFormField(
+                controller: CampusMissionController,
+                label: 'Campus Mission',
+                hintText: 'Enter Campus Mission',
+                borderColor: errorColor,
+              ),
+              SizedBox(height: 20,),
+              CustomTextFormField(
+                controller: CampusVisionController,
+                label: 'Campus Vision',
+                hintText: 'Enter Campus Vision',
+                borderColor: errorColor,
+              ),
+            ],
+          ),
         ),
       ),
     );

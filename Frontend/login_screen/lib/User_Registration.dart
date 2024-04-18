@@ -87,23 +87,14 @@ class _User_RegistrationState extends State<User_Registration> {
       if (response.statusCode == 201) {
         // Registration successful, handle the response
         setState(() {
+          isLoading = false;
           colorMessage = Colors.green;
+          errorColor = Colors.black12; // Reset errorColor to default value
           errorMessage = 'Registration successful';
         });
         print('Registration successful');
         // You can navigate to another screen or show a success message here
       } else {
-        setState(() {
-          if (firstName == '' &&
-              lastName == '' &&
-              email == '' &&
-              password == '' &&
-              confirmPassword == '' &&
-              userName == '') {
-            errorColor = Colors.red;
-            errorMessage = 'Please Enter all Fields';
-          }
-        });
         throw Exception('Failed create user ${response.body}');
       }
     } catch (e) {
@@ -229,9 +220,26 @@ class _User_RegistrationState extends State<User_Registration> {
                       String confirmPassword = ConfirmPasswordController.text;
                       String userName = UserName.text;
 
-                      // calling of function to create user by pressing button
-                      registerUser(firstName, lastName, email, password,
-                          confirmPassword, userName);
+
+                        if (firstName == '' ||
+                            lastName == '' ||
+                            email == '' ||
+                            password == '' ||
+                            confirmPassword == '' ||
+                            userName == '') {
+                            setState(() {
+                              errorColor = Colors.red;
+                              colorMessage = Colors.red;
+                              errorMessage = 'Please Enter all Fields';
+                            });
+                        }
+                        else
+                          {
+                            // calling of function to create user by pressing button
+                            registerUser(firstName, lastName, email, password,
+                                confirmPassword, userName);
+                          }
+
                     },
                     ButtonText: 'Register',
                   ),

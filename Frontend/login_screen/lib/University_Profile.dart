@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:login_screen/Campus_Page.dart';
 import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
 
@@ -21,7 +22,7 @@ class University_Profile extends StatelessWidget {
           children: [
             SingleChildScrollView(
               child: Container(
-                height: 550,
+                height: 500,
                 color: Colors.grey.shade200,
                 child: Padding(
                   padding: const EdgeInsets.all(20.0),
@@ -40,6 +41,18 @@ class University_Profile extends StatelessWidget {
                     ),
                   ),
                 ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 20.0),
+              child: Custom_Button(
+                onPressedFunction: () {
+                  Navigator.push(context,MaterialPageRoute(builder: (context) => Campus_Page()));
+                },
+                BackgroundColor: Colors.green,
+                ForegroundColor: Colors.white,
+                ButtonText: "Show Campus",
+                ButtonWidth: 170,
               ),
             ),
             // Button for delete functionality.
