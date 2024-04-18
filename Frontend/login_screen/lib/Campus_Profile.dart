@@ -3,18 +3,18 @@ import 'package:flutter/material.dart';
 import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
 
-class University_Profile extends StatelessWidget {
+class Campus_Profile extends StatelessWidget {
   final Map<String, dynamic>
-      university_data; // initializing the list to store the university data we get from the university management class
-  // and show the data of that university on which tap is pressed
+      campus_data; // initializing the list to store the campus data we get from the campus management class
+  // and show the data of that campus on which tap is pressed
 
-  University_Profile(
-      {required this.university_data}); // Constructor to initialize the University_Profile widget with university data.
+  Campus_Profile(
+      {required this.campus_data}); // Constructor to initialize the Campus_Profile widget with university data.
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Center(child: Text('University Overview')),
+          title: const Center(child: Text('Campus Overview')),
         ),
         body: Column(
           children: [
@@ -28,13 +28,13 @@ class University_Profile extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // Title for university details section.
-                        Text("University Details",
+                        // Title for campus details section.
+                        Text("Campus Details",
                             style: CustomTextStyles.headingStyle()),
                         const SizedBox(height: 10),
 
-                        // calling of the _buildUniversityInfoCards() for every field of university data that will be stored on the card
-                        ..._buildUniversityInfoCards(), // Spread operator (...) to unpack the list of university info cards into children.
+                        // calling of the _buildCampusInfoCards() for every field of campus data that will be stored on the card
+                        ..._buildCampusInfoCards(), // Spread operator (...) to unpack the list of campus info cards into children.
                       ],
                     ),
                   ),
@@ -58,17 +58,15 @@ class University_Profile extends StatelessWidget {
         ));
   }
 
-  List<Widget> _buildUniversityInfoCards() {
+  List<Widget> _buildCampusInfoCards() {
     return [
-      _buildUniversityDetailCard("University Name", university_data['name']),
-      _buildUniversityDetailCard(
-          "University Mission", university_data['mission']),
-      _buildUniversityDetailCard(
-          "University Vision", university_data['vision']),
+      _buildCampusDetailCard("Campus Name", campus_data['name']),
+      _buildCampusDetailCard("Campus Mission", campus_data['mission']),
+      _buildCampusDetailCard("Campus Vision", campus_data['vision']),
     ];
   }
 
-  Widget _buildUniversityDetailCard(String label, String? value) {
+  Widget _buildCampusDetailCard(String label, String? value) {
     return SizedBox(
       width: double.infinity,
       child: Card(
