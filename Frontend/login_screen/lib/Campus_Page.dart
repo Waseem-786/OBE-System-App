@@ -3,16 +3,17 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:login_screen/Campus.dart';
 import 'package:login_screen/Campus_Profile.dart';
 import 'package:login_screen/Create_Campus.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Field.dart';
+import 'package:login_screen/University.dart';
+import 'package:login_screen/main.dart';
 
 import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
 
 class Campus_Page extends StatefulWidget{
-
-
 
   @override
   State<Campus_Page> createState() => _Campus_PageState();
@@ -20,6 +21,7 @@ class Campus_Page extends StatefulWidget{
 
 class _Campus_PageState extends State<Campus_Page> {
 
+  final int university_id = University.id;
   late Future<List<dynamic>> campusesFuture;
 
   @override
@@ -42,13 +44,14 @@ class _Campus_PageState extends State<Campus_Page> {
 
   Future<List<dynamic>> fetchCampuses() async
   {
+    final ipAddress = MyApp.ip;
     final storage = FlutterSecureStorage(
       aOptions: AndroidOptions(
         encryptedSharedPreferences: true,
       ),
     );
     final accessToken = await storage.read(key: "access_token");
-    final url = Uri.parse('http://192.168.0.105:8000/api/campus');
+    final url = Uri.parse('$ipAddress:8000/api/university/${university_id}/campus');
     final response = await http.get(
       url,
       headers: {'Authorization': 'Bearer $accessToken'},
@@ -101,11 +104,17 @@ class _Campus_PageState extends State<Campus_Page> {
                           onTap: () async {
                             var campusData = await getCampusById(campuses[index]['id']);
                             if (campusData != null) {
+                              Campus.id = campusData['id'];
+                              Campus.name = campusData['name'];
+                              Campus.mission = campusData['mission'];
+                              Campus.vision = campusData['vision'];
+                              Campus.university_id = campusData['university'];
+                              Campus.university_name = campusData['university_name'];
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                        Campus_Profile(campus_data: campusData),
+                                        Campus_Profile(),
                               ));
                               // Perform actions with campusData
                             }

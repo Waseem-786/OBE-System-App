@@ -3,20 +3,25 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:login_screen/Campus.dart';
 import 'package:login_screen/Create_Campus.dart';
 import 'package:login_screen/Create_Department.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Field.dart';
 import 'package:login_screen/Department_Profile.dart';
 import 'package:http/http.dart' as http;
+import 'package:login_screen/main.dart';
 import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
 
 class Department_Page extends StatefulWidget{
+
   @override
   State<Department_Page> createState() => _Department_PageState();
 }
 
 class _Department_PageState extends State<Department_Page> {
+
+  final int campus_id = Campus.id;
 
   late Future<List<dynamic>> DepartmentFuture;
 
@@ -40,13 +45,15 @@ class _Department_PageState extends State<Department_Page> {
 
   Future<List<dynamic>> fetchDepartments() async
   {
+    final ipAddress = MyApp.ip;
+
     final storage = FlutterSecureStorage(
       aOptions: AndroidOptions(
         encryptedSharedPreferences: true,
       ),
     );
     final accessToken = await storage.read(key: "access_token");
-    final url = Uri.parse('http://192.168.0.105:8000/api/campus');
+    final url = Uri.parse('$ipAddress:8000/api/campus/${campus_id}/department');
     final response = await http.get(
       url,
       headers: {'Authorization': 'Bearer $accessToken'},

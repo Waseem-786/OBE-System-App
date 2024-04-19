@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:login_screen/Create_University.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Button.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Style.dart';
+import 'package:login_screen/University.dart';
 import 'package:login_screen/University_Profile.dart';
 
 class University_Page extends StatefulWidget {
@@ -101,11 +102,15 @@ class _University_PageState extends State<University_Page> {
                             // passed by tapping the user
                             var user = await getUniversityById(universities[index]['id']);
                             if (user != null) {
+                              University.id = user['id'];
+                              University.name = user['name'];
+                              University.vision = user['vision'];
+                              University.mission = user['mission'];
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                        University_Profile(university_data: user)),
+                                        University_Profile()),
                               );
                             }
                           },

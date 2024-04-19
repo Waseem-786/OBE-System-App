@@ -14,7 +14,7 @@ class Department_Profile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Center(child: Text('Department Overview')),
+          title: const Center(child: Text('Department Profile')),
         ),
         body: Column(
           children: [

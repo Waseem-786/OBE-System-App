@@ -1,22 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:login_screen/Campus.dart';
 import 'package:login_screen/Department_Page.dart';
 import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
 
 class Campus_Profile extends StatelessWidget {
-  final Map<String, dynamic>
-      campus_data; // initializing the list to store the campus data we get from the campus management class
-  // and show the data of that campus on which tap is pressed
 
-  Campus_Profile(
-      {required this.campus_data}); // Constructor to initialize the Campus_Profile widget with university data.
+  final campus_id = Campus.id;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Color(0xffc19a6b),
-          title:  Center(child: Text('Campus Overview',style: CustomTextStyles.headingStyle(fontSize: 22))),
+          title:  Center(child: Text('Campus Profile',style: CustomTextStyles.headingStyle(fontSize: 22))),
         ),
         body: Column(
           children: [
@@ -74,9 +71,9 @@ class Campus_Profile extends StatelessWidget {
 
   List<Widget> _buildCampusInfoCards() {
     return [
-      _buildCampusDetailCard("Campus Name", campus_data['name']),
-      _buildCampusDetailCard("Campus Mission", campus_data['mission']),
-      _buildCampusDetailCard("Campus Vision", campus_data['vision']),
+      _buildCampusDetailCard("Campus Name", Campus.name),
+      _buildCampusDetailCard("Campus Mission", Campus.mission),
+      _buildCampusDetailCard("Campus Vision", Campus.vision),
     ];
   }
 
