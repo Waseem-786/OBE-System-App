@@ -87,7 +87,7 @@ class _Department_PageState extends State<Department_Page> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) =>
-                                    Department_Profile(department_data: department_data)
+                                    Department_Profile()
                                   ));
                               // Perform actions with campusData
                             }

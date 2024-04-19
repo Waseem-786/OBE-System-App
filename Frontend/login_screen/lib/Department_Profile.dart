@@ -2,14 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
+import 'Department.dart';
 
 class Department_Profile extends StatelessWidget {
-  final Map<String, dynamic>
-      department_data; // initializing the list to store the department data we get from the department management class
-  // and show the data of that department on which tap is pressed
-
-  Department_Profile(
-      {required this.department_data}); // Constructor to initialize the Department_Profile widget with department data.
+  final department_id = Department.id;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,11 +56,11 @@ class Department_Profile extends StatelessWidget {
 
   List<Widget> _buildDepartmentInfoCards() {
     return [
-      _buildDepartmentDetailCard("Department Name", department_data['name']),
+      _buildDepartmentDetailCard("Department Name", Department.name),
       _buildDepartmentDetailCard(
-          "Department Mission", department_data['mission']),
+          "Department Mission", Department.mission),
       _buildDepartmentDetailCard(
-          "Department Vision", department_data['vision']),
+          "Department Vision",Department.vision),
     ];
   }
 
