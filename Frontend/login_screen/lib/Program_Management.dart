@@ -1,12 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:login_screen/Campus.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Button.dart';
+import 'package:login_screen/Department.dart';
+import 'package:login_screen/Department_CLO_PLO.dart';
 import 'package:login_screen/Show_PEO.dart';
 import 'package:login_screen/Show_PLO.dart';
 
 import 'Custom_Widgets/Custom_Text_Style.dart';
 
 class Program_Management extends StatelessWidget {
+  final int campus_id = Campus.id;
+  // print(campus_id);
+  var DepartmentFuture = Department.getDepartments(1);
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -21,35 +27,51 @@ class Program_Management extends StatelessWidget {
             ),
           ),
         ),
-        body: Center(
-          child: Container(
-            padding: EdgeInsets.all(16),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Custom_Button(
-                  onPressedFunction: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => Show_PLO()));
-                  },
-                  ButtonText: "Show PLO's ",
-                  ButtonWidth: 200,
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Custom_Button(
-                  onPressedFunction: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => Show_PEO()));
-                  },
-                  ButtonText: "Show PEO's ",
-                  ButtonWidth: 200,
-                ),
-              ],
-            ),
+
+      body: Column(
+        children: [
+          FutureBuilder<List<dynamic>>(
+            future: DepartmentFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              } else {
+                final departments = snapshot.data!;
+                return Expanded(
+                  child: ListView.builder(
+                    itemCount: departments.length,
+                    itemBuilder: (context, index) {
+                      final department = departments[index];
+                      return Card(
+                        color: Colors.white,
+                        elevation: 5,
+                        margin: EdgeInsets.all(10),
+                        child: ListTile(
+                          title: Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: Text(department['name'], style: CustomTextStyles.bodyStyle(fontSize: 17)),
+                          ),
+                          onTap: ()  {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          Department_CLO_PLO()
+                                  ));
+
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                );
+              }
+            },
           ),
-        ));
-  }
+        ],
+      ),
+    );
+    }
 }
