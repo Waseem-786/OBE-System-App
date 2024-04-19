@@ -7,6 +7,7 @@ import 'package:login_screen/Campus.dart';
 import 'package:login_screen/Create_Campus.dart';
 import 'package:login_screen/Create_Department.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Field.dart';
+import 'package:login_screen/Department.dart';
 import 'package:login_screen/Department_Profile.dart';
 import 'package:http/http.dart' as http;
 import 'package:login_screen/main.dart';
@@ -28,7 +29,7 @@ class _Department_PageState extends State<Department_Page> {
   @override
   void initState() {
     super.initState();
-    DepartmentFuture = fetchDepartments();
+    DepartmentFuture = Department.getDepartments(campus_id);
   }
   Future<Map<String, dynamic>?> getCampusById(int id) async {
     final campuses = await DepartmentFuture; // Assuming campusesFuture is a Future<List<dynamic>> containing campus data
@@ -42,30 +43,6 @@ class _Department_PageState extends State<Department_Page> {
     }
     return null;
   }
-
-  Future<List<dynamic>> fetchDepartments() async
-  {
-    final ipAddress = MyApp.ip;
-
-    final storage = FlutterSecureStorage(
-      aOptions: AndroidOptions(
-        encryptedSharedPreferences: true,
-      ),
-    );
-    final accessToken = await storage.read(key: "access_token");
-    final url = Uri.parse('$ipAddress:8000/api/campus/${campus_id}/department');
-    final response = await http.get(
-      url,
-      headers: {'Authorization': 'Bearer $accessToken'},
-    );
-
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body) as List<dynamic>;
-    } else {
-      throw Exception('Failed to load campuses');
-    }
-  }
-
 
   @override
   Widget build(BuildContext context) {

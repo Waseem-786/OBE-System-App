@@ -7,6 +7,7 @@ import 'package:login_screen/Create_Role.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Field.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Style.dart';
 import 'package:login_screen/Dashboard.dart';
+import 'package:login_screen/Token.dart';
 import 'Custom_Widgets/Custom_Button.dart';
 import 'package:http/http.dart' as http;
 
@@ -37,12 +38,15 @@ class _LoginPageState extends State<LoginPage> {
 
     // when the app iniatializes. it checks the tokens, if it is stored then
     // it directly ,moves to the dashboard instead of login screen
-    storage.read(key: "access_token").then((accessToken) {
+    storage.read(key: "access_token").then((accessToken) async {
       print("access token is $accessToken");
       loggedin = accessToken;
       if (loggedin != null) {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => Dashboard_Page()));
+        bool verified = await Token.verify(accessToken!);
+        if(verified) {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => Dashboard_Page()));
+        }
       }
     });
     storage.read(key: "refresh_token").then((refreshToken) {
@@ -50,11 +54,6 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
-  // function to store tokens when login is performed
-  Future<void> storeTokens(Map<String, dynamic> tokens) async {
-    await storage.write(key: "access_token", value: tokens['access']);
-    await storage.write(key: "refresh_token", value: tokens['refresh']);
-  }
 
   // function to post the request to the server to get tokens by passing
   // username and password
@@ -74,7 +73,7 @@ class _LoginPageState extends State<LoginPage> {
         print(responseData);
 
         // function call to store tokens
-        await storeTokens(responseData);
+        await Token.storeTokens(responseData);
       } else {
         setState(() {
           if (username == '' && password == '') {
