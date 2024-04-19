@@ -15,6 +15,8 @@ class User_Registration extends StatefulWidget {
 }
 
 class _User_RegistrationState extends State<User_Registration> {
+
+
   String?
   errorMessage; //variable to show the error when the wrong credentials are entered or the fields are empty
   Color colorMessage = Colors.red; // color of the message when the error occurs
