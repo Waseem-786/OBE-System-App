@@ -1,15 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-
 import 'package:login_screen/Create_University.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Button.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Style.dart';
 import 'package:login_screen/University.dart';
 import 'package:login_screen/University_Profile.dart';
-
-import 'main.dart';
 
 class University_Page extends StatefulWidget {
   @override
@@ -22,39 +16,7 @@ class _University_PageState extends State<University_Page> {
   @override
   void initState() {
     super.initState();
-    universitiesFuture = fetchUniversities();
-  }
-
-  Future<Map<String, dynamic>?> getUniversityById(int id) async {
-    final universities = await universitiesFuture;
-    for (var university in universities) {
-      if (university['id'] == id) {
-        print(university);
-        return university;
-      }
-    }
-    return null;
-  }
-
-  Future<List<dynamic>> fetchUniversities() async {
-    final ipAddress = MyApp.ip;
-    const storage = FlutterSecureStorage(
-      aOptions: AndroidOptions(
-        encryptedSharedPreferences: true,
-      ),
-    );
-    final accessToken = await storage.read(key: "access_token");
-    final url = Uri.parse('$ipAddress:8000/api/university');
-    final response = await http.get(
-      url,
-      headers: {'Authorization': 'Bearer $accessToken'},
-    );
-
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body) as List<dynamic>;
-    } else {
-      throw Exception('Failed to load universities');
-    }
+    universitiesFuture = University.fetchUniversities();
   }
 
   @override
@@ -98,7 +60,7 @@ class _University_PageState extends State<University_Page> {
                           onTap: () async {
                             // call of a function to get the data of that user whose id is passed and id is
                             // passed by tapping the user
-                            var user = await getUniversityById(
+                            var user = await University.getUniversityById(
                                 universities[index]['id']);
                             if (user != null) {
                               University.id = user['id'];

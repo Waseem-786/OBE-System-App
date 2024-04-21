@@ -3,7 +3,7 @@ import 'package:login_screen/Approval_Process.dart';
 import 'package:login_screen/Assessments.dart';
 import 'package:login_screen/Batch_Management.dart';
 import 'package:login_screen/Campus_Page.dart';
-import 'package:login_screen/Courses.dart';
+import 'package:login_screen/Course_Page.dart';
 import 'package:login_screen/Department_Page.dart';
 import 'package:login_screen/Program_Management.dart';
 import 'package:login_screen/University_Page.dart';
@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/Program_Management': (context) => Program_Management(),
         '/Batch_Management': (context) => Batch_Management(),
-        '/Courses': (context) => Courses(),
+        '/Course_Page': (context) => Course_Page(),
         '/Approval_Process': (context) => Approval_Process(),
         '/Assessments': (context) => Assessments(),
         '/User_Management': (context) => User_Management(),

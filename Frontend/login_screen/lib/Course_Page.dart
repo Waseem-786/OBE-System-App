@@ -9,14 +9,14 @@ import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
 import 'main.dart';
 
-class Courses extends StatefulWidget {
-  const Courses({super.key});
+class Course_Page extends StatefulWidget {
+  const Course_Page({super.key});
 
   @override
-  State<StatefulWidget> createState() => CoursesState();
+  State<StatefulWidget> createState() => Course_PageState();
 }
 
-class CoursesState extends State<Courses> {
+class Course_PageState extends State<Course_Page> {
   late Future<List<dynamic>> coursesFuture;
 
   @override

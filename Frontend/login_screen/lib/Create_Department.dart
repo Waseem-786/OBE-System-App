@@ -9,6 +9,7 @@ import 'package:login_screen/Custom_Widgets/Custom_Text_Field.dart';
 
 import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
+import 'Department.dart';
 import 'main.dart';
 
 class Create_Department extends StatefulWidget
@@ -47,42 +48,7 @@ class _Create_DepartmentState extends State<Create_Department> {
 
   final TextEditingController DepartmentVisionController = TextEditingController();
 
-  Future<void> createDepartment(
-      String token, String name, String mission, String vision) async {
-    final ipAddress = MyApp.ip;
-    setState(() {
-      isLoading = true; // Ensure isLoading is set to true before the request
-    });
-    final url = Uri.parse('$ipAddress:8000/api/department');
-    final response = await http.post(
-      url,
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
-        'name': name,
-        'mission': mission,
-        'vision': vision,
-        'campus' : campus_id,
-      }),
-    );
 
-    if (response.statusCode == 201) {
-      // Registration successful, handle the response
-      setState(() {
-        isLoading = false;
-        colorMessage = Colors.green;
-        errorColor = Colors.black12; // Reset errorColor to default value
-        errorMessage = 'Department Created successfully';
-
-      });
-      print('Department Created successful');
-    } else {
-      print('Failed to create Department. Status code: ${response.statusCode}');
-      throw Exception('Failed to create Department ${response.body}');
-    }
-  }
 
   @override
   Widget build(BuildContext context){
@@ -120,7 +86,7 @@ class _Create_DepartmentState extends State<Create_Department> {
               ),
               SizedBox(height: 20,),
               Custom_Button(
-                onPressedFunction: () {
+                onPressedFunction: () async {
                   String DepartmentName = DepartmentNameController.text;
                   String DepartmentMission = DepartmentMissionController.text;
                   String DepartmentVision = DepartmentVisionController.text;
@@ -131,11 +97,22 @@ class _Create_DepartmentState extends State<Create_Department> {
                       colorMessage = Colors.red;
                       errorColor = Colors.red;
                       errorMessage = 'Please enter all fields';
-
                     });
                   } else {
-                    createDepartment(myToken, DepartmentName, DepartmentMission,
-                        DepartmentVision);
+                    setState(() {
+                      isLoading = true;
+                    });
+                    bool created = await Department.createDepartment(
+                        DepartmentName, DepartmentMission, DepartmentVision, campus_id);
+                    if (created) {
+                      setState(() {
+                        isLoading = false;
+                        colorMessage = Colors.green;
+                        errorColor =
+                            Colors.black12; // Reset errorColor to default value
+                        errorMessage = 'Department Created successfully';
+                      });
+                    }
                   }
                 },
                 ButtonText: 'Create Department',

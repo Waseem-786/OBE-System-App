@@ -7,7 +7,7 @@ import 'package:login_screen/Login_Page.dart';
 import 'package:login_screen/User_Management.dart';
 import 'package:login_screen/Assessments.dart';
 import 'package:login_screen/Batch_Management.dart';
-import 'package:login_screen/Courses.dart';
+import 'package:login_screen/Course_Page.dart';
 import 'package:login_screen/Program_Management.dart';
 import 'package:login_screen/Splash_Screen.dart';
 
