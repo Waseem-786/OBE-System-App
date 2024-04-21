@@ -10,7 +10,6 @@ import 'package:login_screen/Custom_Widgets/Custom_Text_Style.dart';
 import 'package:login_screen/Dashboard.dart';
 import 'package:login_screen/Token.dart';
 import 'Custom_Widgets/Custom_Button.dart';
-import 'package:http/http.dart' as http;
 
 import 'main.dart';
 
@@ -26,25 +25,20 @@ class _LoginPageState extends State<LoginPage> {
   String? errorMessage; //variable to show the error when the wrong credentials are entered or the fields are empty
 
 
-  // For encryption of tokens
-  final storage = FlutterSecureStorage(
-    aOptions: AndroidOptions(
-      encryptedSharedPreferences: true,
-    ),
-  );
 
 
-  void initState() {
+
+  void initState(){
     super.initState();
-
-    // Call a separate method to handle asynchronous work without awaiting it
-    handleTokenVerification();
+    _handleTokenVerification();
   }
 
+  Future<void> _handleTokenVerification() async {
+    await handleTokenVerification(); // Call your asynchronous logic here
+  }
 
   Future<void> handleTokenVerification() async {
     String? accessToken = await Token.readAccessToken();
-    print("access token is $accessToken");
     loggedin = accessToken;
     if (loggedin != null) {
       bool verified = await Token.verifyToken(accessToken!);
@@ -55,9 +49,6 @@ class _LoginPageState extends State<LoginPage> {
         );
       }
     }
-    storage.read(key: "refresh_token").then((refreshToken) {
-      print("refresh token is $refreshToken");
-    });
   }
 
 
@@ -158,10 +149,9 @@ class _LoginPageState extends State<LoginPage> {
 
                         // function call to get a token by passing username and password to the server to get token
                         Future<String?> message = Token.getToken(username, password) ;
-                        print(message);
                         message.then((result) {
                           print(result);
-                          if (result==null) {
+                          if (result=="ok") {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(

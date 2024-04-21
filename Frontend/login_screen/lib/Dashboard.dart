@@ -11,23 +11,15 @@ import 'package:login_screen/Courses.dart';
 import 'package:login_screen/Program_Management.dart';
 import 'package:login_screen/Splash_Screen.dart';
 
+import 'Token.dart';
+import 'User.dart';
+
 class Dashboard_Page extends StatefulWidget {
   @override
   State<Dashboard_Page> createState() => _Dashboard_PageState();
 }
 
 class _Dashboard_PageState extends State<Dashboard_Page> {
-  // For encryption of tokens
-  final storage = FlutterSecureStorage(
-    aOptions: AndroidOptions(
-      encryptedSharedPreferences: true,
-    ),
-  );
-
-  void deleteTokens() {
-    storage.delete(key: "access_token");
-    storage.delete(key: "refresh_token");
-  }
 
   List<String> headings = [
     'Program Management',
@@ -51,13 +43,27 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
   List<String> screenNames = [
     'Program_Management',
     'Batch_Management',
-    'Courses',
+    'Course_Page',
     'Approval_Process',
     'Assessments',
     'User_Management',
     'University_Page',
   ];
   String _selectedOption = '';
+
+
+  @override
+  initState(){
+    super.initState();
+    _GetUser(); // Call your asynchronous logic here
+  }
+  Future<void> _GetUser() async {
+    await GetUser(); // Call your asynchronous logic here
+  }
+
+  Future<void> GetUser() async {
+    await User.getUser();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +96,7 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
             icon: Icon(Icons.more_vert),
             onSelected: (String result) {
               if (result == 'Log out') {
-                deleteTokens();
+                Token.deleteTokens();
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => LoginPage()));
               }

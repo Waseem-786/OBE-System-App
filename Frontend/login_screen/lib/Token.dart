@@ -23,7 +23,6 @@ class Token {
         'token': accessToken,
       },
     );
-
     if (response.statusCode == 200) {
       return true;
     } else if (response.statusCode == 401) {
@@ -41,16 +40,30 @@ class Token {
   }
 
 
-  static String? readAccessToken() {
-    storage.read(key: "access_token").then((accessToken) async {
+  static Future<String?> readAccessToken() async {
+    try {
+      final accessToken = await storage.read(key: "access_token");
       return accessToken;
-    });
+    } catch (e) {
+      print("Error reading access token: $e");
+      return null;
+    }
   }
 
-  static String? readRefreshToken(){
-    storage.read(key: "refresh_token").then((accessToken) async {
+
+  static Future<String?> readRefreshToken() async {
+    try {
+      final refreshToken = await storage.read(key: "refresh_token");
       return refreshToken;
-    });
+    } catch (e) {
+      print("Error reading access token: $e");
+      return null;
+    }
+  }
+
+  static void deleteTokens() {
+    storage.delete(key: "access_token");
+    storage.delete(key: "refresh_token");
   }
 
   // function to post the request to the server to get tokens by passing
@@ -65,13 +78,11 @@ class Token {
           'password': password,
         },
       );
-      print(response.statusCode);
-      print(response.body);
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
         // function call to store tokens
         await Token.storeTokens(responseData);
-        return null;
+        return "ok";
       } else if (response.statusCode == 400){
           errorMessage = 'Please Enter Credentials';
       }
