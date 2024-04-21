@@ -1,4 +1,5 @@
 
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -32,69 +33,31 @@ class _LoginPageState extends State<LoginPage> {
     ),
   );
 
-  @override
+
   void initState() {
     super.initState();
 
-    // when the app iniatializes. it checks the tokens, if it is stored then
-    // it directly ,moves to the dashboard instead of login screen
-    storage.read(key: "access_token").then((accessToken) async {
-      print("access token is $accessToken");
-      loggedin = accessToken;
-      if (loggedin != null) {
-        bool verified = await Token.verify(accessToken!);
-        if(verified) {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => Dashboard_Page()));
-        }
-      }
-    });
-    storage.read(key: "refresh_token").then((refreshToken) {
-      print("refresh token is $refreshToken");
-    });
+    // Call a separate method to handle asynchronous work without awaiting it
+    handleTokenVerification();
   }
 
 
-  // function to post the request to the server to get tokens by passing
-  // username and password
-  Future<String?> getToken(String username, String password) async {
-    final ipAddress = MyApp.ip;
-    try {
-      final response = await http.post(
-        Uri.parse('$ipAddress:8000/auth/jwt/create'),
-        body: {
-          'username': username,
-          'password': password,
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
-        print(responseData);
-
-        // function call to store tokens
-        await Token.storeTokens(responseData);
-      } else {
-        setState(() {
-          if (username == '' && password == '') {
-            errorColor = Colors.red;
-            errorMessage = 'Please Enter Credentials';
-          } else {
-            errorMessage = '*Incorrect Username & Password';
-            errorColor = Colors.red;
-          }
-        });
-        throw Exception('Failed to load token');
+  Future<void> handleTokenVerification() async {
+    String? accessToken = await Token.readAccessToken();
+    print("access token is $accessToken");
+    loggedin = accessToken;
+    if (loggedin != null) {
+      bool verified = await Token.verifyToken(accessToken!);
+      if(verified) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Dashboard_Page())
+        );
       }
-    } catch (e) {
-      setState(() {
-        errorMessage = "Something went wrong. Server Error";
-        errorColor = Colors.red;
-      });
-
-      // print('Bad response here: $e');
-      throw Exception('Bad response');
     }
+    storage.read(key: "refresh_token").then((refreshToken) {
+      print("refresh token is $refreshToken");
+    });
   }
 
 
@@ -194,15 +157,25 @@ class _LoginPageState extends State<LoginPage> {
                         });
 
                         // function call to get a token by passing username and password to the server to get token
-                        getToken(username, password).then((token) {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => Dashboard_Page()));
-                          print('Token: $token');
-                          // Use the token for further requests or save it for later use
-                        }).catchError((error) {
-                          print('Error: $error');
+                        Future<String?> message = Token.getToken(username, password) ;
+                        print(message);
+                        message.then((result) {
+                          print(result);
+                          if (result==null) {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Dashboard_Page()));
+                          }
+                          else{
+                            setState(() {
+                              errorMessage = result;
+                              errorColor = Colors.red;
+                            });
+                          }
+                        // Use the token for further requests or save it for later use
+                        }).catchError((Error) {
+                          errorMessage = Error;
                         }).whenComplete(() {
                           setState(() {
                             isLoading = false; // Ensure isLoading is set back to false after request completes

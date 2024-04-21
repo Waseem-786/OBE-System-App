@@ -9,7 +9,14 @@ class Token {
   static String refreshToken = '';
   static String ipAddress = MyApp.ip;
 
-  static Future<bool> verify(String accessToken) async {
+  // For encryption of tokens
+  static final storage = FlutterSecureStorage(
+    aOptions: AndroidOptions(
+      encryptedSharedPreferences: true,
+    ),
+  );
+
+  static Future<bool> verifyToken(String accessToken) async {
     final response = await http.post(
       Uri.parse('$ipAddress:8000/auth/jwt/verify'),
       body: {
@@ -28,15 +35,56 @@ class Token {
 
   // function to store tokens when login is performed
   static Future<void> storeTokens(Map<String, dynamic> tokens) async {
-    // For encryption of tokens
-    final storage = FlutterSecureStorage(
-      aOptions: AndroidOptions(
-        encryptedSharedPreferences: true,
-      ),
-    );
 
     await storage.write(key: "access_token", value: tokens['access']);
     await storage.write(key: "refresh_token", value: tokens['refresh']);
+  }
+
+
+  static String? readAccessToken() {
+    storage.read(key: "access_token").then((accessToken) async {
+      return accessToken;
+    });
+  }
+
+  static String? readRefreshToken(){
+    storage.read(key: "refresh_token").then((accessToken) async {
+      return refreshToken;
+    });
+  }
+
+  // function to post the request to the server to get tokens by passing
+  // username and password
+  static Future<String?> getToken(String username, String password) async {
+    String errorMessage;
+    try {
+      final response = await http.post(
+        Uri.parse('$ipAddress:8000/auth/jwt/create'),
+        body: {
+          'username': username,
+          'password': password,
+        },
+      );
+      print(response.statusCode);
+      print(response.body);
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        // function call to store tokens
+        await Token.storeTokens(responseData);
+        return null;
+      } else if (response.statusCode == 400){
+          errorMessage = 'Please Enter Credentials';
+      }
+      else if (response.statusCode == 401) {
+        errorMessage = '*Incorrect Username & Password';
+      }
+      else {
+        errorMessage = response.body;
+      }
+      return errorMessage;
+    } catch (e) {
+        errorMessage = "Something went wrong. Server Error";
+    }
   }
 
 }
