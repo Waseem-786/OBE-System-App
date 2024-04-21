@@ -5,7 +5,6 @@ import 'Custom_Widgets/Custom_Text_Style.dart';
 import 'Department.dart';
 
 class Department_Profile extends StatelessWidget {
-  final department_id = Department.id;
   @override
   Widget build(BuildContext context) {
     return Scaffold(

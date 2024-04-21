@@ -12,7 +12,7 @@ import 'Custom_Widgets/Custom_Text_Style.dart';
 class Program_Management extends StatelessWidget {
   final int campus_id = Campus.id;
   // print(campus_id);
-  var DepartmentFuture = Department.getDepartments(1);
+  var DepartmentFuture = Department.getDepartmentsbyCampusid(1);
   @override
   Widget build(BuildContext context) {
     // TODO: implement build

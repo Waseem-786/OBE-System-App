@@ -1,16 +1,9 @@
-import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:login_screen/Campus.dart';
-import 'package:login_screen/Create_Campus.dart';
 import 'package:login_screen/Create_Department.dart';
-import 'package:login_screen/Custom_Widgets/Custom_Text_Field.dart';
 import 'package:login_screen/Department.dart';
 import 'package:login_screen/Department_Profile.dart';
-import 'package:http/http.dart' as http;
-import 'package:login_screen/main.dart';
 import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
 
@@ -29,20 +22,9 @@ class _Department_PageState extends State<Department_Page> {
   @override
   void initState() {
     super.initState();
-    DepartmentFuture = Department.getDepartments(campus_id);
+    DepartmentFuture = Department.getDepartmentsbyCampusid(campus_id);
   }
-  Future<Map<String, dynamic>?> getCampusById(int id) async {
-    final campuses = await DepartmentFuture; // Assuming campusesFuture is a Future<List<dynamic>> containing campus data
-    if (campuses != null) {
-      for (var campus in campuses) {
-        if (campus['id'] == id) {
-          print(campus);
-          return campus;
-        }
-      }
-    }
-    return null;
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +33,7 @@ class _Department_PageState extends State<Department_Page> {
         backgroundColor: Color(0xffc19a6b),
         title: Center(
           child: Text(
-              'Campus Page',style: CustomTextStyles.headingStyle(fontSize: 22)
+              'Department Page',style: CustomTextStyles.headingStyle(fontSize: 22)
           ),
         ),
       ),
@@ -65,12 +47,12 @@ class _Department_PageState extends State<Department_Page> {
               } else if (snapshot.hasError) {
                 return Center(child: Text('Error: ${snapshot.error}'));
               } else {
-                final campuses = snapshot.data!;
+                final departments = snapshot.data!;
                 return Expanded(
                   child: ListView.builder(
-                    itemCount: campuses.length,
+                    itemCount: departments.length,
                     itemBuilder: (context, index) {
-                      final campus = campuses[index];
+                      final department = departments[index];
                       return Card(
                         color: Colors.white,
                         elevation: 5,
@@ -78,11 +60,15 @@ class _Department_PageState extends State<Department_Page> {
                         child: ListTile(
                           title: Padding(
                             padding: const EdgeInsets.all(20.0),
-                            child: Text(campus['name'], style: CustomTextStyles.bodyStyle(fontSize: 17)),
+                            child: Text(department['name'], style: CustomTextStyles.bodyStyle(fontSize: 17)),
                           ),
                           onTap: () async {
-                            var department_data = await getCampusById(campuses[index]['id']);
+                            var department_data = await Department.getDepartmentById(departments[index]['id'],campus_id);
                             if (department_data != null) {
+                              Department.id = department_data['id'];
+                              Department.name = department_data['name'];
+                              Department.mission = department_data['mission'];
+                              Department.vision = department_data['vision'];
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(

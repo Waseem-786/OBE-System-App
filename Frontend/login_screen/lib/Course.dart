@@ -1,3 +1,9 @@
+import 'dart:convert';
+
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
+import 'main.dart';
+
 class Course {
   static String? _code;
   static String? _title;
@@ -5,7 +11,7 @@ class Course {
   static int _lab_credits = 0;
   static String? _course_type;
   static String? _required_elective;
-  static String? _prerequisite;
+  static int? _prerequisite;
   static String? _description;
 
   Course();
@@ -53,9 +59,9 @@ class Course {
   }
 
   //setter getter for course's prerequisite
-  static String? get prerequisite => _prerequisite;
+  static int? get prerequisite => _prerequisite;
 
-  static set prerequisite(String? value) {
+  static set prerequisite(int? value) {
     _prerequisite = value;
   }
 
@@ -64,5 +70,48 @@ class Course {
 
   static set description(String? value) {
     _description = value;
+  }
+  static Future<bool> createCourse(String code, String title, int theoryCredits,int labCredits,String courseType,
+      String reqElec, String preReq, String description) async {
+    try {
+      const storage = FlutterSecureStorage(
+        aOptions: AndroidOptions(
+          encryptedSharedPreferences: true,
+        ),
+      );
+      final accessToken = await storage.read(key: "access_token");
+      const ipAddress = MyApp.ip;
+      final url = Uri.parse('$ipAddress:8000/api/course');
+      final response = await http.post(
+        url,
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'code' : code,
+          'title': title,
+          'theory_credits':theoryCredits,
+          'lab_credits': labCredits,
+          'course_type':courseType,
+          'required_elective':reqElec,
+          'prerequisite':1,
+          'description':description,
+          'university':11
+        }),
+      );
+      if (response.statusCode == 201) {
+        print('Course Created successfully');
+        return true;
+      } else {
+        print('Failed to create Course. Status code: ${response.statusCode}');
+        print('Body: ${response.body}');
+
+        return false;
+      }
+    } catch (e) {
+      print('Exception while creating Course: $e');
+      return false;
+    }
   }
 }

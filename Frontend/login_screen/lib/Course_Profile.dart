@@ -66,7 +66,7 @@ class Course_Profile extends StatelessWidget {
       _buildCourseDetailCard("Lab Credits", Course.lab_credits.toString()),
       _buildCourseDetailCard("Course Type", Course.course_type),
       _buildCourseDetailCard("Course Req/Elec", Course.required_elective),
-      _buildCourseDetailCard("Course Prerequisite", Course.prerequisite),
+      _buildCourseDetailCard("Course Prerequisite", Course.prerequisite.toString()),
       _buildCourseDetailCard("Course Description", Course.description),
     ];
   }
