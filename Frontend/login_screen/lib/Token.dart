@@ -16,11 +16,11 @@ class Token {
     ),
   );
 
-  static Future<bool> verifyToken(String accessToken) async {
+  static Future<bool> verifyToken(String Token) async {
     final response = await http.post(
       Uri.parse('$ipAddress:8000/auth/jwt/verify'),
       body: {
-        'token': accessToken,
+        'token': Token,
       },
     );
     if (response.statusCode == 200) {
@@ -39,6 +39,11 @@ class Token {
     await storage.write(key: "refresh_token", value: tokens['refresh']);
   }
 
+  // function to store tokens when login is performed
+  static Future<void> updateAccessToken(var accessToken) async {
+
+    await storage.write(key: "access_token", value: accessToken['access']);
+  }
 
   static Future<String?> readAccessToken() async {
     try {
@@ -68,7 +73,7 @@ class Token {
 
   // function to post the request to the server to get tokens by passing
   // username and password
-  static Future<String?> getToken(String username, String password) async {
+  static Future<String> getToken(String username, String password) async {
     String errorMessage;
     try {
       final response = await http.post(
@@ -92,10 +97,38 @@ class Token {
       else {
         errorMessage = response.body;
       }
-      return errorMessage;
     } catch (e) {
         errorMessage = "Something went wrong. Server Error";
     }
+    return errorMessage;
+  }
+
+  static Future<bool> refreshAccessToken() async{
+    String? refreshToken = await readRefreshToken();
+    String errorMessage;
+    try {
+      final response = await http.post(
+        Uri.parse('$ipAddress:8000/auth/jwt/refresh'),
+        body: {
+          'refresh': refreshToken,
+        },
+      );
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        // function call to store tokens
+        await Token.updateAccessToken(responseData);
+        return true;
+      } else if (response.statusCode == 401) {
+        errorMessage = 'Token is Invaldid or Unauthorized';
+      }
+      else {
+        errorMessage = response.body;
+      }
+      print(errorMessage);
+    } catch (e) {
+      errorMessage = "Something went wrong. Server Error";
+    }
+    return false;
   }
 
 }

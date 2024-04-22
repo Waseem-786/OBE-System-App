@@ -118,7 +118,7 @@ class User {
     String? accessToken = await Token.readAccessToken();
     try {
       final response = await http.get(
-        Uri.parse('$ipAddress:8000/auth/users'),
+        Uri.parse('$ipAddress:8000/auth/users/'),
         headers: {'Authorization': 'Bearer $accessToken'},
       );
 
