@@ -1,15 +1,11 @@
-// import 'dart:ffi';
-import 'dart:convert';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:login_screen/User_Profile.dart';
 import 'package:login_screen/User_Registration.dart';
-import 'package:login_screen/main.dart';
 import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
+import 'User.dart';
 
 class User_Management extends StatefulWidget {
   @override
@@ -17,25 +13,19 @@ class User_Management extends StatefulWidget {
 }
 
 class User_Management_State extends State<User_Management> {
-  // for Encryption purpose
-  final storage = FlutterSecureStorage(
-    aOptions: AndroidOptions(
-      encryptedSharedPreferences: true,
-    ),
-  );
+  // variable to store the data after making a get request
+  var responseData;
+
   @override
   void initState() {
     super.initState();
-    storage.read(key: "access_token").then((accessToken) {
-      // show the users of that person(authority) who is logged in
-      getUsers(
-          accessToken!); // pass the token of that user who is logged in to show the users which are authorized to show
-      //to that account who is logged in
-    });
   }
 
-  // variable to store the data after making a get request
-  var responseData;
+  Future<void> _getAllUsers() async {
+    responseData = await User.getAllUsers();
+  }
+
+
 
   // function to get user's data by passing email
   Map<String, dynamic>? getUserByEmail(String email) {
@@ -49,29 +39,6 @@ class User_Management_State extends State<User_Management> {
       }
     }
     return null;
-  }
-
-
-  // function to get the users from the server by passing token of the user who is logged in
-  Future<void> getUsers(String accessToken) async {
-    final ipAddress = MyApp.ip;
-    final response = await http.get(
-      Uri.parse('$ipAddress:8000/api/users'),
-      headers: {
-        'Authorization': 'Bearer $accessToken',
-      },
-    );
-    print("response.body");
-    if (response.statusCode == 200) {
-      print("Success");
-
-      // all the data of the users is stored in responseData
-      responseData = jsonDecode(response.body);
-      // Handle the response data
-      print(responseData);
-    } else {
-      throw Exception('Failed to load users');
-    }
   }
 
 
@@ -93,9 +60,7 @@ class User_Management_State extends State<User_Management> {
       // and  there could be a timing issue where the UI is built before responseData is populated with the actual data.
       // so the Future builder is used
       body: FutureBuilder(
-        future: storage
-            .read(key: "access_token")
-            .then((accessToken) => getUsers(accessToken!)),
+        future: _getAllUsers(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());

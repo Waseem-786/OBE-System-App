@@ -1,13 +1,13 @@
-import 'dart:convert';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:login_screen/main.dart';
+
+import 'Department.dart';
+import 'University.dart';
+import 'Campus.dart';
 import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Field.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
 import 'Custom_Widgets/DropDown.dart';
+import 'User.dart';
 
 class User_Registration extends StatefulWidget {
   @override
@@ -15,109 +15,28 @@ class User_Registration extends StatefulWidget {
 }
 
 class _User_RegistrationState extends State<User_Registration> {
+  bool universitySelected = false;
+  bool campusSelected = false;
+  bool departmentSelected = false;
 
-
-  String?
-  errorMessage; //variable to show the error when the wrong credentials are entered or the fields are empty
-  Color colorMessage = Colors.red; // color of the message when the error occurs
-  var isLoading =
-  false; // variable for use the functionality of loading while request is processed to server
-  Color errorColor = Colors
-      .black12; // color of border of text fields when the error is not occurred
+  String? errorMessage;
+  Color messageColor = Colors.red;
+  var isLoading = false;
+  Color borderColor = Colors.black12;
 
   final TextEditingController FirstNameController = TextEditingController();
   final TextEditingController LastNameController = TextEditingController();
   final TextEditingController EmailController = TextEditingController();
   final TextEditingController PasswordController = TextEditingController();
-  final TextEditingController ConfirmPasswordController =
-  TextEditingController();
+  final TextEditingController ConfirmPasswordController = TextEditingController();
   final TextEditingController UserName = TextEditingController();
-  final TextEditingController Campus = TextEditingController();
-  final TextEditingController Role = TextEditingController();
-  final TextEditingController Department = TextEditingController();
-
-  late String token;
-
-  final storage = FlutterSecureStorage(
-    aOptions: AndroidOptions(
-      encryptedSharedPreferences: true,
-    ),
-  );
-
-  @override
-  void initState() {
-    super.initState();
-    storage.read(key: "access_token").then((accessToken) {
-      setState(() {
-        token = accessToken!;
-      });
-    });
-  }
-
-  // function to send the post request to the server to create a user by passing user fields
-  Future<void> registerUser(String firstName, String lastName, String email,
-      String password, String confirmPassword, String userName) async {
-
-    final ipAddress = MyApp.ip;
-    setState(() {
-      isLoading = true; // Ensure isLoading is set to true before the request
-    });
-
-    // Create a map containing the user registration data
-    Map<String, String> userData = {
-      'first_name': firstName,
-      'last_name': lastName,
-      'email': email,
-      'password': password,
-      're_password': confirmPassword,
-      'username': userName,
-    };
-
-    // Convert the map to a JSON string
-    String requestBody = jsonEncode(userData);
-
-    // Send the POST request
-    try {
-      http.Response response = await http.post(
-        Uri.parse('$ipAddress:8000/auth/users/'),
-        body: requestBody,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      );
-
-      if (response.statusCode == 201) {
-        // Registration successful, handle the response
-        setState(() {
-          isLoading = false;
-          colorMessage = Colors.green;
-          errorColor = Colors.black12; // Reset errorColor to default value
-          errorMessage = 'Registration successful';
-        });
-        print('Registration successful');
-        // You can navigate to another screen or show a success message here
-      } else {
-        throw Exception('Failed create user ${response.body}');
-      }
-    } catch (e) {
-      // Handle any errors that occurred during the request
-      print('Error sending request to server: $e');
-      setState(() {
-        errorColor = Colors.red;
-        errorMessage =
-        'Failed to connect to the server. Please try again later.$e';
-      });
-    } finally {
-      setState(() {
-        isLoading =
-        false; // Ensure isLoading is set back to false after request completes
-      });
-    }
-  }
+  final TextEditingController UniversityController = TextEditingController();
+  final TextEditingController CampusController = TextEditingController();
+  final TextEditingController RoleController = TextEditingController();
+  final TextEditingController DepartmentController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    final ipAddress = MyApp.ip;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xffc19a6b),
@@ -143,30 +62,31 @@ class _User_RegistrationState extends State<User_Registration> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   CustomTextFormField(
-                      controller: FirstNameController,
-                      label: 'First Name',
-                      hintText: 'Enter First Name',
-                      borderColor: errorColor),
+                    controller: FirstNameController,
+                    label: 'First Name',
+                    hintText: 'Enter First Name',
+                    borderColor: borderColor,
+                  ),
                   SizedBox(height: 20),
                   CustomTextFormField(
                     controller: LastNameController,
                     label: 'Last Name',
                     hintText: 'Enter Last Name',
-                    borderColor: errorColor,
+                    borderColor: borderColor,
                   ),
                   SizedBox(height: 20),
                   CustomTextFormField(
                     controller: EmailController,
                     label: 'Email',
                     hintText: 'Enter Email',
-                    borderColor: errorColor,
+                    borderColor: borderColor,
                   ),
                   SizedBox(height: 20),
                   CustomTextFormField(
                     controller: PasswordController,
                     label: 'Password',
                     hintText: 'Enter Password',
-                    borderColor: errorColor,
+                    borderColor: borderColor,
                     passField: true,
                   ),
                   SizedBox(height: 20),
@@ -174,7 +94,7 @@ class _User_RegistrationState extends State<User_Registration> {
                     controller: ConfirmPasswordController,
                     label: 'Confirm Password',
                     hintText: 'Enter Password Again',
-                    borderColor: errorColor,
+                    borderColor: borderColor,
                     passField: true,
                   ),
                   SizedBox(height: 20),
@@ -182,65 +102,101 @@ class _User_RegistrationState extends State<User_Registration> {
                     controller: UserName,
                     label: 'User Name',
                     hintText: 'Enter Username',
-                    borderColor: errorColor,
+                    borderColor: borderColor,
                   ),
                   SizedBox(height: 20),
-                  DropDown(
-                    token: token,
-                    endpoint: '$ipAddress:8000/api/university',
+                  // University Dropdown
+                  DropDownWithoutArguments(
+                    fetchData: University.fetchUniversities, // Fetch universities data asynchronously
                     hintText: "Select University",
                     label: "University",
+                    controller: UniversityController,
+                    onValueChanged: (dynamic? id) {
+                      setState(() {
+                        universitySelected = id != null;
+                        campusSelected = false;
+                      });
+                      if (id != null) {
+                        CampusController.clear(); // Clear the Campus controller when University changes
+                        departmentSelected = false;
+                      }
+                    },
                   ),
-                  SizedBox(height: 20),
-                  DropDown(
-                    token: token,
-                    endpoint: '$ipAddress:8000/api/campus',
-                    hintText: "Select Campus",
-                    label: "Campus",
-                  ),
-                  SizedBox(height: 20),
-                  DropDown(
-                    token: token,
-                    endpoint: '$ipAddress:8000/api/department',
-                    hintText: "Select department",
-                    label: "department",
-                  ),
+
+                  // Campus Dropdown
+                  if (universitySelected)
+                    DropDownWithArguments(
+                      fetchData: () => Campus.fetchCampusesByUniversityId(int.tryParse(UniversityController.text)!), // Fetch campuses asynchronously
+                      hintText: "Select Campus",
+                      label: "Campus",
+                      controller: CampusController,
+                      onValueChanged: (dynamic? id) {
+                        setState(() {
+                          campusSelected = id != null;
+                          if (id != null) {
+                            departmentSelected = false;
+                          }
+                        });
+                      },
+                    ),
+
+                  // Department Dropdown
+                  if (campusSelected)
+                    DropDownWithArguments(
+                      fetchData: () => Department.getDepartmentsbyCampusid(int.tryParse(CampusController.text)!), // Fetch departments asynchronously
+                      hintText: "Select department",
+                      label: "department",
+                      controller: DepartmentController,
+                      onValueChanged: (dynamic? id) {
+                        setState(() {
+                          departmentSelected = id != null;
+                        });
+                      },
+                    ),
                   SizedBox(height: 20),
                   CustomTextFormField(
-                    controller: Role,
+                    controller: RoleController,
                     label: 'User Role',
                     hintText: 'Enter Role',
-                    borderColor: errorColor,
+                    borderColor: borderColor,
                   ),
                   SizedBox(height: 20),
                   Custom_Button(
-                    onPressedFunction: () {
+                    onPressedFunction: () async {
+                      setState(() {
+                        isLoading = true;
+                      });
                       String firstName = FirstNameController.text;
                       String lastName = LastNameController.text;
                       String email = EmailController.text;
                       String password = PasswordController.text;
                       String confirmPassword = ConfirmPasswordController.text;
                       String userName = UserName.text;
+                      String? universityIdString = UniversityController.text.isNotEmpty ? UniversityController.text : null;
+                      String? campusIdString = CampusController.text.isNotEmpty ? CampusController.text : null;
+                      String? departmentIdString = DepartmentController.text.isNotEmpty ? DepartmentController.text : null;
 
+                      int? universityId = universityIdString != null ? int.tryParse(universityIdString) : null;
+                      int? campusId = campusIdString != null ? int.tryParse(campusIdString) : null;
+                      int? departmentId = departmentIdString != null ? int.tryParse(departmentIdString) : null;
 
-                        if (firstName == '' ||
-                            lastName == '' ||
-                            email == '' ||
-                            password == '' ||
-                            confirmPassword == '' ||
-                            userName == '') {
-                            setState(() {
-                              errorColor = Colors.red;
-                              colorMessage = Colors.red;
-                              errorMessage = 'Please Enter all Fields';
-                            });
-                        }
-                        else
-                          {
-                            // calling of function to create user by pressing button
-                            registerUser(firstName, lastName, email, password,
-                                confirmPassword, userName);
-                          }
+                      String message = await User.registerUser(firstName, lastName, email, password, confirmPassword, userName, universityId, campusId, departmentId);
+                      errorMessage = message;
+                      if (message != "Registration successful") {
+                        setState(() {
+                          isLoading = false;
+                          borderColor = Colors.red;
+                          messageColor = Colors.red;
+                        });
+                      }
+                      else
+                      {
+                        setState(() {
+                          isLoading = false;
+                          borderColor = Colors.black;
+                          messageColor = Colors.green;
+                        });
+                      }
 
                     },
                     ButtonText: 'Register',
@@ -253,8 +209,7 @@ class _User_RegistrationState extends State<User_Registration> {
                   errorMessage != null
                       ? Text(
                     errorMessage!,
-                    style:
-                    CustomTextStyles.bodyStyle(color: colorMessage),
+                    style: CustomTextStyles.bodyStyle(color: messageColor),
                   )
                       : SizedBox(),
                 ],

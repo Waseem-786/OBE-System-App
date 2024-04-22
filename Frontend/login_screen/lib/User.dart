@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:ui';
 
+import 'package:flutter/material.dart';
 import 'package:login_screen/Token.dart';
 import 'package:http/http.dart' as http;
 import 'main.dart';
@@ -152,6 +154,79 @@ class User {
     campusName = responseData['campus_name'].toString();
     departmentName = responseData['department_name'].toString();
     isSuperUser = bool.parse(responseData['is_superuser'].toString());
+  }
+
+  // Get All users for superuser
+  static Future<List> getAllUsers() async {
+    String? accessToken = await Token.readAccessToken();
+
+    final response = await http.get(
+      Uri.parse('$ipAddress:8000/api/users'),
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+      },
+    );
+    if (response.statusCode == 200) {
+      // all the data of the users is stored in responseData
+      var responseData = jsonDecode(response.body);
+      return responseData;
+    } else {
+      return [];
+    }
+  }
+
+  // Create User
+  static Future<String> registerUser(String firstName, String lastName, String email, String password, String confirmPassword, String userName, int? universityId, int? campusId, int? departmentId) async {
+    String message = "";
+    // Create a map containing the user registration data
+    Map<String, dynamic> userData = {
+      'first_name': firstName,
+      'last_name': lastName,
+      'email': email,
+      'password': password,
+      're_password': confirmPassword,
+      'username': userName,
+    };
+
+    // Conditionally include universityId, campusId, and departmentId if provided
+    if (universityId != null) {
+      userData['university'] = universityId;
+    }
+    if (campusId != null) {
+      userData['campus'] = campusId;
+    }
+    if (departmentId != null) {
+      userData['department'] = departmentId;
+    }
+
+    // Convert the map to a JSON string
+    String requestBody = jsonEncode(userData);
+
+    // Send the POST request
+    try {
+      http.Response response = await http.post(
+        Uri.parse('$ipAddress:8000/auth/users/'),
+        body: requestBody,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 201) {
+        message = 'Registration successful';
+        // You can navigate to another screen or show a success message here
+      } else if (response.statusCode == 400) {
+        message = 'Please Enter all Fields';
+      }
+      else {
+        message = 'Failed create user ${response.body}';
+      }
+    } catch (e) {
+      // Handle any errors that occurred during the request
+      message = 'Failed to connect to the server. Please try again later.$e';
+    }
+
+    return message;
   }
 
 }
