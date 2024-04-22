@@ -13,10 +13,10 @@ class Create_Course extends StatefulWidget {
 
 class Create_Course_State extends State<Create_Course> {
   String?
-  errorMessage; //variable to show the error when the wrong credentials are entered or the fields are empty
+      errorMessage; //variable to show the error when the wrong credentials are entered or the fields are empty
   Color colorMessage = Colors.red; // color of the message when the error occurs
   var isLoading =
-  false; // variable for use the functionality of loading while request is processed to server
+      false; // variable for use the functionality of loading while request is processed to server
   Color errorColor = Colors
       .black12; // color of border of text fields when the error is not occurred
 
@@ -172,11 +172,13 @@ class Create_Course_State extends State<Create_Course> {
                   print("Hi");
                   String CourseCode = CourseCodeController.text;
                   String CourseTitle = CourseTitleController.text;
-                  int? theoryCredits = int.tryParse(CourseTheoryCreditsController.text);
-                  int? labCredits = int.tryParse(CourseLabCreditsController.text);
+                  int? theoryCredits =
+                      int.tryParse(CourseTheoryCreditsController.text);
+                  int? labCredits =
+                      int.tryParse(CourseLabCreditsController.text);
                   String CourseType = CourseTypeController.text;
                   String? ReqEelc = SelectedCourseReqElec;
-                  String?  PreReq = SelectedCoursePrerequisite;
+                  String? PreReq = SelectedCoursePrerequisite;
                   String Description = CourseDescriptionController.text;
                   labCredits ??= 0;
                   if (CourseCode.isEmpty ||
@@ -185,8 +187,7 @@ class Create_Course_State extends State<Create_Course> {
                       CourseType.isEmpty ||
                       ReqEelc == null ||
                       PreReq == null ||
-                      Description.isEmpty
-                  ) {
+                      Description.isEmpty) {
                     setState(() {
                       colorMessage = Colors.red;
                       errorColor = Colors.red;
@@ -196,17 +197,16 @@ class Create_Course_State extends State<Create_Course> {
                     setState(() {
                       isLoading = true;
                     });
-                    print('Course Code: $CourseCode');
-                    print('Course Title: $CourseTitle');
-                    print('Theory Credits: $theoryCredits');
-                    print('Lab Credits: $labCredits');
-                    print('Course Type: $CourseType');
-                    print('Required/Elective: $ReqEelc');
-                    print('Prerequisite: $PreReq');
-                    print('Description: $Description');
 
                     bool created = await Course.createCourse(
-                        CourseCode,CourseTitle,theoryCredits,labCredits,CourseType,ReqEelc,PreReq,Description);
+                        CourseCode,
+                        CourseTitle,
+                        theoryCredits,
+                        labCredits,
+                        CourseType,
+                        ReqEelc,
+                        PreReq,
+                        Description);
                     if (created) {
                       setState(() {
                         isLoading = false;
@@ -228,9 +228,9 @@ class Create_Course_State extends State<Create_Course> {
               ),
               errorMessage != null
                   ? Text(
-                errorMessage!,
-                style: CustomTextStyles.bodyStyle(color: colorMessage),
-              )
+                      errorMessage!,
+                      style: CustomTextStyles.bodyStyle(color: colorMessage),
+                    )
                   : SizedBox(),
             ],
           ),

@@ -1,25 +1,24 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:login_screen/Course.dart';
-import 'package:login_screen/CLO_Page.dart';
+import 'package:login_screen/CLO.dart';
 import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
 
-class Course_Profile extends StatelessWidget {
+class CLO_Profile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: const Color(0xffc19a6b),
           title: Center(
-              child: Text('Course Profile',
+              child: Text('CLO Profile',
                   style: CustomTextStyles.headingStyle(fontSize: 22))),
         ),
         body: Column(
           children: [
             SingleChildScrollView(
               child: Container(
-                height: 500,
+                height: 600,
                 color: Colors.grey.shade200,
                 child: Padding(
                   padding: const EdgeInsets.all(20.0),
@@ -28,31 +27,20 @@ class Course_Profile extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         // Title for course details section.
-                        Text("Course Details",
+                        Text("CLO Details",
                             style: CustomTextStyles.headingStyle()),
                         const SizedBox(height: 10),
 
-                        // calling of the _buildCourseInfoCards() for every field of course data that will be stored on the card
-                        ..._buildCourseInfoCards(), // Spread operator (...) to unpack the list of course info cards into children.
+                        // calling of the _buildCLOInfoCards() for every field of clo data that will be stored on the card
+                        ..._buildCLOInfoCards(), // Spread operator (...) to unpack the list of clo info cards into children.
                       ],
                     ),
                   ),
                 ),
               ),
             ),
+            const SizedBox(height: 20,),
 
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Custom_Button(
-                onPressedFunction: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=>CLO_Page()));                  // Implement delete functionality.
-                },
-                BackgroundColor: Colors.green,
-                ForegroundColor: Colors.white,
-                ButtonText: "Show CLO's",
-                ButtonWidth: 150,
-              ),
-            ),
             // Button for delete functionality.
             Padding(
               padding: const EdgeInsets.only(bottom:  20.0),
@@ -70,21 +58,15 @@ class Course_Profile extends StatelessWidget {
         ));
   }
 
-  List<Widget> _buildCourseInfoCards() {
+  List<Widget> _buildCLOInfoCards() {
     return [
-      _buildCourseDetailCard("Course Code", Course.code),
-      _buildCourseDetailCard("Course Title", Course.title),
-      _buildCourseDetailCard(
-          "Theory Credits", Course.theory_credits.toString()),
-      _buildCourseDetailCard("Lab Credits", Course.lab_credits.toString()),
-      _buildCourseDetailCard("Course Type", Course.course_type),
-      _buildCourseDetailCard("Course Req/Elec", Course.required_elective),
-      _buildCourseDetailCard("Course Prerequisite", Course.prerequisite.toString()),
-      _buildCourseDetailCard("Course Description", Course.description),
+      _buildCLODetailCard("CLO Description", CLO.description),
+      _buildCLODetailCard("Bloom Taxonomy", CLO.bloom_taxonomy),
+      _buildCLODetailCard("BT-Level", CLO.level.toString()),
     ];
   }
 
-  Widget _buildCourseDetailCard(String label, String? value) {
+  Widget _buildCLODetailCard(String label, String? value) {
     return SizedBox(
       width: double.infinity,
       child: Card(

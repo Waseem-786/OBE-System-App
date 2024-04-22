@@ -12,15 +12,6 @@ class University {
   static String? _vision; // Updated to nullable String
   static String? _mission; // Updated to nullable String
 
-  String?
-  errorMessage; //variable to show the error when the wrong credentials are entered or the fields are empty
-  Color colorMessage = Colors.red; // color of the message when the error occurs
-  var isLoading =
-  false; // variable for use the functionality of loading while request is processed to server
-  Color errorColor = Colors
-      .black12; // color of border of text fields when the error is not occurred
-
-
   University();
 
   static int get id => _id;

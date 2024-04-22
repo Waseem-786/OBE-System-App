@@ -22,37 +22,10 @@ class Course_PageState extends State<Course_Page> {
   @override
   void initState() {
     super.initState();
-    coursesFuture = fetchCourses();
+    coursesFuture = Course.fetchCourses();
   }
 
-  Future<List<dynamic>> fetchCourses() async {
-    final ipAddress = MyApp.ip;
-    const storage = FlutterSecureStorage(
-        aOptions: AndroidOptions(encryptedSharedPreferences: true));
-    final accessToken = await storage.read(key: "access_token");
-    final url = Uri.parse('$ipAddress:8000/api/course');
-    final response = await http.get(
-      url,
-      headers: {'Authorization': 'Bearer $accessToken'},
-    );
 
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body) as List<dynamic>;
-    } else {
-      throw Exception('Failed to Load Courses');
-    }
-  }
-
-  Future<Map<String, dynamic>?> getCoursebyCode(String code) async {
-    final courses = await coursesFuture;
-    for (var course in courses) {
-      if (course['code'] == code) {
-        print(course);
-        return course;
-      }
-    }
-    return null;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,11 +73,12 @@ class Course_PageState extends State<Course_Page> {
                                     ),
                                   ),
                                   onTap: () async {
-                                    // call of a function to get the data of that course whose code is passed and code is
+                                    // call of a function to get the data of that course whose id is passed and id is
                                     // passed by tapping the user
-                                    var user = await getCoursebyCode(
+                                    var user = await Course.getCoursebyCode(
                                         courses[index]['code']);
                                     if (user != null) {
+                                      Course.id = user['id'];
                                       Course.code = user['code'];
                                       Course.title = user['title'];
                                       Course.theory_credits =

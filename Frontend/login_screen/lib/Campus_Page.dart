@@ -1,14 +1,9 @@
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:login_screen/Campus.dart';
 import 'package:login_screen/Campus_Profile.dart';
 import 'package:login_screen/Create_Campus.dart';
-import 'package:login_screen/Custom_Widgets/Custom_Text_Field.dart';
 import 'package:login_screen/University.dart';
-import 'package:login_screen/main.dart';
 
 import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
@@ -27,42 +22,11 @@ class _Campus_PageState extends State<Campus_Page> {
   @override
   void initState() {
     super.initState();
-    campusesFuture = fetchCampuses();
-  }
-  Future<Map<String, dynamic>?> getCampusById(int id) async {
-    final campuses = await campusesFuture; // Assuming campusesFuture is a Future<List<dynamic>> containing campus data
-    if (campuses != null) {
-      for (var campus in campuses) {
-        if (campus['id'] == id) {
-          print(campus);
-          return campus;
-        }
-      }
-    }
-    return null;
+    campusesFuture = Campus.fetchCampusesByUniversityId(university_id);
   }
 
-  Future<List<dynamic>> fetchCampuses() async
-  {
-    final ipAddress = MyApp.ip;
-    final storage = FlutterSecureStorage(
-      aOptions: AndroidOptions(
-        encryptedSharedPreferences: true,
-      ),
-    );
-    final accessToken = await storage.read(key: "access_token");
-    final url = Uri.parse('$ipAddress:8000/api/university/${university_id}/campus');
-    final response = await http.get(
-      url,
-      headers: {'Authorization': 'Bearer $accessToken'},
-    );
 
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body) as List<dynamic>;
-    } else {
-      throw Exception('Failed to load campuses');
-    }
-  }
+
 
 
   @override
@@ -102,7 +66,7 @@ class _Campus_PageState extends State<Campus_Page> {
                             child: Text(campus['name'], style: CustomTextStyles.bodyStyle(fontSize: 17)),
                           ),
                           onTap: () async {
-                            var campusData = await getCampusById(campuses[index]['id']);
+                            var campusData = await Campus.getCampusByCampusId(campuses[index]['id'],university_id);
                             if (campusData != null) {
                               Campus.id = campusData['id'];
                               Campus.name = campusData['name'];

@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'main.dart';
 
 class Course {
+  static int _id = 0;
   static String? _code;
   static String? _title;
   static int? _theory_credits;
@@ -13,6 +14,11 @@ class Course {
   static String? _required_elective;
   static int? _prerequisite;
   static String? _description;
+
+  static set id(int value) {
+    _id = value;
+  }
+  static int get id => _id;
 
   Course();
 
@@ -113,5 +119,33 @@ class Course {
       print('Exception while creating Course: $e');
       return false;
     }
+  }
+  static Future<List<dynamic>> fetchCourses() async {
+    final ipAddress = MyApp.ip;
+    const storage = FlutterSecureStorage(
+        aOptions: AndroidOptions(encryptedSharedPreferences: true));
+    final accessToken = await storage.read(key: "access_token");
+    final url = Uri.parse('$ipAddress:8000/api/course');
+    final response = await http.get(
+      url,
+      headers: {'Authorization': 'Bearer $accessToken'},
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body) as List<dynamic>;
+    } else {
+      throw Exception('Failed to Load Courses');
+    }
+  }
+
+  static Future<Map<String, dynamic>?> getCoursebyCode(String code) async {
+    final courses = await fetchCourses();
+    for (var course in courses) {
+      if (course['code'] == code) {
+        print(course);
+        return course;
+      }
+    }
+    return null;
   }
 }

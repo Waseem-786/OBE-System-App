@@ -28,7 +28,7 @@ class User_Profile extends StatelessWidget {
         children: [
           SingleChildScrollView(
             child: Container(
-              height: 550,
+              height: 600,
               color: Colors.grey.shade200,
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
