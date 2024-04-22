@@ -23,6 +23,8 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
 
   List<String> headings = [
     'Program Management',
+    'PLO',
+    'PEO',
     'Batch Management',
     'Courses',
     'Approval Process',
@@ -33,6 +35,8 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
   final List<IconData> icons = [
     FontAwesomeIcons.cogs,
     FontAwesomeIcons.calendarAlt,
+    FontAwesomeIcons.calendarAlt,
+    FontAwesomeIcons.calendarAlt,
     FontAwesomeIcons.book,
     FontAwesomeIcons.thumbsUp,
     FontAwesomeIcons.poll,
@@ -42,6 +46,8 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
 
   List<String> screenNames = [
     'Program_Management',
+    'PLO',
+    'PEO',
     'Batch_Management',
     'Course_Page',
     'Approval_Process',
@@ -244,7 +250,7 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
                       ),
                     );
                   },
-                  itemCount: 7,
+                  itemCount: 9,
                 ),
               ),
             ),

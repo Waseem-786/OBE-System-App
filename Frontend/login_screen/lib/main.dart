@@ -6,10 +6,13 @@ import 'package:login_screen/Campus_Page.dart';
 import 'package:login_screen/Course_Page.dart';
 import 'package:login_screen/Department_Page.dart';
 import 'package:login_screen/Program_Management.dart';
+import 'package:login_screen/PLO_Page.dart';
 import 'package:login_screen/University_Page.dart';
 import 'package:login_screen/User_Management.dart';
 import 'package:login_screen/Splash_Screen.dart';
 import 'package:login_screen/login_page.dart';
+
+import 'Show_PEO.dart';
 
 void main() {
   runApp(const MyApp());
@@ -34,6 +37,8 @@ class MyApp extends StatelessWidget {
       home: SplashScreen(),
       routes: {
         '/Program_Management': (context) => Program_Management(),
+        '/PLO': (context) => PLO_Page(),
+        '/PEO': (context) => Show_PEO(),
         '/Batch_Management': (context) => Batch_Management(),
         '/Course_Page': (context) => Course_Page(),
         '/Approval_Process': (context) => Approval_Process(),

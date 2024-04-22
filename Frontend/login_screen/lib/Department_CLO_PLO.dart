@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
 import 'Show_PEO.dart';
-import 'Show_PLO.dart';
+import 'PLO_Page.dart';
 
 class Department_CLO_PLO extends StatelessWidget {
   const Department_CLO_PLO({super.key});
@@ -34,7 +34,7 @@ class Department_CLO_PLO extends StatelessWidget {
                 Custom_Button(
                   onPressedFunction: () {
                     Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => Show_PLO()));
+                        MaterialPageRoute(builder: (context) => PLO_Page()));
                   },
                   ButtonText: "Show PLO's ",
                   ButtonWidth: 200,
