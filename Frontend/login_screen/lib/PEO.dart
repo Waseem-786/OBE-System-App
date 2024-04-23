@@ -1,22 +1,12 @@
-
 import 'dart:convert';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'main.dart';
 
-class PLO{
-
+class PEO {
   static int _id = 0;
   static String? _description;
-  static String? _name;
-
-  static String? get name => _name;
-
-  static set name(String? value) {
-    _name = value;
-  }
-
 
   static int get id => _id;
 
@@ -30,50 +20,43 @@ class PLO{
     _description = value;
   }
 
-
-
-  static Future<bool> createPLO(String name,String description,int deptid)
-  async {
+  static Future<bool> createPEO(String description, int deptid) async {
     try {
       const storage = FlutterSecureStorage(
         aOptions: AndroidOptions(
           encryptedSharedPreferences: true,
         ),
       );
+
       final accessToken = await storage.read(key: "access_token");
       const ipAddress = MyApp.ip;
-      final url = Uri.parse('$ipAddress:8000/api/plo');
+      final url = Uri.parse('$ipAddress:8000/api/peo');
       final response = await http.post(
         url,
         headers: {
           'Authorization': 'Bearer $accessToken',
           'Content-Type': 'application/json',
         },
-        body: jsonEncode({
-          'name': name,
-          'description': description,
-          'program':deptid
-
-        }),
+        body: jsonEncode({'description': description, 'program': deptid}),
       );
+
       if (response.statusCode == 201) {
         return true;
       } else {
-        print(
-            'Failed to create PLO. Status code: ${response.statusCode}');
+        print('Failed to create PEO. Status code: ${response.statusCode}');
         return false;
       }
     } catch (e) {
-      print('Exception while creating PLO: $e');
+      print('Exception while creating PEO: $e');
       return false;
     }
   }
-  static Future<List<dynamic>> fetchPLO() async {
+  static Future<List<dynamic>> fetchPEO() async {
     final ipAddress = MyApp.ip;
     const storage = FlutterSecureStorage(
         aOptions: AndroidOptions(encryptedSharedPreferences: true));
     final accessToken = await storage.read(key: "access_token");
-    final url = Uri.parse('$ipAddress:8000/api/plo');
+    final url = Uri.parse('$ipAddress:8000/api/peo');
     final response = await http.get(
       url,
       headers: {'Authorization': 'Bearer $accessToken'},
@@ -82,19 +65,22 @@ class PLO{
     if (response.statusCode == 200) {
       return jsonDecode(response.body) as List<dynamic>;
     } else {
-      throw Exception('Failed to Load PLOs');
+      throw Exception('Failed to Load PEOs');
     }
   }
 
-  static Future<Map<String, dynamic>?> getPLObyPLOId(int PLO_id) async {
-    final plos = await fetchPLO();
-    for (var plo in plos) {
-      if (plo['id'] == PLO_id) {
-        return plo;
+  static Future<Map<String, dynamic>?> getPEObyPEOId(int PEO_id) async {
+    final peos = await fetchPEO();
+    for (var peo in peos) {
+      if (peo['id'] == PEO_id) {
+        return peo;
       }
     }
     return null;
   }
+
+
+
 
 
 }

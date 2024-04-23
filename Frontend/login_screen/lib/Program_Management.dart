@@ -4,7 +4,7 @@ import 'package:login_screen/Campus.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Button.dart';
 import 'package:login_screen/Department.dart';
 import 'package:login_screen/Department_CLO_PLO.dart';
-import 'package:login_screen/Show_PEO.dart';
+import 'package:login_screen/PEO_Page.dart';
 import 'package:login_screen/PLO_Page.dart';
 
 import 'Custom_Widgets/Custom_Text_Style.dart';

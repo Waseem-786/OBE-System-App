@@ -12,7 +12,7 @@ import 'package:login_screen/User_Management.dart';
 import 'package:login_screen/Splash_Screen.dart';
 import 'package:login_screen/login_page.dart';
 
-import 'Show_PEO.dart';
+import 'PEO_Page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/Program_Management': (context) => Program_Management(),
         '/PLO': (context) => PLO_Page(),
-        '/PEO': (context) => Show_PEO(),
+        '/PEO': (context) => PEO_Page(),
         '/Batch_Management': (context) => Batch_Management(),
         '/Course_Page': (context) => Course_Page(),
         '/Approval_Process': (context) => Approval_Process(),
