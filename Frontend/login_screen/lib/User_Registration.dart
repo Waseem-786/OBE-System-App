@@ -18,6 +18,7 @@ class _User_RegistrationState extends State<User_Registration> {
   bool universitySelected = false;
   bool campusSelected = false;
   bool departmentSelected = false;
+  dynamic? selectedUniversityId;
   dynamic? selectedCampusId;
   dynamic? selectedDepartmentId;
 
@@ -76,7 +77,9 @@ class _User_RegistrationState extends State<User_Registration> {
       });
       return false;
     }
-    
+
+
+
     return true;
   }
 
@@ -152,14 +155,16 @@ class _User_RegistrationState extends State<User_Registration> {
                   ),
                   SizedBox(height: 20),
                   // University Dropdown
-                  UniversityDropDown(
+                  DropDown(
                     fetchData: University.fetchUniversities, // Fetch universities data asynchronously
                     hintText: "Select University",
                     label: "University",
                     controller: UniversityController,
+                    selectedValue: selectedUniversityId,
                     onValueChanged: (dynamic? id) {
                       setState(() {
                         universitySelected = id != null;
+                        selectedUniversityId = id;
                         campusSelected = false;
                         departmentSelected = false;
                         CampusController.clear(); // Clear the Campus controller when University changes
@@ -172,7 +177,7 @@ class _User_RegistrationState extends State<User_Registration> {
                   SizedBox(height: 20),
                   // Campus Dropdown
                   if (universitySelected)
-                    CampusDropDown(
+                    DropDown(
                       fetchData: () => Campus.fetchCampusesByUniversityId(int.tryParse(UniversityController.text)!), // Fetch campuses asynchronously
                       hintText: "Select Campus",
                       label: "Campus",
@@ -191,7 +196,7 @@ class _User_RegistrationState extends State<User_Registration> {
                   SizedBox(height: 20),
                   // Department Dropdown
                   if (campusSelected)
-                    DepartmentDropDown(
+                    DropDown(
                       fetchData: () => Department.getDepartmentsbyCampusid(int.tryParse(CampusController.text)!), // Fetch departments asynchronously
                       hintText: "Select department",
                       label: "department",
