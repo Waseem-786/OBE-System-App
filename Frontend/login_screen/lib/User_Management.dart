@@ -74,7 +74,7 @@ class User_Management_State extends State<User_Management> {
                 children: [
                   Container(
                     color: Colors.grey.shade200,
-                    height: 530,
+                    height: 670,
                     child: ListView.builder(
                       itemCount: responseData != null ? responseData.length : 0,
                       itemBuilder: (context, index) {

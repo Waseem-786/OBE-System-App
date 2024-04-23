@@ -11,9 +11,8 @@ class PLO_Profile extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: const Color(0xffc19a6b),
-          title: Center(
-              child: Text('PLO Profile',
-                  style: CustomTextStyles.headingStyle(fontSize: 22))),
+          title: Text('PLO Profile',
+              style: CustomTextStyles.headingStyle(fontSize: 22)),
         ),
         body: Column(
           children: [

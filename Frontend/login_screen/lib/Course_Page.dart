@@ -35,7 +35,7 @@ class Course_PageState extends State<Course_Page> {
         backgroundColor: const Color(0xffc19a6b),
         title: Center(
           child: Text(
-            'Courses',
+            'Course Page',
             style: CustomTextStyles.headingStyle(fontSize: 20),
           ),
         ),

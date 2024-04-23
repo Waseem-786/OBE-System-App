@@ -79,12 +79,12 @@ class _PLO_PageState extends State<PLO_Page> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                plos[index]['id'].toString(),
+                               "PLO-" + (1+index).toString(),
                                 style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                               ),
                               const Icon(
                                 Icons.info,
-                                color: Colors.green,
+                                color: Color(0xffc19a6b),
                               ),
                             ],
                           ),

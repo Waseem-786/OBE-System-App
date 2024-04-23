@@ -59,6 +59,17 @@ class University {
     }
   }
 
+  // static Future<Map<String, dynamic>?> getUniversityById(int id) async {
+  //   final universities = await fetchUniversities();
+  //   for (var university in universities) {
+  //     if (university['id'] == id) {
+  //       print(university);
+  //       return university;
+  //     }
+  //   }
+  //   return null;
+  // }
+
   static Future<Map<String, dynamic>?> getUniversityById(int id) async {
     final universities = await fetchUniversities();
     for (var university in universities) {
@@ -69,6 +80,7 @@ class University {
     }
     return null;
   }
+  
   static Future<bool> createUniversity(String name, String mission, String vision) async {
     try {
       const storage = FlutterSecureStorage(

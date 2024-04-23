@@ -29,60 +29,8 @@ class _LoginPageState extends State<LoginPage> {
 
   void initState(){
     super.initState();
-    _handleTokenVerification();
+    // _handleTokenVerification();
   }
-
-  Future<void> _handleTokenVerification() async {
-    await handleTokenVerification(); // Call your asynchronous logic here
-  }
-
-
-  /*
-    It attempts to read the access token.
-    If the access token exists, it verifies its validity.
-    If the access token is valid, it navigates to the Dashboard.
-    If the access token is not valid, it attempts to read the refresh token.
-    If the refresh token exists, it verifies its validity.
-    If the refresh token is valid, it attempts to refresh the access token.
-    If the access token is successfully refreshed, it verifies its validity again.
-    If the access token is now valid, it navigates to the Dashboard.
-  */
-  Future<void> handleTokenVerification() async {
-    //Read AccessToken & Check validity and route to Dashboard
-    String? accessToken = await Token.readAccessToken();
-    if (accessToken != null) {
-      bool verified = await Token.verifyToken(accessToken!);
-      if (verified) {
-        Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => Dashboard_Page())
-        );
-      }
-      //If not verified then updated access token by reading refresh token and verifying refresh token
-      else {
-        String? refreshToken = await Token.readRefreshToken();
-        if (refreshToken != null) {
-          bool verified = await Token.verifyToken(refreshToken!);
-          if (verified) {
-            bool refresh = await Token.refreshAccessToken();
-            if (refresh) {
-              String? accessToken = await Token.readAccessToken();
-              if (accessToken != null) {
-                bool verified = await Token.verifyToken(accessToken!);
-                if (verified) {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Dashboard_Page())
-                  );
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -156,8 +104,6 @@ class _LoginPageState extends State<LoginPage> {
                     GestureDetector(
                       onTap: () {
 
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=>Create_Role()));
-
                       },
                       child: Text(
                         'Forget Password?',
@@ -184,7 +130,7 @@ class _LoginPageState extends State<LoginPage> {
                         message.then((result) {
                           print(result);
                           if (result=="ok") {
-                            Navigator.push(
+                            Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => Dashboard_Page()));

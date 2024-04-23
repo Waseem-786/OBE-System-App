@@ -77,12 +77,12 @@ class _CLO_PageState extends State<CLO_Page> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                clos[index]['id'].toString(),
+                              'CLO-'+ (1 + index).toString(),
                                 style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                               ),
                               const Icon(
                                 Icons.info,
-                                color: Colors.green,
+                                color: Color(0xffc19a6b),
                               ),
                             ],
                           ),

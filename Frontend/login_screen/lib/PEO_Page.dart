@@ -85,7 +85,7 @@ class _PEO_PageState extends State<PEO_Page> {
                               ),
                               const Icon(
                                 Icons.info,
-                                color: Colors.green,
+                                color: Color(0xffc19a6b),
                               ),
                             ],
                           ),

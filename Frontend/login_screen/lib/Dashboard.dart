@@ -64,7 +64,7 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
     _GetUser(); // Call your asynchronous logic here
   }
   Future<void> _GetUser() async {
-    await GetUser(); // Call your asynchronous logic here
+    await User.getUser(); // Call your asynchronous logic here
   }
 
   Future<void> GetUser() async {
@@ -154,10 +154,10 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Name",
+                      Text(User.username,
                           style: CustomTextStyles.bodyStyle(fontSize: 27)),
                       Text(
-                        "UserID",
+                        User.email,
                         style: CustomTextStyles.bodyStyle(),
                       ),
                     ],
@@ -177,7 +177,7 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
 
             SingleChildScrollView(
               child: Container(
-                height: 550,
+                height: 600,
                 child: GridView.builder(
                   shrinkWrap: true,
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
