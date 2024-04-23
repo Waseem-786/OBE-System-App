@@ -216,7 +216,7 @@ class User {
         message = 'Registration successful';
         // You can navigate to another screen or show a success message here
       } else if (response.statusCode == 400) {
-        message = 'Please Enter all Fields';
+        message = response.body;
       }
       else {
         message = 'Failed create user ${response.body}';

@@ -18,6 +18,8 @@ class _User_RegistrationState extends State<User_Registration> {
   bool universitySelected = false;
   bool campusSelected = false;
   bool departmentSelected = false;
+  dynamic? selectedCampusId;
+  dynamic? selectedDepartmentId;
 
   String? errorMessage;
   Color messageColor = Colors.red;
@@ -34,6 +36,50 @@ class _User_RegistrationState extends State<User_Registration> {
   final TextEditingController CampusController = TextEditingController();
   final TextEditingController RoleController = TextEditingController();
   final TextEditingController DepartmentController = TextEditingController();
+
+  bool _validateFields() {
+    if (FirstNameController.text.isEmpty ||
+        LastNameController.text.isEmpty ||
+        EmailController.text.isEmpty ||
+        PasswordController.text.isEmpty ||
+        ConfirmPasswordController.text.isEmpty ||
+        UserName.text.isEmpty) {
+      setState(() {
+        errorMessage = 'Please fill in all required fields.';
+        messageColor = Colors.red;
+      });
+      return false;
+    }
+
+    if (!EmailController.text.contains('@') || !EmailController.text.contains('.')) {
+      setState(() {
+        errorMessage = 'Please enter a valid email address.';
+        messageColor = Colors.red;
+      });
+      return false;
+    }
+
+    // Password complexity validation using the provided regular expression
+    String password = PasswordController.text;
+    if (!RegExp(r'^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,}$').hasMatch(password)) {
+      setState(() {
+        errorMessage = 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character.';
+        messageColor = Colors.red;
+      });
+      return false;
+    }
+
+    if (PasswordController.text != ConfirmPasswordController.text) {
+      setState(() {
+        errorMessage = 'Passwords do not match.';
+        messageColor = Colors.red;
+      });
+      return false;
+    }
+    
+    return true;
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +152,7 @@ class _User_RegistrationState extends State<User_Registration> {
                   ),
                   SizedBox(height: 20),
                   // University Dropdown
-                  DropDownWithoutArguments(
+                  UniversityDropDown(
                     fetchData: University.fetchUniversities, // Fetch universities data asynchronously
                     hintText: "Select University",
                     label: "University",
@@ -115,41 +161,46 @@ class _User_RegistrationState extends State<User_Registration> {
                       setState(() {
                         universitySelected = id != null;
                         campusSelected = false;
-                      });
-                      if (id != null) {
-                        CampusController.clear(); // Clear the Campus controller when University changes
                         departmentSelected = false;
-                      }
+                        CampusController.clear(); // Clear the Campus controller when University changes
+                        DepartmentController.clear(); // Clear the Department controller when University changes
+                        selectedCampusId = null;
+                        selectedDepartmentId = null;
+                      });
                     },
                   ),
-
+                  SizedBox(height: 20),
                   // Campus Dropdown
                   if (universitySelected)
-                    DropDownWithArguments(
+                    CampusDropDown(
                       fetchData: () => Campus.fetchCampusesByUniversityId(int.tryParse(UniversityController.text)!), // Fetch campuses asynchronously
                       hintText: "Select Campus",
                       label: "Campus",
                       controller: CampusController,
+                      selectedValue: selectedCampusId,
                       onValueChanged: (dynamic? id) {
                         setState(() {
                           campusSelected = id != null;
-                          if (id != null) {
-                            departmentSelected = false;
-                          }
+                          selectedCampusId = id;
+                          departmentSelected = false;
+                          DepartmentController.clear(); // Clear the Department controller when Campus changes
+                          selectedDepartmentId = null;
                         });
                       },
                     ),
-
+                  SizedBox(height: 20),
                   // Department Dropdown
                   if (campusSelected)
-                    DropDownWithArguments(
+                    DepartmentDropDown(
                       fetchData: () => Department.getDepartmentsbyCampusid(int.tryParse(CampusController.text)!), // Fetch departments asynchronously
                       hintText: "Select department",
                       label: "department",
                       controller: DepartmentController,
+                      selectedValue: selectedDepartmentId,
                       onValueChanged: (dynamic? id) {
                         setState(() {
                           departmentSelected = id != null;
+                          selectedDepartmentId = id;
                         });
                       },
                     ),
@@ -166,6 +217,14 @@ class _User_RegistrationState extends State<User_Registration> {
                       setState(() {
                         isLoading = true;
                       });
+
+                      if (!_validateFields()) {
+                        setState(() {
+                          isLoading = false;
+                        });
+                        return;
+                      }
+
                       String firstName = FirstNameController.text;
                       String lastName = LastNameController.text;
                       String email = EmailController.text;
@@ -195,6 +254,19 @@ class _User_RegistrationState extends State<User_Registration> {
                           isLoading = false;
                           borderColor = Colors.black;
                           messageColor = Colors.green;
+
+
+                          //Reset Fields
+                          FirstNameController.clear();
+                          LastNameController.clear();
+                          EmailController.clear();
+                          PasswordController.clear();
+                          ConfirmPasswordController.clear();
+                          UserName.clear();
+                          UniversityController.clear();
+                          CampusController.clear();
+                          DepartmentController.clear();
+                          RoleController.clear();
                         });
                       }
 
@@ -221,3 +293,4 @@ class _User_RegistrationState extends State<User_Registration> {
     );
   }
 }
+
