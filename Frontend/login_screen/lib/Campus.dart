@@ -13,6 +13,12 @@ class Campus {
   static int _university_id = 0;
   static String _university_name = '';
 
+  static const ipAddress = MyApp.ip;
+  static const storage = FlutterSecureStorage(
+    aOptions: AndroidOptions(
+      encryptedSharedPreferences: true,
+    ),
+  );
 
   static int get id => _id;
 
@@ -70,27 +76,37 @@ class Campus {
       throw Exception('Failed to load campuses');
     }
   }
-  static Future<Map<String, dynamic>?> getCampusByCampusId(int Campus_id,int University_id) async {
-    final campuses = await fetchCampusesByUniversityId(University_id); // Assuming campusesFuture is a Future<List<dynamic>> containing campus data
-    if (campuses != null) {
-      for (var campus in campuses) {
-        if (campus['id'] == Campus_id) {
-          print(campus);
-          return campus;
-        }
-      }
+  // static Future<Map<String, dynamic>?> getCampusByCampusId(int Campus_id,int University_id) async {
+  //   final campuses = await fetchCampusesByUniversityId(University_id); // Assuming campusesFuture is a Future<List<dynamic>> containing campus data
+  //   if (campuses != null) {
+  //     for (var campus in campuses) {
+  //       if (campus['id'] == Campus_id) {
+  //         print(campus);
+  //         return campus;
+  //       }
+  //     }
+  //   }
+  //   return null;
+  // }
+
+  static Future<List> getCampusById(int id) async {
+    final accessToken = await storage.read(key: "access_token");
+    final url = Uri.parse('$ipAddress:8000/api/campus/$id');
+    final response = await http.get(
+      url,
+      headers: {'Authorization': 'Bearer $accessToken'},
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body) as List<dynamic>;
+    } else {
+      print("Failed to load Campus");
+      return [];
     }
-    return null;
   }
   static Future<bool> createCampus(String name, String mission, String vision, int University_id) async {
     try {
-      const storage = FlutterSecureStorage(
-        aOptions: AndroidOptions(
-          encryptedSharedPreferences: true,
-        ),
-      );
       final accessToken = await storage.read(key: "access_token");
-      const ipAddress = MyApp.ip;
       final url = Uri.parse('$ipAddress:8000/api/campus');
       final response = await http.post(
         url,

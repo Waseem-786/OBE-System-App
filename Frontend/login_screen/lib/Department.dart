@@ -11,8 +11,12 @@ class Department {
   static String _university_name = '';
   static int _campus_id = 0;
   static String _campus_name = '';
-
-  static String ipAddress = MyApp.ip;
+  static const ipAddress = MyApp.ip;
+  static const storage = FlutterSecureStorage(
+    aOptions: AndroidOptions(
+      encryptedSharedPreferences: true,
+    ),
+  );
 
   static int get id => _id;
 
@@ -76,27 +80,37 @@ class Department {
       return [];
     }
   }
-  static Future<Map<String, dynamic>?> getDepartmentById(int deptid, int campusid) async {
-    final departments = await getDepartmentsbyCampusid(campusid); // Assuming campusesFuture is a Future<List<dynamic>> containing campus data
-    if (departments != null) {
-      for (var department in departments) {
-        if (department['id'] == deptid) {
-          print(department);
-          return department;
-        }
-      }
+  // static Future<Map<String, dynamic>?> getDepartmentById(int deptid, int campusid) async {
+  //   final departments = await getDepartmentsbyCampusid(campusid); // Assuming campusesFuture is a Future<List<dynamic>> containing campus data
+  //   if (departments != null) {
+  //     for (var department in departments) {
+  //       if (department['id'] == deptid) {
+  //         print(department);
+  //         return department;
+  //       }
+  //     }
+  //   }
+  //   return null;
+  // }
+
+  static Future<List> getDepartmentById(int id) async {
+    final accessToken = await storage.read(key: "access_token");
+    final url = Uri.parse('$ipAddress:8000/api/department/$id');
+    final response = await http.get(
+      url,
+      headers: {'Authorization': 'Bearer $accessToken'},
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body) as List<dynamic>;
+    } else {
+      print("Failed to load Department");
+      return [];
     }
-    return null;
   }
   static Future<bool> createDepartment(String name, String mission, String vision,int campusid) async {
     try {
-      const storage = FlutterSecureStorage(
-        aOptions: AndroidOptions(
-          encryptedSharedPreferences: true,
-        ),
-      );
       final accessToken = await storage.read(key: "access_token");
-      const ipAddress = MyApp.ip;
       final url = Uri.parse('$ipAddress:8000/api/department');
       final response = await http.post(
         url,

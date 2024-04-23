@@ -6,7 +6,6 @@ import 'package:login_screen/Department.dart';
 import 'package:login_screen/Department_Profile.dart';
 import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
-
 class Department_Page extends StatefulWidget{
 
   @override
@@ -63,12 +62,12 @@ class _Department_PageState extends State<Department_Page> {
                             child: Text(department['name'], style: CustomTextStyles.bodyStyle(fontSize: 17)),
                           ),
                           onTap: () async {
-                            var department_data = await Department.getDepartmentById(departments[index]['id'],campus_id);
+                            var department_data = await Department.getDepartmentById(departments[index]['id']);
                             if (department_data != null) {
-                              Department.id = department_data['id'];
-                              Department.name = department_data['name'];
-                              Department.mission = department_data['mission'];
-                              Department.vision = department_data['vision'];
+                              Department.id = department_data[0]['id'];
+                              Department.name = department_data[0]['name'];
+                              Department.mission = department_data[0]['mission'];
+                              Department.vision = department_data[0]['vision'];
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(

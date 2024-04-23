@@ -11,7 +11,12 @@ class University {
   static String _name = '';
   static String? _vision; // Updated to nullable String
   static String? _mission; // Updated to nullable String
-
+  static const ipAddress = MyApp.ip;
+  static const storage = FlutterSecureStorage(
+    aOptions: AndroidOptions(
+      encryptedSharedPreferences: true,
+    ),
+  );
   University();
 
   static int get id => _id;
@@ -37,6 +42,7 @@ class University {
   static set mission(String? value) { // Updated setter to accept nullable String
     _mission = value;
   }
+
 
   static  Future<List<dynamic>> fetchUniversities() async {
     final ipAddress = MyApp.ip;
@@ -70,17 +76,22 @@ class University {
   //   return null;
   // }
 
-  static Future<Map<String, dynamic>?> getUniversityById(int id) async {
-    final universities = await fetchUniversities();
-    for (var university in universities) {
-      if (university['id'] == id) {
-        print(university);
-        return university;
-      }
+  static Future<List> getUniversityById(int id) async {
+    final accessToken = await storage.read(key: "access_token");
+    final url = Uri.parse('$ipAddress:8000/api/university/$id');
+    final response = await http.get(
+      url,
+      headers: {'Authorization': 'Bearer $accessToken'},
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body) as List<dynamic>;
+    } else {
+      print("Failed to load university");
+      return [];
     }
-    return null;
   }
-  
+
   static Future<bool> createUniversity(String name, String mission, String vision) async {
     try {
       const storage = FlutterSecureStorage(
