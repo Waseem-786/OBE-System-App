@@ -175,14 +175,14 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
 
   Future<void> _setDepartmentData() async {
     try{
-      var department_data = await Department.getDepartmentById(User.departmentid);
-      if (department_data != null && department_data.isNotEmpty) {
-        Department.id = department_data['id'];
-        Department.name = department_data['name'];
-        Department.mission = department_data['mission'];
-        Department.vision = department_data['vision'];
-        Department.campus_id = department_data['campus'];
-        Department.campus_name = department_data['campus_name'];
+      var departmentData = await Department.getDepartmentById(User.departmentid);
+      if (departmentData != null && departmentData.isNotEmpty) {
+        Department.id = departmentData['id'];
+        Department.name = departmentData['name'];
+        Department.mission = departmentData['mission'];
+        Department.vision = departmentData['vision'];
+        Department.campus_id = departmentData['campus'];
+        Department.campus_name = departmentData['campus_name'];
       }
     }
     catch (e) {
@@ -199,200 +199,162 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Scaffold(
-            appBar: AppBar(title: Text('Loading...')),
-            body: Center(child: CircularProgressIndicator()),
+            appBar: AppBar(title: const Text('Loading...')),
+            body: const Center(child: CircularProgressIndicator()),
           );
         } else {
           return Scaffold(
             appBar: AppBar(
-              backgroundColor: Color(0xffc19a6b),
-              // backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-              title: Container(
-                margin: EdgeInsets.only(left: 26),
-                child: Text('Admin Dashboard',
-                    style: CustomTextStyles.headingStyle(fontSize: 22)
-                    // TextStyle(fontWeight: FontWeight
-                    //   .bold, fontFamily: 'Merri'
-                    //
-                    // ),
-                    //
-
-                    ),
+              backgroundColor: const Color(0xffc19a6b),
+              title: Text(
+                'Admin Dashboard',
+                style: CustomTextStyles.headingStyle(fontSize: 22),
               ),
-              // actions: [
-              //   IconButton(
-              //     icon: Icon(Icons.more_vert),
-              //     iconSize: 25,
-              //     onPressed: () {},
-              //   ),
-              // ],
-
               actions: [
-                PopupMenuButton<String>(
-                  icon: Icon(Icons.more_vert),
-                  onSelected: (String result) {
-                    if (result == 'Log out') {
-                      Token.deleteTokens();
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => LoginPage()));
-                    }
-                    setState(() {
-                      _selectedOption = result;
-                    });
+                IconButton(
+                  icon: const Icon(Icons.power_settings_new_outlined, size: 30,),
+                  onPressed: () {
+                    Token.deleteTokens();
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => LoginPage()),
+                    );
                   },
-                  itemBuilder: (BuildContext context) =>
-                      <PopupMenuEntry<String>>[
-                    PopupMenuItem<String>(
-                      value: 'Log out',
-                      child: Text('Log out'),
-                    ),
-                    // PopupMenuItem<String>(
-                    //   value: 'update',
-                    //   child: Text('Update'),
-                    // ),
-                    // Add more PopupMenuItems for other options as needed
-                  ],
                 ),
               ],
             ),
-            body: Container(
-              // margin: const EdgeInsets.only(bottom: 102),
-              height: double.infinity,
-              color: Colors.white10,
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 23,
-                  ),
-                  Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 14, right: 8),
-                        child: CircleAvatar(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(35),
-                            child: Image.asset(
-                              "assets/images/MyProfile.jpeg",
-                            ),
+            body: Column(
+              children: [
+                const SizedBox(
+                  height: 23,
+                ),
+                Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 14, right: 8),
+                      child: CircleAvatar(
+                        radius: 35,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(35),
+                          child: Image.asset(
+                            "assets/images/MyProfile.jpeg",
                           ),
-                          radius: 35,
                         ),
                       ),
-                      SizedBox(
-                        width: 10,
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(User.username,
+                              style:
+                                  CustomTextStyles.bodyStyle(fontSize: 27)),
+                          Text(
+                            User.email,
+                            style: CustomTextStyles.bodyStyle(),
+                          ),
+                        ],
                       ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(User.username,
-                                style:
-                                    CustomTextStyles.bodyStyle(fontSize: 27)),
-                            Text(
-                              User.email,
-                              style: CustomTextStyles.bodyStyle(),
-                            ),
-                          ],
-                        ),
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.only(right: 8.0),
+                      child: Icon(Icons.notifications, size: 35),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+
+                const Divider(thickness: 1, color: Colors.black),
+
+                SingleChildScrollView(
+                  child: SizedBox(
+                    height: 575,
+                    child: GridView.builder(
+                      shrinkWrap: true,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 4,
+                        mainAxisSpacing: 4,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 8.0),
-                        child: Icon(Icons.notifications, size: 35),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(7.0),
+                          child: InkWell(
+                            // onTap: () {
+                            //   // Navigate to the corresponding location
+                            //   // For simplicity, let's print the location for now
+                            //   // print(screenNames[index]);
+                            //
+                            // Navigator.push(context, MaterialPageRoute(builder: (context)=> screenNames[index]));
+                            //
+                            // },
+                            onTap: () {
+                              Navigator.pushNamed(
+                                  context, '/${screenNames[index]}');
+                            },
 
-                  Divider(thickness: 1, color: Colors.black),
-
-                  SingleChildScrollView(
-                    child: Container(
-                      height: 600,
-                      child: GridView.builder(
-                        shrinkWrap: true,
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 4,
-                          mainAxisSpacing: 4,
-                        ),
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.all(7.0),
-                            child: InkWell(
-                              // onTap: () {
-                              //   // Navigate to the corresponding location
-                              //   // For simplicity, let's print the location for now
-                              //   // print(screenNames[index]);
-                              //
-                              // Navigator.push(context, MaterialPageRoute(builder: (context)=> screenNames[index]));
-                              //
-                              // },
-                              onTap: () {
-                                Navigator.pushNamed(
-                                    context, '/' + screenNames[index]);
-                              },
-
-                              child: Card(
-                                elevation: 7,
-                                shape: RoundedRectangleBorder(
+                            child: Card(
+                              elevation: 7,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Container(
+                                decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    gradient: LinearGradient(
-                                      begin: Alignment.topCenter,
-                                      end: Alignment.bottomCenter,
-                                      colors: [
-                                        Color(0xFF8B5A2B), // Dark brown
-                                        Color(0xFFC19A6B), // Light brown
-                                        Color(0xFF8B5A2B), // Dark brown
-                                      ],
-                                    ),
+                                  gradient: const LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      Color(0xFF8B5A2B), // Dark brown
+                                      Color(0xFFC19A6B), // Light brown
+                                      Color(0xFF8B5A2B), // Dark brown
+                                    ],
                                   ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Center(
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Icon(
-                                            icons[index],
-                                            size: 39,
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Center(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          icons[index],
+                                          size: 39,
+                                          color: Colors.white,
+                                        ),
+                                        const SizedBox(
+                                          height: 15,
+                                        ),
+                                        Text(
+                                          headings[index],
+                                          style:
+                                              CustomTextStyles.headingStyle(
                                             color: Colors.white,
+                                            fontSize: 19,
                                           ),
-                                          SizedBox(
-                                            height: 15,
-                                          ),
-                                          Text(
-                                            headings[index],
-                                            style:
-                                                CustomTextStyles.headingStyle(
-                                              color: Colors.white,
-                                              fontSize: 19,
-                                            ),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        ],
-                                      ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
                               ),
                             ),
-                          );
-                        },
-                        itemCount: headings.length,
-                      ),
+                          ),
+                        );
+                      },
+                      itemCount: headings.length,
                     ),
                   ),
-                  // SizedBox(height: 33,)
-                ],
-              ),
+                ),
+              ],
             ),
           );
         }

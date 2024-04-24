@@ -46,7 +46,7 @@ class _Campus_PageState extends State<Campus_Page> {
             future: campusesFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
+                return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
                 return Center(child: Text('Error: ${snapshot.error}'));
               } else {
@@ -59,7 +59,7 @@ class _Campus_PageState extends State<Campus_Page> {
                       return Card(
                         color: Colors.white,
                         elevation: 5,
-                        margin: EdgeInsets.all(10),
+                        margin: const EdgeInsets.all(10),
                         child: ListTile(
                           title: Padding(
                             padding: const EdgeInsets.all(20.0),
@@ -76,10 +76,17 @@ class _Campus_PageState extends State<Campus_Page> {
                               Campus.university_name = campusData['university_name'];
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(
+                                MaterialPageRoute<bool>(
                                     builder: (context) =>
                                         Campus_Profile(),
-                              ));
+                              )).then((result) {
+                                if (result != null && result) {
+                                  // Set the state of the previous page here
+                                  setState(() {
+                                    campusesFuture = Campus.fetchCampusesByUniversityId(university_id);
+                                  });
+                                }
+                              });;
                               // Perform actions with campusData
                             }
                           },
@@ -93,7 +100,7 @@ class _Campus_PageState extends State<Campus_Page> {
           ),
           Center(
             child: Container(
-              margin: EdgeInsets.only(bottom: 20, top: 12),
+              margin: const EdgeInsets.only(bottom: 20, top: 12),
               child: Custom_Button(
                 onPressedFunction: () {
                   Navigator.push(
