@@ -68,12 +68,12 @@ class _Campus_PageState extends State<Campus_Page> {
                           onTap: () async {
                             var campusData = await Campus.getCampusById(campuses[index]['id']);
                             if (campusData != null) {
-                              Campus.id = campusData[0]['id'];
-                              Campus.name = campusData[0]['name'];
-                              Campus.mission = campusData[0]['mission'];
-                              Campus.vision = campusData[0]['vision'];
-                              Campus.university_id = campusData[0]['university'];
-                              Campus.university_name = campusData[0]['university_name'];
+                              Campus.id = campusData['id'];
+                              Campus.name = campusData['name'];
+                              Campus.mission = campusData['mission'];
+                              Campus.vision = campusData['vision'];
+                              Campus.university_id = campusData['university'];
+                              Campus.university_name = campusData['university_name'];
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(

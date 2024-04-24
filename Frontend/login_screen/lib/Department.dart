@@ -8,7 +8,6 @@ class Department {
   static String _name = '';
   static String _vision = '';
   static String _mission = '';
-  static String _university_name = '';
   static int _campus_id = 0;
   static String _campus_name = '';
   static const ipAddress = MyApp.ip;
@@ -42,11 +41,6 @@ class Department {
     _mission = value;
   }
 
-  static String get university_name => _university_name;
-
-  static set university_name(String value) {
-    _university_name = value;
-  }
 
   static int get campus_id => _campus_id;
 
@@ -93,7 +87,7 @@ class Department {
   //   return null;
   // }
 
-  static Future<List> getDepartmentById(int id) async {
+  static Future<Map<String, dynamic>?> getDepartmentById(int id) async {
     final accessToken = await storage.read(key: "access_token");
     final url = Uri.parse('$ipAddress:8000/api/department/$id');
     final response = await http.get(
@@ -102,10 +96,10 @@ class Department {
     );
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body) as List<dynamic>;
+      return jsonDecode(response.body);
     } else {
       print("Failed to load Department");
-      return [];
+      return {};
     }
   }
   static Future<bool> createDepartment(String name, String mission, String vision,int campusid) async {

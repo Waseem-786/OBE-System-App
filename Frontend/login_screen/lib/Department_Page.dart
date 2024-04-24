@@ -63,11 +63,15 @@ class _Department_PageState extends State<Department_Page> {
                           ),
                           onTap: () async {
                             var department_data = await Department.getDepartmentById(departments[index]['id']);
+                            print(department_data);
+
                             if (department_data != null) {
-                              Department.id = department_data[0]['id'];
-                              Department.name = department_data[0]['name'];
-                              Department.mission = department_data[0]['mission'];
-                              Department.vision = department_data[0]['vision'];
+                              Department.id = department_data['id'];
+                              Department.name = department_data['name'];
+                              Department.mission = department_data['mission'];
+                              Department.vision = department_data['vision'];
+                              Department.campus_id = department_data['campus'];
+                              Department.campus_name = department_data['campus_name'];
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(

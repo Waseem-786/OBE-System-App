@@ -60,13 +60,13 @@ class _University_PageState extends State<University_Page> {
                           onTap: () async {
                             // call of a function to get the data of that user whose id is passed and id is
                             // passed by tapping the user
-                            List user = await University.getUniversityById(
+                            var university = await University.getUniversityById(
                                 universities[index]['id']);
-                            if (user != null) {
-                              University.id = user[0]['id'];
-                              University.name = user[0]['name'];
-                              University.vision = user[0]['vision'];
-                              University.mission = user[0]['mission'];
+                            if (university != null) {
+                              University.id = university['id'];
+                              University.name = university['name'];
+                              University.vision = university['vision'];
+                              University.mission = university['mission'];
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(

@@ -144,41 +144,51 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
   }
 
   Future<void> _setUniversityData() async {
-    Future<List<dynamic>> universityFuture =
-        University.getUniversityById(User.universityid);
-    List<dynamic> universityData = await universityFuture;
-    if (universityData.isNotEmpty) {
-      print(universityData[0]['name']);
-      University.id = universityData[0]['id'];
-      University.name = universityData[0]['name'];
-      University.mission = universityData[0]['mission'];
-      University.vision = universityData[0]['vision'];
+    try {
+      var universityData = await University.getUniversityById(User.universityid);
+      if (universityData != null && universityData.isNotEmpty) {
+        University.id = universityData['id'];
+        University.name = universityData['name'];
+        University.mission = universityData['mission'];
+        University.vision = universityData['vision'];
+      }
+    } catch (e) {
+      print("Failed to set university data: $e");
     }
   }
 
   Future<void> _setCampusData() async {
-    Future<List<dynamic>> campusFuture = Campus.getCampusById(User.campusid);
-    List<dynamic> campusData = await campusFuture;
-    if (campusData.isNotEmpty) {
-      print(campusData[0]['name']);
-      Campus.id = campusData[0]['id'];
-      Campus.name = campusData[0]['name'];
-      Campus.mission = campusData[0]['mission'];
-      Campus.vision = campusData[0]['vision'];
+    try {
+      var campusData = await Campus.getCampusById(User.campusid);
+      if (campusData != null && campusData.isNotEmpty) {
+        Campus.id = campusData['id'];
+        Campus.name = campusData['name'];
+        Campus.mission = campusData['mission'];
+        Campus.vision = campusData['vision'];
+        Campus.university_id = campusData['university'];
+        Campus.university_name = campusData['university_name'];
+      }
+    } catch (e) {
+      print("Failed to set campus data: $e");
     }
   }
 
   Future<void> _setDepartmentData() async {
-    Future<List<dynamic>> deptFuture =
-        Department.getDepartmentById(User.departmentid);
-    List<dynamic> deptData = await deptFuture;
-    if (deptData.isNotEmpty) {
-      print(deptData[0]['name']);
-      Department.id = deptData[0]['id'];
-      Department.name = deptData[0]['name'];
-      Department.mission = deptData[0]['mission'];
-      Department.vision = deptData[0]['vision'];
+    try{
+      var department_data = await Department.getDepartmentById(User.departmentid);
+      if (department_data != null && department_data.isNotEmpty) {
+        Department.id = department_data['id'];
+        Department.name = department_data['name'];
+        Department.mission = department_data['mission'];
+        Department.vision = department_data['vision'];
+        Department.campus_id = department_data['campus'];
+        Department.campus_name = department_data['campus_name'];
+      }
     }
+    catch (e) {
+      print("Failed to set department data: $e");
+    }
+
   }
 
   String _selectedOption = '';

@@ -89,7 +89,7 @@ class Campus {
   //   return null;
   // }
 
-  static Future<List> getCampusById(int id) async {
+  static Future<Map<String, dynamic>?> getCampusById(int id) async {
     final accessToken = await storage.read(key: "access_token");
     final url = Uri.parse('$ipAddress:8000/api/campus/$id');
     final response = await http.get(
@@ -98,10 +98,10 @@ class Campus {
     );
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body) as List<dynamic>;
+      return jsonDecode(response.body);
     } else {
       print("Failed to load Campus");
-      return [];
+      return {};
     }
   }
   static Future<bool> createCampus(String name, String mission, String vision, int University_id) async {
