@@ -41,6 +41,19 @@ class User_Management_State extends State<User_Management> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Check if the current route is the route you're returning from
+    ModalRoute? currentRoute = ModalRoute.of(context);
+    if (currentRoute != null && currentRoute.isCurrent) {
+      // Call your refresh function here
+      setState(() {
+        _getAllUsers();
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(

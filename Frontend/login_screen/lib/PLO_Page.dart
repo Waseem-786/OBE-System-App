@@ -21,6 +21,19 @@ class _PLO_PageState extends State<PLO_Page> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Check if the current route is the route you're returning from
+    ModalRoute? currentRoute = ModalRoute.of(context);
+    if (currentRoute != null && currentRoute.isCurrent) {
+      // Call your refresh function here
+      setState(() {
+        ploFuture = PLO.fetchPLO();
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(

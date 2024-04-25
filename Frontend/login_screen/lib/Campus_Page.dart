@@ -26,6 +26,19 @@ class _Campus_PageState extends State<Campus_Page> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Check if the current route is the route you're returning from
+    ModalRoute? currentRoute = ModalRoute.of(context);
+    if (currentRoute != null && currentRoute.isCurrent) {
+      // Call your refresh function here
+      setState(() {
+        campusesFuture = Campus.fetchCampusesByUniversityId(university_id);
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(

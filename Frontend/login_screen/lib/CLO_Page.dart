@@ -22,6 +22,19 @@ class _CLO_PageState extends State<CLO_Page> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Check if the current route is the route you're returning from
+    ModalRoute? currentRoute = ModalRoute.of(context);
+    if (currentRoute != null && currentRoute.isCurrent) {
+      // Call your refresh function here
+      setState(() {
+        cloFuture = CLO.fetchCLO();
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(

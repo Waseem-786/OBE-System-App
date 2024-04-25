@@ -18,6 +18,20 @@ class _Department_PageState extends State<Department_Page> {
   late Future<List<dynamic>> departmentFuture;
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Check if the current route is the route you're returning from
+    ModalRoute? currentRoute = ModalRoute.of(context);
+    if (currentRoute != null && currentRoute.isCurrent) {
+      // Call your refresh function here
+      setState(() {
+        departmentFuture = Department.getDepartmentsbyCampusid(campus_id);
+      });
+    }
+  }
+
+
+  @override
   void initState() {
     super.initState();
     departmentFuture = Department.getDepartmentsbyCampusid(campus_id);
