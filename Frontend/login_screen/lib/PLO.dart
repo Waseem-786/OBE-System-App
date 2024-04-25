@@ -1,6 +1,4 @@
-
 import 'dart:convert';
-
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'main.dart';
@@ -10,6 +8,10 @@ class PLO{
   static int _id = 0;
   static String? _description;
   static String? _name;
+
+  static const ipAddress = MyApp.ip;
+  static const storage = FlutterSecureStorage(
+      aOptions: AndroidOptions(encryptedSharedPreferences: true));
 
   static String? get name => _name;
 
@@ -30,18 +32,10 @@ class PLO{
     _description = value;
   }
 
-
-
   static Future<bool> createPLO(String name,String description,int deptid)
   async {
     try {
-      const storage = FlutterSecureStorage(
-        aOptions: AndroidOptions(
-          encryptedSharedPreferences: true,
-        ),
-      );
       final accessToken = await storage.read(key: "access_token");
-      const ipAddress = MyApp.ip;
       final url = Uri.parse('$ipAddress:8000/api/plo');
       final response = await http.post(
         url,
@@ -68,17 +62,14 @@ class PLO{
       return false;
     }
   }
+
   static Future<List<dynamic>> fetchPLO() async {
-    final ipAddress = MyApp.ip;
-    const storage = FlutterSecureStorage(
-        aOptions: AndroidOptions(encryptedSharedPreferences: true));
     final accessToken = await storage.read(key: "access_token");
     final url = Uri.parse('$ipAddress:8000/api/plo');
     final response = await http.get(
       url,
       headers: {'Authorization': 'Bearer $accessToken'},
     );
-
     if (response.statusCode == 200) {
       return jsonDecode(response.body) as List<dynamic>;
     } else {
@@ -96,5 +87,28 @@ class PLO{
     return null;
   }
 
+  static Future<bool> deletePLO(int ploId) async {
+    try {
+      final accessToken = await storage.read(key: "access_token");
 
+      final url = Uri.parse('$ipAddress:8000/api/plo/$ploId');
+      final response = await http.delete(
+        url,
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+
+      if (response.statusCode == 204) {
+        print('PLO deleted successfully');
+        return true;
+      } else {
+        print('Failed to delete PLO. Status code: ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      print('Exception while deleting PLO: $e');
+      return false;
+    }
+  }
 }

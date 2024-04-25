@@ -1,12 +1,8 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:login_screen/CLO.dart';
-import 'package:login_screen/Course.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Button.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Field.dart';
 import 'package:login_screen/User.dart';
-
 import 'Custom_Widgets/Custom_Text_Style.dart';
 import 'PLO.dart';
 
@@ -16,7 +12,7 @@ class Create_PLO extends StatefulWidget {
 }
 
 class _Create_PLOState extends State<Create_PLO> {
-  int departmentid = User.departmentid;
+  int departmentId = User.departmentid;
   String?
   errorMessage;
   //variable to show the error when the wrong credentials are entered or the fields are empty
@@ -30,16 +26,15 @@ class _Create_PLOState extends State<Create_PLO> {
   // color of border of text fields when the error is not occurred
 
   final TextEditingController PLODescription_Controller = TextEditingController();
-
   final TextEditingController PLOName_Controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xffc19a6b),
+        backgroundColor: const Color(0xffc19a6b),
         title: Container(
-          margin: EdgeInsets.only(left: 90),
+          margin: const EdgeInsets.only(left: 90),
           child: Text(
             "Create PLO",
             style: CustomTextStyles.headingStyle(fontSize: 20),
@@ -47,28 +42,26 @@ class _Create_PLOState extends State<Create_PLO> {
         ),
       ),
       body: Container(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-
             CustomTextFormField(controller: PLOName_Controller,
               hintText: 'Enter PLO Name',
-              label: 'Enter PLO Name',),
-             SizedBox(height: 20,),
+              label: 'Enter PLO Name',
+            ),
+             const SizedBox(height: 20,),
             CustomTextFormField(controller: PLODescription_Controller,
               hintText: 'Enter PLO Description',
-              label: 'Enter PLO Description',),
-
-            SizedBox(height: 20,),
-
-
+              label: 'Enter PLO Description',
+            ),
+            const SizedBox(height: 20,),
             Custom_Button(
               onPressedFunction: () async {
-                String PLODescription = PLODescription_Controller.text;
                 String PLOName = PLOName_Controller.text;
-                if (PLODescription.isEmpty || PLOName.isEmpty) {
+                String PLODescription = PLODescription_Controller.text;
+                if (PLOName.isEmpty || PLODescription.isEmpty) {
                   setState(() {
                     colorMessage = Colors.red;
                     errorColor = Colors.red;
@@ -79,8 +72,12 @@ class _Create_PLOState extends State<Create_PLO> {
                     isLoading = true;
                   });
                   bool created = await PLO.createPLO(
-                    PLOName,PLODescription, departmentid);
+                    PLOName,PLODescription, departmentId);
                   if (created) {
+                    //Clear all the fields
+                    PLODescription_Controller.clear();
+                    PLOName_Controller.clear();
+
                     setState(() {
                       isLoading = false;
                       colorMessage = Colors.green;
@@ -93,17 +90,17 @@ class _Create_PLOState extends State<Create_PLO> {
               },
               ButtonWidth: 160,
               ButtonText: 'Create PLO',),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Visibility(
               visible: isLoading,
-              child: CircularProgressIndicator(),
+              child: const CircularProgressIndicator(),
             ),
             errorMessage != null
                 ? Text(
               errorMessage!,
               style: CustomTextStyles.bodyStyle(color: colorMessage),
             )
-                : SizedBox(),
+                : const SizedBox(),
           ],
         ),
       ),

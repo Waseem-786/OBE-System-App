@@ -25,15 +25,11 @@ class _Campus_PageState extends State<Campus_Page> {
     campusesFuture = Campus.fetchCampusesByUniversityId(university_id);
   }
 
-
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xffc19a6b),
+        backgroundColor: const Color(0xffc19a6b),
         title: Center(
           child: Text(
             'Campus Page',style: CustomTextStyles.headingStyle(fontSize: 22)
@@ -81,12 +77,12 @@ class _Campus_PageState extends State<Campus_Page> {
                                         Campus_Profile(),
                               )).then((result) {
                                 if (result != null && result) {
-                                  // Set the state of the previous page here
+                                  // Set the state of the page here
                                   setState(() {
                                     campusesFuture = Campus.fetchCampusesByUniversityId(university_id);
                                   });
                                 }
-                              });;
+                              });
                               // Perform actions with campusData
                             }
                           },

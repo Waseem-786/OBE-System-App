@@ -1,15 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:login_screen/CLO.dart';
-import 'package:login_screen/CLO_Profile.dart';
-
-import 'Create_CLO.dart';
 import 'Create_PEO.dart';
-import 'Create_PLO.dart';
 import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
 import 'PEO.dart';
-import 'PLO.dart';
 import 'PEO_Profile.dart';
 
 class PEO_Page extends StatefulWidget {
@@ -30,9 +24,9 @@ class _PEO_PageState extends State<PEO_Page> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xffc19a6b),
+        backgroundColor: const Color(0xffc19a6b),
         title: Container(
-          margin: EdgeInsets.only(left: 90),
+          margin: const EdgeInsets.only(left: 90),
           child: Text(
             "PEO Page",
             style: CustomTextStyles.headingStyle(fontSize: 20),
@@ -63,10 +57,17 @@ class _PEO_PageState extends State<PEO_Page> {
                             PEO.id = user['id'];
                             PEO.description = user['description'];
                             Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) =>
-                                  PEO_Profile()),
-                            );
+                                context,
+                                MaterialPageRoute<bool>(
+                                  builder: (context) => PEO_Profile(),
+                                )).then((result) {
+                              if (result != null && result) {
+                                // Set the state of the page here
+                                setState(() {
+                                  peoFuture = PEO.fetchPEO();
+                                });
+                              }
+                            });
                           }
                         },
                         child: Container(

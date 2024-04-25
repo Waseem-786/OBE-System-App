@@ -4,17 +4,21 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'main.dart';
 
-class CLO
-{
+class CLO {
   static int _id = 0;
   static String? _description;
   static String? _bloom_taxonomy;
   static int? _level;
   static int? _course;
 
+  static const ipAddress = MyApp.ip;
+  static const storage = FlutterSecureStorage(
+      aOptions: AndroidOptions(encryptedSharedPreferences: true));
+
   static set id(int value) {
     _id = value;
   }
+
   static int get id => _id;
 
   static String? get description => _description;
@@ -22,8 +26,6 @@ class CLO
   static set description(String? value) {
     _description = value;
   }
-
-
 
   static String? get bloom_taxonomy => _bloom_taxonomy;
 
@@ -42,15 +44,11 @@ class CLO
   static set course(int? value) {
     _course = value;
   }
-  static Future<bool> createCLO(String description, String BT, int BTLevel, int course_id) async {
+
+  static Future<bool> createCLO(
+      String description, String BT, int BTLevel, int course_id) async {
     try {
-      const storage = FlutterSecureStorage(
-        aOptions: AndroidOptions(
-          encryptedSharedPreferences: true,
-        ),
-      );
       final accessToken = await storage.read(key: "access_token");
-      const ipAddress = MyApp.ip;
       final url = Uri.parse('$ipAddress:8000/api/clo');
       final response = await http.post(
         url,
@@ -69,8 +67,7 @@ class CLO
         print('CLO Created successfully');
         return true;
       } else {
-        print(
-            'Failed to create CLO. Status code: ${response.statusCode}');
+        print('Failed to create CLO. Status code: ${response.statusCode}');
         return false;
       }
     } catch (e) {
@@ -78,10 +75,8 @@ class CLO
       return false;
     }
   }
+
   static Future<List<dynamic>> fetchCLO() async {
-    final ipAddress = MyApp.ip;
-    const storage = FlutterSecureStorage(
-        aOptions: AndroidOptions(encryptedSharedPreferences: true));
     final accessToken = await storage.read(key: "access_token");
     final url = Uri.parse('$ipAddress:8000/api/clo');
     final response = await http.get(
@@ -104,5 +99,30 @@ class CLO
       }
     }
     return null;
+  }
+
+  static Future<bool> deleteCLO(int cloId) async {
+    try {
+      final accessToken = await storage.read(key: "access_token");
+
+      final url = Uri.parse('$ipAddress:8000/api/clo/$cloId');
+      final response = await http.delete(
+        url,
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+
+      if (response.statusCode == 204) {
+        print('CLO deleted successfully');
+        return true;
+      } else {
+        print('Failed to delete CLO. Status code: ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      print('Exception while deleting CLO: $e');
+      return false;
+    }
   }
 }

@@ -68,10 +68,17 @@ class _University_PageState extends State<University_Page> {
                               University.vision = university['vision'];
                               University.mission = university['mission'];
                               Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => University_Profile()),
-                              );
+                                  context,
+                                  MaterialPageRoute<bool>(
+                                    builder: (context) => University_Profile(),
+                                  )).then((result) {
+                                if (result != null && result) {
+                                  // Set the state of the page here
+                                  setState(() {
+                                    universitiesFuture = University.fetchUniversities();
+                                  });
+                                }
+                              });
                             }
                           },
                         ),

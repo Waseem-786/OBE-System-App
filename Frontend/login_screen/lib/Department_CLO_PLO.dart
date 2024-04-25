@@ -1,8 +1,5 @@
-
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
 import 'PEO_Page.dart';
@@ -15,9 +12,9 @@ class Department_CLO_PLO extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Color(0xffc19a6b),
+          backgroundColor: const Color(0xffc19a6b),
           title: Container(
-            margin: EdgeInsets.only(left: 30),
+            margin: const EdgeInsets.only(left: 30),
             child: Text(
               'Program Management',
               style: CustomTextStyles.headingStyle(fontSize: 20),
@@ -26,7 +23,7 @@ class Department_CLO_PLO extends StatelessWidget {
         ),
         body: Center(
           child: Container(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -39,7 +36,7 @@ class Department_CLO_PLO extends StatelessWidget {
                   ButtonText: "Show PLO's ",
                   ButtonWidth: 200,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 Custom_Button(
@@ -47,7 +44,7 @@ class Department_CLO_PLO extends StatelessWidget {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) => PEO_Page()));
                   },
-                  ButtonText: "Show PEO's ",
+                  ButtonText: "Show PEOs",
                   ButtonWidth: 200,
                 ),
               ],

@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:login_screen/CLO.dart';
@@ -28,18 +27,16 @@ class _Create_CLOState extends State<Create_CLO> {
  // color of border of text fields when the error is not occurred
 
   final TextEditingController CLODescription_Controller = TextEditingController();
-
   String? SelectedBloomTaxonomy;
-
   int? SelectedBTLevel;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xffc19a6b),
+        backgroundColor: const Color(0xffc19a6b),
         title: Container(
-          margin: EdgeInsets.only(left: 90),
+          margin: const EdgeInsets.only(left: 90),
           child: Text(
             "Create CLO",
             style: CustomTextStyles.headingStyle(fontSize: 20),
@@ -47,7 +44,7 @@ class _Create_CLOState extends State<Create_CLO> {
         ),
       ),
       body: Container(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -55,7 +52,7 @@ class _Create_CLOState extends State<Create_CLO> {
             CustomTextFormField(controller: CLODescription_Controller,
               hintText: 'Enter CLO Description',
               label: 'Enter CLO Description',),
-            SizedBox(height: 20,),
+            const SizedBox(height: 20,),
             DropdownButtonFormField<String>(
               value: SelectedBloomTaxonomy,
               onChanged: (value) {
@@ -84,7 +81,7 @@ class _Create_CLOState extends State<Create_CLO> {
                 );
               }).toList(),
             ),
-            SizedBox(height: 20,),
+            const SizedBox(height: 20,),
             DropdownButtonFormField<int>(
               value: SelectedBTLevel,
               onChanged: (value) {
@@ -113,7 +110,7 @@ class _Create_CLOState extends State<Create_CLO> {
                 );
               }).toList(),
             ),
-            SizedBox(height: 20,),
+            const SizedBox(height: 20,),
             Custom_Button(
               onPressedFunction: () async {
                 String CLODescription = CLODescription_Controller.text;
@@ -134,6 +131,11 @@ class _Create_CLOState extends State<Create_CLO> {
                   bool created = await CLO.createCLO(
                       CLODescription, BT, BTLevel, Course_id );
                   if (created) {
+                    //
+                    CLODescription_Controller.clear();
+                    SelectedBloomTaxonomy = null;
+                    SelectedBTLevel = null;
+
                     setState(() {
                       isLoading = false;
                       colorMessage = Colors.green;
@@ -146,17 +148,17 @@ class _Create_CLOState extends State<Create_CLO> {
               },
               ButtonWidth: 160,
               ButtonText: 'Create CLO',),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Visibility(
               visible: isLoading,
-              child: CircularProgressIndicator(),
+              child: const CircularProgressIndicator(),
             ),
             errorMessage != null
                 ? Text(
               errorMessage!,
               style: CustomTextStyles.bodyStyle(color: colorMessage),
             )
-                : SizedBox(),
+                : const SizedBox(),
           ],
         ),
       ),

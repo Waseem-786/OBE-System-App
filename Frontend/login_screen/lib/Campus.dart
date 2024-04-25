@@ -57,16 +57,10 @@ class Campus {
   }
 
   static Future<List<dynamic>> fetchCampusesByUniversityId(
-      int university_id) async {
-    const ipAddress = MyApp.ip;
-    const storage = FlutterSecureStorage(
-      aOptions: AndroidOptions(
-        encryptedSharedPreferences: true,
-      ),
-    );
+      int universityId) async {
     final accessToken = await storage.read(key: "access_token");
     final url =
-        Uri.parse('$ipAddress:8000/api/university/${university_id}/campus');
+        Uri.parse('$ipAddress:8000/api/university/$universityId/campus');
     final response = await http.get(
       url,
       headers: {'Authorization': 'Bearer $accessToken'},
@@ -78,18 +72,6 @@ class Campus {
       throw Exception('Failed to load campuses');
     }
   }
-  // static Future<Map<String, dynamic>?> getCampusByCampusId(int Campus_id,int University_id) async {
-  //   final campuses = await fetchCampusesByUniversityId(University_id); // Assuming campusesFuture is a Future<List<dynamic>> containing campus data
-  //   if (campuses != null) {
-  //     for (var campus in campuses) {
-  //       if (campus['id'] == Campus_id) {
-  //         print(campus);
-  //         return campus;
-  //       }
-  //     }
-  //   }
-  //   return null;
-  // }
 
   static Future<Map<String, dynamic>?> getCampusById(int id) async {
     final accessToken = await storage.read(key: "access_token");
@@ -141,21 +123,20 @@ class Campus {
   static Future<bool> deleteCampus(int campusId) async {
     try {
       final accessToken = await storage.read(key: "access_token");
-
-      final campusUrl = Uri.parse('$ipAddress:8000/api/campus/$campusId');
-      final campusResponse = await http.delete(
-        campusUrl,
+      final url = Uri.parse('$ipAddress:8000/api/campus/$campusId');
+      final response = await http.delete(
+        url,
         headers: {
           'Authorization': 'Bearer $accessToken',
         },
       );
 
-      if (campusResponse.statusCode == 204) {
+      if (response.statusCode == 204) {
         print('Campus deleted successfully');
         return true;
       } else {
         print(
-            'Failed to delete Campus. Status code: ${campusResponse.statusCode}');
+            'Failed to delete Campus. Status code: ${response.statusCode}');
         return false;
       }
     } catch (e) {

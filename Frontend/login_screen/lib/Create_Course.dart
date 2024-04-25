@@ -208,6 +208,16 @@ class Create_Course_State extends State<Create_Course> {
                         PreReq,
                         Description);
                     if (created) {
+                      //Clear all the fields and deselect the radio button and dropdown
+                      CourseCodeController.clear();
+                      CourseTitleController.clear();
+                      CourseTheoryCreditsController.clear();
+                      CourseLabCreditsController.clear();
+                      CourseTypeController.clear();
+                      SelectedCourseReqElec = null;
+                      SelectedCoursePrerequisite = null;
+                      CourseDescriptionController.clear();
+
                       setState(() {
                         isLoading = false;
                         colorMessage = Colors.green;
@@ -221,17 +231,17 @@ class Create_Course_State extends State<Create_Course> {
                 ButtonText: 'Create Course',
                 ButtonWidth: 200,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Visibility(
                 visible: isLoading,
-                child: CircularProgressIndicator(),
+                child: const CircularProgressIndicator(),
               ),
               errorMessage != null
                   ? Text(
                       errorMessage!,
                       style: CustomTextStyles.bodyStyle(color: colorMessage),
                     )
-                  : SizedBox(),
+                  : const SizedBox(),
             ],
           ),
         ),

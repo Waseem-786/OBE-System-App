@@ -8,6 +8,10 @@ class PEO {
   static int _id = 0;
   static String? _description;
 
+  static const ipAddress = MyApp.ip;
+  static const storage = FlutterSecureStorage(
+      aOptions: AndroidOptions(encryptedSharedPreferences: true));
+
   static int get id => _id;
 
   static set id(int value) {
@@ -22,14 +26,7 @@ class PEO {
 
   static Future<bool> createPEO(String description, int deptid) async {
     try {
-      const storage = FlutterSecureStorage(
-        aOptions: AndroidOptions(
-          encryptedSharedPreferences: true,
-        ),
-      );
-
       final accessToken = await storage.read(key: "access_token");
-      const ipAddress = MyApp.ip;
       final url = Uri.parse('$ipAddress:8000/api/peo');
       final response = await http.post(
         url,
@@ -51,10 +48,8 @@ class PEO {
       return false;
     }
   }
+
   static Future<List<dynamic>> fetchPEO() async {
-    final ipAddress = MyApp.ip;
-    const storage = FlutterSecureStorage(
-        aOptions: AndroidOptions(encryptedSharedPreferences: true));
     final accessToken = await storage.read(key: "access_token");
     final url = Uri.parse('$ipAddress:8000/api/peo');
     final response = await http.get(
@@ -79,8 +74,28 @@ class PEO {
     return null;
   }
 
+  static Future<bool> deletePEO(int peoId) async {
+    try {
+      final accessToken = await storage.read(key: "access_token");
 
+      final url = Uri.parse('$ipAddress:8000/api/peo/$peoId');
+      final response = await http.delete(
+        url,
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
 
-
-
+      if (response.statusCode == 204) {
+        print('PEO deleted successfully');
+        return true;
+      } else {
+        print('Failed to delete PEO. Status code: ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      print('Exception while deleting PEO: $e');
+      return false;
+    }
+  }
 }

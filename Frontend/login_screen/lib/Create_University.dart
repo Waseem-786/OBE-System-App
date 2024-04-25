@@ -21,10 +21,8 @@ class _Create_UniversityState extends State<Create_University> {
 
   final TextEditingController UniversityNameController =
       TextEditingController();
-
   final TextEditingController UniversityMissionController =
       TextEditingController();
-
   final TextEditingController UniversityVisionController =
       TextEditingController();
 
@@ -32,7 +30,7 @@ class _Create_UniversityState extends State<Create_University> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xffc19a6b),
+        backgroundColor: const Color(0xffc19a6b),
         title: Center(
           child: Text(
             'Create University',
@@ -42,58 +40,62 @@ class _Create_UniversityState extends State<Create_University> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Container(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              CustomTextFormField(
-                controller: UniversityNameController,
-                label: 'University Name',
-                hintText: 'Enter University Name',
-                borderColor: errorColor,
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              CustomTextFormField(
-                controller: UniversityMissionController,
-                label: 'University Mission',
-                hintText: 'Enter University Mission',
-                borderColor: errorColor,
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              CustomTextFormField(
-                controller: UniversityVisionController,
-                label: 'University Vision',
-                hintText: 'Enter University Vision',
-                borderColor: errorColor,
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Custom_Button(
-                onPressedFunction: () async {
-                  String UniversityName = UniversityNameController.text;
-                  String UniversityMission = UniversityMissionController.text;
-                  String UniversityVision = UniversityVisionController.text;
-                  if (UniversityName.isEmpty ||
-                      UniversityMission.isEmpty ||
-                      UniversityVision.isEmpty) {
-                    setState(() {
-                      colorMessage = Colors.red;
-                      errorColor = Colors.red;
-                      errorMessage = 'Please enter all fields';
-                    });
-                  } else {
-                    setState(() {
-                      isLoading = true;
-                    });
-                    bool created = await University.createUniversity(
-                        UniversityName, UniversityMission, UniversityVision);
-                    if (created) {
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            CustomTextFormField(
+              controller: UniversityNameController,
+              label: 'University Name',
+              hintText: 'Enter University Name',
+              borderColor: errorColor,
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            CustomTextFormField(
+              controller: UniversityMissionController,
+              label: 'University Mission',
+              hintText: 'Enter University Mission',
+              borderColor: errorColor,
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            CustomTextFormField(
+              controller: UniversityVisionController,
+              label: 'University Vision',
+              hintText: 'Enter University Vision',
+              borderColor: errorColor,
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            Custom_Button(
+              onPressedFunction: () async {
+                String UniversityName = UniversityNameController.text;
+                String UniversityMission = UniversityMissionController.text;
+                String UniversityVision = UniversityVisionController.text;
+                if (UniversityName.isEmpty ||
+                    UniversityMission.isEmpty ||
+                    UniversityVision.isEmpty) {
+                  setState(() {
+                    colorMessage = Colors.red;
+                    errorColor = Colors.red;
+                    errorMessage = 'Please enter all fields';
+                  });
+                } else {
+                  setState(() {
+                    isLoading = true;
+                  });
+                  bool created = await University.createUniversity(
+                      UniversityName, UniversityMission, UniversityVision);
+                  if (created) {
+                    //Clear all the fields
+                    UniversityNameController.clear();
+                    UniversityMissionController.clear();
+                    UniversityVisionController.clear();
+
                     setState(() {
                       isLoading = false;
                       colorMessage = Colors.green;
@@ -101,25 +103,24 @@ class _Create_UniversityState extends State<Create_University> {
                           Colors.black12; // Reset errorColor to default value
                       errorMessage = 'University Created successfully';
                     });
-                    }
                   }
-                },
-                ButtonText: 'Create University',
-                ButtonWidth: 200,
-              ),
-              SizedBox(height: 20),
-              Visibility(
-                visible: isLoading,
-                child: CircularProgressIndicator(),
-              ),
-              errorMessage != null
-                  ? Text(
-                      errorMessage!,
-                      style: CustomTextStyles.bodyStyle(color: colorMessage),
-                    )
-                  : SizedBox(),
-            ],
-          ),
+                }
+              },
+              ButtonText: 'Create University',
+              ButtonWidth: 200,
+            ),
+            const SizedBox(height: 20),
+            Visibility(
+              visible: isLoading,
+              child: const CircularProgressIndicator(),
+            ),
+            errorMessage != null
+                ? Text(
+                    errorMessage!,
+                    style: CustomTextStyles.bodyStyle(color: colorMessage),
+                  )
+                : const SizedBox(),
+          ],
         ),
       ),
     );

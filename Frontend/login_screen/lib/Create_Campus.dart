@@ -1,5 +1,3 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -8,7 +6,6 @@ import 'Campus.dart';
 import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
 import 'University.dart';
-import 'main.dart';
 
 class Create_Campus extends StatefulWidget {
   @override
@@ -27,7 +24,7 @@ class _Create_CampusState extends State<Create_Campus> {
       .black12; // color of border of text fields when the error is not occurred
 
   // for Encryption purpose
-  final storage = FlutterSecureStorage(
+  final storage = const FlutterSecureStorage(
     aOptions: AndroidOptions(
       encryptedSharedPreferences: true,
     ),
@@ -35,6 +32,7 @@ class _Create_CampusState extends State<Create_Campus> {
 
   @override
   void initState() {
+    super.initState();
     storage.read(key: "access_token").then((accessToken) {
       // show the users of that person(authority) who is logged in
       myToken = accessToken;
@@ -42,15 +40,14 @@ class _Create_CampusState extends State<Create_Campus> {
   }
 
   final TextEditingController CampusNameController = TextEditingController();
-
   final TextEditingController CampusMissionController = TextEditingController();
-
   final TextEditingController CampusVisionController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xffc19a6b),
+        backgroundColor: const Color(0xffc19a6b),
         title: Center(
           child: Text(
             'Campus Page',
@@ -60,84 +57,87 @@ class _Create_CampusState extends State<Create_Campus> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Container(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              CustomTextFormField(
-                controller: CampusNameController,
-                label: 'Campus Name',
-                hintText: 'Enter Campus Name',
-                borderColor: errorColor,
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              CustomTextFormField(
-                controller: CampusMissionController,
-                label: 'Campus Mission',
-                hintText: 'Enter Campus Mission',
-                borderColor: errorColor,
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              CustomTextFormField(
-                controller: CampusVisionController,
-                label: 'Campus Vision',
-                hintText: 'Enter Campus Vision',
-                borderColor: errorColor,
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Custom_Button(
-                onPressedFunction: () async {
-                  String CampusName = CampusNameController.text;
-                  String CampusMission = CampusMissionController.text;
-                  String CampusVision = CampusVisionController.text;
-                  if (CampusName.isEmpty ||
-                      CampusMission.isEmpty ||
-                      CampusVision.isEmpty) {
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            CustomTextFormField(
+              controller: CampusNameController,
+              label: 'Campus Name',
+              hintText: 'Enter Campus Name',
+              borderColor: errorColor,
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            CustomTextFormField(
+              controller: CampusMissionController,
+              label: 'Campus Mission',
+              hintText: 'Enter Campus Mission',
+              borderColor: errorColor,
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            CustomTextFormField(
+              controller: CampusVisionController,
+              label: 'Campus Vision',
+              hintText: 'Enter Campus Vision',
+              borderColor: errorColor,
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            Custom_Button(
+              onPressedFunction: () async {
+                String CampusName = CampusNameController.text;
+                String CampusMission = CampusMissionController.text;
+                String CampusVision = CampusVisionController.text;
+                if (CampusName.isEmpty ||
+                    CampusMission.isEmpty ||
+                    CampusVision.isEmpty) {
+                  setState(() {
+                    colorMessage = Colors.red;
+                    errorColor = Colors.red;
+                    errorMessage = 'Please enter all fields';
+                  });
+                } else {
+                  setState(() {
+                    isLoading = true;
+                  });
+                  bool created = await Campus.createCampus(
+                      CampusName, CampusMission, CampusVision, University_id);
+                  if (created) {
+                    // Clear the text fields
+                    CampusNameController.clear();
+                    CampusMissionController.clear();
+                    CampusVisionController.clear();
+
                     setState(() {
-                      colorMessage = Colors.red;
-                      errorColor = Colors.red;
-                      errorMessage = 'Please enter all fields';
+                      isLoading = false;
+                      colorMessage = Colors.green;
+                      errorColor =
+                          Colors.black12; // Reset errorColor to default value
+                      errorMessage = 'Campus Created successfully';
                     });
-                  } else {
-                    setState(() {
-                      isLoading = true;
-                    });
-                    bool created = await Campus.createCampus(
-                        CampusName, CampusMission, CampusVision, University_id);
-                    if (created) {
-                      setState(() {
-                        isLoading = false;
-                        colorMessage = Colors.green;
-                        errorColor =
-                            Colors.black12; // Reset errorColor to default value
-                        errorMessage = 'Campus Created successfully';
-                      });
-                    }
                   }
-                },
-                ButtonText: 'Create Campus',
-                ButtonWidth: 200,
-              ),
-              SizedBox(height: 20),
-              Visibility(
-                visible: isLoading,
-                child: CircularProgressIndicator(),
-              ),
-              errorMessage != null
-                  ? Text(
-                      errorMessage!,
-                      style: CustomTextStyles.bodyStyle(color: colorMessage),
-                    )
-                  : SizedBox(),
-            ],
-          ),
+                }
+              },
+              ButtonText: 'Create Campus',
+              ButtonWidth: 200,
+            ),
+            const SizedBox(height: 20),
+            Visibility(
+              visible: isLoading,
+              child: const CircularProgressIndicator(),
+            ),
+            errorMessage != null
+                ? Text(
+                    errorMessage!,
+                    style: CustomTextStyles.bodyStyle(color: colorMessage),
+                  )
+                : const SizedBox(),
+          ],
         ),
       ),
     );

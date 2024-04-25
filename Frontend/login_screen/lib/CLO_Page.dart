@@ -25,9 +25,9 @@ class _CLO_PageState extends State<CLO_Page> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xffc19a6b),
+        backgroundColor: const Color(0xffc19a6b),
         title: Container(
-          margin: EdgeInsets.only(left: 90),
+          margin: const EdgeInsets.only(left: 90),
           child: Text(
             "CLO Page",
             style: CustomTextStyles.headingStyle(fontSize: 20),
@@ -61,13 +61,22 @@ class _CLO_PageState extends State<CLO_Page> {
                             CLO.level = user['level'];
 
                             Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => CLO_Profile()),
-                            );
+                                context,
+                                MaterialPageRoute<bool>(
+                                  builder: (context) => CLO_Profile(),
+                                )).then((result) {
+                              if (result != null && result) {
+                                // Set the state of the page here
+                                setState(() {
+                                  cloFuture = CLO.fetchCLO();
+                                });
+                              }
+                            });
                           }
                         },
                         child: Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 10),
                           padding: const EdgeInsets.all(15),
                           decoration: BoxDecoration(
                             color: const Color(0xFFECECEC),
@@ -77,8 +86,9 @@ class _CLO_PageState extends State<CLO_Page> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                              'CLO-'+ (1 + index).toString(),
-                                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                'CLO-${1 + index}',
+                                style: const TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold),
                               ),
                               const Icon(
                                 Icons.info,

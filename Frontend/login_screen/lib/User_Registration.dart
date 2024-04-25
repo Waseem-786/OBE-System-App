@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'Department.dart';
 import 'University.dart';
 import 'Campus.dart';
@@ -18,33 +17,33 @@ class _User_RegistrationState extends State<User_Registration> {
   bool universitySelected = false;
   bool campusSelected = false;
   bool departmentSelected = false;
-  dynamic? selectedUniversityId;
-  dynamic? selectedCampusId;
-  dynamic? selectedDepartmentId;
+  dynamic selectedUniversityId;
+  dynamic selectedCampusId;
+  dynamic selectedDepartmentId;
 
   String? errorMessage;
   Color messageColor = Colors.red;
   var isLoading = false;
   Color borderColor = Colors.black12;
 
-  final TextEditingController FirstNameController = TextEditingController();
-  final TextEditingController LastNameController = TextEditingController();
-  final TextEditingController EmailController = TextEditingController();
-  final TextEditingController PasswordController = TextEditingController();
-  final TextEditingController ConfirmPasswordController = TextEditingController();
-  final TextEditingController UserName = TextEditingController();
-  final TextEditingController UniversityController = TextEditingController();
-  final TextEditingController CampusController = TextEditingController();
-  final TextEditingController RoleController = TextEditingController();
-  final TextEditingController DepartmentController = TextEditingController();
+  final TextEditingController firstNameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
+  final TextEditingController userNameController = TextEditingController();
+  final TextEditingController universityController = TextEditingController();
+  final TextEditingController campusController = TextEditingController();
+  final TextEditingController roleController = TextEditingController();
+  final TextEditingController departmentController = TextEditingController();
 
   bool _validateFields() {
-    if (FirstNameController.text.isEmpty ||
-        LastNameController.text.isEmpty ||
-        EmailController.text.isEmpty ||
-        PasswordController.text.isEmpty ||
-        ConfirmPasswordController.text.isEmpty ||
-        UserName.text.isEmpty) {
+    if (firstNameController.text.isEmpty ||
+        lastNameController.text.isEmpty ||
+        emailController.text.isEmpty ||
+        passwordController.text.isEmpty ||
+        confirmPasswordController.text.isEmpty ||
+        userNameController.text.isEmpty) {
       setState(() {
         errorMessage = 'Please fill in all required fields.';
         messageColor = Colors.red;
@@ -52,7 +51,7 @@ class _User_RegistrationState extends State<User_Registration> {
       return false;
     }
 
-    if (!EmailController.text.contains('@') || !EmailController.text.contains('.')) {
+    if (!emailController.text.contains('@') || !emailController.text.contains('.')) {
       setState(() {
         errorMessage = 'Please enter a valid email address.';
         messageColor = Colors.red;
@@ -61,7 +60,7 @@ class _User_RegistrationState extends State<User_Registration> {
     }
 
     // Password complexity validation using the provided regular expression
-    String password = PasswordController.text;
+    String password = passwordController.text;
     if (!RegExp(r'^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,}$').hasMatch(password)) {
       setState(() {
         errorMessage = 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character.';
@@ -70,16 +69,13 @@ class _User_RegistrationState extends State<User_Registration> {
       return false;
     }
 
-    if (PasswordController.text != ConfirmPasswordController.text) {
+    if (passwordController.text != confirmPasswordController.text) {
       setState(() {
         errorMessage = 'Passwords do not match.';
         messageColor = Colors.red;
       });
       return false;
     }
-
-
-
     return true;
   }
 
@@ -88,10 +84,10 @@ class _User_RegistrationState extends State<User_Registration> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xffc19a6b),
+        backgroundColor: const Color(0xffc19a6b),
         title: Container(
-          margin: EdgeInsets.only(left: 25),
-          child: Text(
+          margin: const EdgeInsets.only(left: 25),
+          child: const Text(
             'User Registration',
             style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Merri'),
           ),
@@ -104,119 +100,119 @@ class _User_RegistrationState extends State<User_Registration> {
         child: ListView(
           children: [
             Container(
-              margin: EdgeInsets.only(top: 70),
-              padding: EdgeInsets.all(16),
+              margin: const EdgeInsets.only(top: 70),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   CustomTextFormField(
-                    controller: FirstNameController,
+                    controller: firstNameController,
                     label: 'First Name',
                     hintText: 'Enter First Name',
                     borderColor: borderColor,
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   CustomTextFormField(
-                    controller: LastNameController,
+                    controller: lastNameController,
                     label: 'Last Name',
                     hintText: 'Enter Last Name',
                     borderColor: borderColor,
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   CustomTextFormField(
-                    controller: EmailController,
+                    controller: emailController,
                     label: 'Email',
                     hintText: 'Enter Email',
                     borderColor: borderColor,
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   CustomTextFormField(
-                    controller: PasswordController,
+                    controller: passwordController,
                     label: 'Password',
                     hintText: 'Enter Password',
                     borderColor: borderColor,
                     passField: true,
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   CustomTextFormField(
-                    controller: ConfirmPasswordController,
+                    controller: confirmPasswordController,
                     label: 'Confirm Password',
                     hintText: 'Enter Password Again',
                     borderColor: borderColor,
                     passField: true,
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   CustomTextFormField(
-                    controller: UserName,
+                    controller: userNameController,
                     label: 'User Name',
                     hintText: 'Enter Username',
                     borderColor: borderColor,
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   // University Dropdown
                   DropDown(
                     fetchData: University.fetchUniversities, // Fetch universities data asynchronously
                     hintText: "Select University",
                     label: "University",
-                    controller: UniversityController,
+                    controller: universityController,
                     selectedValue: selectedUniversityId,
-                    onValueChanged: (dynamic? id) {
+                    onValueChanged: (dynamic id) {
                       setState(() {
                         universitySelected = id != null;
                         selectedUniversityId = id;
                         campusSelected = false;
                         departmentSelected = false;
-                        CampusController.clear(); // Clear the Campus controller when University changes
-                        DepartmentController.clear(); // Clear the Department controller when University changes
+                        campusController.clear(); // Clear the Campus controller when University changes
+                        departmentController.clear(); // Clear the Department controller when University changes
                         selectedCampusId = null;
                         selectedDepartmentId = null;
                       });
                     },
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   // Campus Dropdown
                   if (universitySelected)
                     DropDown(
-                      fetchData: () => Campus.fetchCampusesByUniversityId(int.tryParse(UniversityController.text)!), // Fetch campuses asynchronously
+                      fetchData: () => Campus.fetchCampusesByUniversityId(int.tryParse(universityController.text)!), // Fetch campuses asynchronously
                       hintText: "Select Campus",
                       label: "Campus",
-                      controller: CampusController,
+                      controller: campusController,
                       selectedValue: selectedCampusId,
-                      onValueChanged: (dynamic? id) {
+                      onValueChanged: (dynamic id) {
                         setState(() {
                           campusSelected = id != null;
                           selectedCampusId = id;
                           departmentSelected = false;
-                          DepartmentController.clear(); // Clear the Department controller when Campus changes
+                          departmentController.clear(); // Clear the Department controller when Campus changes
                           selectedDepartmentId = null;
                         });
                       },
                     ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   // Department Dropdown
                   if (campusSelected)
                     DropDown(
-                      fetchData: () => Department.getDepartmentsbyCampusid(int.tryParse(CampusController.text)!), // Fetch departments asynchronously
+                      fetchData: () => Department.getDepartmentsbyCampusid(int.tryParse(campusController.text)!), // Fetch departments asynchronously
                       hintText: "Select department",
                       label: "department",
-                      controller: DepartmentController,
+                      controller: departmentController,
                       selectedValue: selectedDepartmentId,
-                      onValueChanged: (dynamic? id) {
+                      onValueChanged: (dynamic id) {
                         setState(() {
                           departmentSelected = id != null;
                           selectedDepartmentId = id;
                         });
                       },
                     ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   CustomTextFormField(
-                    controller: RoleController,
+                    controller: roleController,
                     label: 'User Role',
                     hintText: 'Enter Role',
                     borderColor: borderColor,
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Custom_Button(
                     onPressedFunction: () async {
                       setState(() {
@@ -230,15 +226,15 @@ class _User_RegistrationState extends State<User_Registration> {
                         return;
                       }
 
-                      String firstName = FirstNameController.text;
-                      String lastName = LastNameController.text;
-                      String email = EmailController.text;
-                      String password = PasswordController.text;
-                      String confirmPassword = ConfirmPasswordController.text;
-                      String userName = UserName.text;
-                      String? universityIdString = UniversityController.text.isNotEmpty ? UniversityController.text : null;
-                      String? campusIdString = CampusController.text.isNotEmpty ? CampusController.text : null;
-                      String? departmentIdString = DepartmentController.text.isNotEmpty ? DepartmentController.text : null;
+                      String firstName = firstNameController.text;
+                      String lastName = lastNameController.text;
+                      String email = emailController.text;
+                      String password = passwordController.text;
+                      String confirmPassword = confirmPasswordController.text;
+                      String userName = userNameController.text;
+                      String? universityIdString = universityController.text.isNotEmpty ? universityController.text : null;
+                      String? campusIdString = campusController.text.isNotEmpty ? campusController.text : null;
+                      String? departmentIdString = departmentController.text.isNotEmpty ? departmentController.text : null;
 
                       int? universityId = universityIdString != null ? int.tryParse(universityIdString) : null;
                       int? campusId = campusIdString != null ? int.tryParse(campusIdString) : null;
@@ -262,33 +258,33 @@ class _User_RegistrationState extends State<User_Registration> {
 
 
                           //Reset Fields
-                          FirstNameController.clear();
-                          LastNameController.clear();
-                          EmailController.clear();
-                          PasswordController.clear();
-                          ConfirmPasswordController.clear();
-                          UserName.clear();
-                          UniversityController.clear();
-                          CampusController.clear();
-                          DepartmentController.clear();
-                          RoleController.clear();
+                          firstNameController.clear();
+                          lastNameController.clear();
+                          emailController.clear();
+                          passwordController.clear();
+                          confirmPasswordController.clear();
+                          userNameController.clear();
+                          universityController.clear();
+                          campusController.clear();
+                          departmentController.clear();
+                          roleController.clear();
                         });
                       }
 
                     },
                     ButtonText: 'Register',
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Visibility(
                     visible: isLoading,
-                    child: CircularProgressIndicator(),
+                    child: const CircularProgressIndicator(),
                   ),
                   errorMessage != null
                       ? Text(
                     errorMessage!,
                     style: CustomTextStyles.bodyStyle(color: messageColor),
                   )
-                      : SizedBox(),
+                      : const SizedBox(),
                 ],
               ),
             )

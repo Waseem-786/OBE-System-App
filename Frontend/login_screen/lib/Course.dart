@@ -77,16 +77,15 @@ class Course {
   static set description(String? value) {
     _description = value;
   }
+
+  static const ipAddress = MyApp.ip;
+  static const storage = FlutterSecureStorage(
+      aOptions: AndroidOptions(encryptedSharedPreferences: true));
+
   static Future<bool> createCourse(String code, String title, int theoryCredits,int labCredits,String courseType,
       String reqElec, String preReq, String description) async {
     try {
-      const storage = FlutterSecureStorage(
-        aOptions: AndroidOptions(
-          encryptedSharedPreferences: true,
-        ),
-      );
       final accessToken = await storage.read(key: "access_token");
-      const ipAddress = MyApp.ip;
       final url = Uri.parse('$ipAddress:8000/api/course');
       final response = await http.post(
         url,
@@ -111,8 +110,6 @@ class Course {
         return true;
       } else {
         print('Failed to create Course. Status code: ${response.statusCode}');
-        print('Body: ${response.body}');
-
         return false;
       }
     } catch (e) {
@@ -120,10 +117,8 @@ class Course {
       return false;
     }
   }
+
   static Future<List<dynamic>> fetchCourses() async {
-    final ipAddress = MyApp.ip;
-    const storage = FlutterSecureStorage(
-        aOptions: AndroidOptions(encryptedSharedPreferences: true));
     final accessToken = await storage.read(key: "access_token");
     final url = Uri.parse('$ipAddress:8000/api/course');
     final response = await http.get(
@@ -138,14 +133,38 @@ class Course {
     }
   }
 
-  static Future<Map<String, dynamic>?> getCoursebyCode(String code) async {
+  static Future<Map<String, dynamic>?> getCoursebyId(int courseId) async {
     final courses = await fetchCourses();
     for (var course in courses) {
-      if (course['code'] == code) {
-        print(course);
+      if (course['id'] == courseId) {
         return course;
       }
     }
     return null;
+  }
+
+  static Future<bool> deleteCourse(int courseId) async {
+    try {
+      final accessToken = await storage.read(key: "access_token");
+
+      final url = Uri.parse('$ipAddress:8000/api/course/$courseId');
+      final response = await http.delete(
+        url,
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+
+      if (response.statusCode == 204) {
+        print('Course deleted successfully');
+        return true;
+      } else {
+        print('Failed to delete Course. Status code: ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      print('Exception while deleting Course: $e');
+      return false;
+    }
   }
 }

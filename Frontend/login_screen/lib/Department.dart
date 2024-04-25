@@ -10,6 +10,7 @@ class Department {
   static String _mission = '';
   static int _campus_id = 0;
   static String _campus_name = '';
+
   static const ipAddress = MyApp.ip;
   static const storage = FlutterSecureStorage(
     aOptions: AndroidOptions(
@@ -54,15 +55,10 @@ class Department {
     _campus_name = value;
   }
 
-  static Future<List<dynamic>> getDepartmentsbyCampusid(campus_id) async
+  static Future<List<dynamic>> getDepartmentsbyCampusid(campusId) async
   {
-    final storage = FlutterSecureStorage(
-      aOptions: AndroidOptions(
-        encryptedSharedPreferences: true,
-      ),
-    );
     final accessToken = await storage.read(key: "access_token");
-    final url = Uri.parse('$ipAddress:8000/api/campus/${campus_id}/department');
+    final url = Uri.parse('$ipAddress:8000/api/campus/$campusId/department');
     final response = await http.get(
       url,
       headers: {'Authorization': 'Bearer $accessToken'},
@@ -74,18 +70,6 @@ class Department {
       return [];
     }
   }
-  // static Future<Map<String, dynamic>?> getDepartmentById(int deptid, int campusid) async {
-  //   final departments = await getDepartmentsbyCampusid(campusid); // Assuming campusesFuture is a Future<List<dynamic>> containing campus data
-  //   if (departments != null) {
-  //     for (var department in departments) {
-  //       if (department['id'] == deptid) {
-  //         print(department);
-  //         return department;
-  //       }
-  //     }
-  //   }
-  //   return null;
-  // }
 
   static Future<Map<String, dynamic>?> getDepartmentById(int id) async {
     final accessToken = await storage.read(key: "access_token");
@@ -102,7 +86,7 @@ class Department {
       return {};
     }
   }
-  static Future<bool> createDepartment(String name, String mission, String vision,int campusid) async {
+  static Future<bool> createDepartment(String name, String mission, String vision,int campusId) async {
     try {
       final accessToken = await storage.read(key: "access_token");
       final url = Uri.parse('$ipAddress:8000/api/department');
@@ -116,7 +100,7 @@ class Department {
           'name': name,
           'mission': mission,
           'vision': vision,
-          'campus':campusid
+          'campus':campusId
         }),
       );
       if (response.statusCode == 201) {
@@ -130,6 +114,30 @@ class Department {
       }
     } catch (e) {
       print('Exception while creating Department: $e');
+      return false;
+    }
+  }
+
+  static Future<bool> deleteDepartment(int departmentId) async {
+    try {
+      final accessToken = await storage.read(key: "access_token");
+      final url = Uri.parse('$ipAddress:8000/api/department/$departmentId');
+      final response = await http.delete(
+        url,
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+
+      if (response.statusCode == 204) {
+        print('Department deleted successfully');
+        return true;
+      } else {
+        print('Failed to delete Department. Status code: ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      print('Exception while deleting Department: $e');
       return false;
     }
   }

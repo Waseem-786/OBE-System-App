@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:ui';
-import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'main.dart';
 import 'package:http/http.dart' as http;
@@ -45,36 +43,18 @@ class University {
 
 
   static  Future<List<dynamic>> fetchUniversities() async {
-    final ipAddress = MyApp.ip;
-    const storage = FlutterSecureStorage(
-      aOptions: AndroidOptions(
-        encryptedSharedPreferences: true,
-      ),
-    );
     final accessToken = await storage.read(key: "access_token");
     final url = Uri.parse('$ipAddress:8000/api/university');
     final response = await http.get(
       url,
       headers: {'Authorization': 'Bearer $accessToken'},
     );
-
     if (response.statusCode == 200) {
       return jsonDecode(response.body) as List<dynamic>;
     } else {
       throw Exception('Failed to load universities');
     }
   }
-
-  // static Future<Map<String, dynamic>?> getUniversityById(int id) async {
-  //   final universities = await fetchUniversities();
-  //   for (var university in universities) {
-  //     if (university['id'] == id) {
-  //       print(university);
-  //       return university;
-  //     }
-  //   }
-  //   return null;
-  // }
 
   static Future<Map<String, dynamic>?> getUniversityById(int id) async {
     final accessToken = await storage.read(key: "access_token");
@@ -127,4 +107,27 @@ class University {
     }
   }
 
+  static Future<bool> deleteUniversity(int universityId) async {
+    try {
+      final accessToken = await storage.read(key: "access_token");
+
+      final url = Uri.parse('$ipAddress:8000/api/university/$universityId');
+      final response = await http.delete(
+        url,
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+      if (response.statusCode == 204) {
+        print('University deleted successfully');
+        return true;
+      } else {
+        print('Failed to delete University. Status code: ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      print('Exception while deleting University: $e');
+      return false;
+    }
+  }
 }

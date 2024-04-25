@@ -26,7 +26,6 @@ class User_Management_State extends State<User_Management> {
   }
 
 
-
   // function to get user's data by passing email
   Map<String, dynamic>? getUserByEmail(String email) {
     if (responseData != null) {
@@ -41,12 +40,11 @@ class User_Management_State extends State<User_Management> {
     return null;
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xffc19a6b),
+        backgroundColor: const Color(0xffc19a6b),
         title: Center(
           child: Text(
             'User Management',
@@ -63,7 +61,7 @@ class User_Management_State extends State<User_Management> {
         future: _getAllUsers(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else {
@@ -84,20 +82,20 @@ class User_Management_State extends State<User_Management> {
                           child: Card(
                             color: Colors.white,
                             elevation: 5,
-                            child: Container(
+                            child: SizedBox(
                               height: 100,
                               child: ListTile(
-                                contentPadding: EdgeInsets.symmetric(
+                                contentPadding: const EdgeInsets.symmetric(
                                     vertical: 10, horizontal: 10),
                                 leading: CircleAvatar(
+                                  radius: 30,
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(25),
                                     child: Image.asset("assets/images/sd.jpg"),
                                   ),
-                                  radius: 30,
                                 ),
-                                trailing: Padding(
-                                  padding: const EdgeInsets.all(18.0),
+                                trailing: const Padding(
+                                  padding: EdgeInsets.all(18.0),
                                   child: Icon(Icons.edit_square),
                                 ),
                                 title: Text(
@@ -116,11 +114,17 @@ class User_Management_State extends State<User_Management> {
                                       responseData[index]['email']);
                                   if (user != null) {
                                     Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              User_Profile(user_data: user)),
-                                    );
+                                        context,
+                                        MaterialPageRoute<bool>(
+                                          builder: (context) => User_Profile(user_data: user),
+                                        )).then((result) {
+                                      if (result != null && result) {
+                                        // Set the state of the page here
+                                        setState(() {
+                                          _getAllUsers();
+                                        });
+                                      }
+                                    });
                                   }
                                 },
                               ),
@@ -130,7 +134,7 @@ class User_Management_State extends State<User_Management> {
                       },
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                   Custom_Button(
@@ -140,8 +144,8 @@ class User_Management_State extends State<User_Management> {
                           MaterialPageRoute(
                               builder: (context) => User_Registration()));
                     },
-                    ButtonText: 'Add',
-                    ButtonWidth: 100,
+                    ButtonText: 'Add User',
+                    ButtonWidth: 120,
                   )
                 ],
               ),

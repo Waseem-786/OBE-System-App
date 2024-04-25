@@ -1,13 +1,9 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:login_screen/Course.dart';
 import 'package:login_screen/Course_Profile.dart';
 import 'package:login_screen/Create_Course.dart';
-import 'package:http/http.dart' as http;
 import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
-import 'main.dart';
 
 class Course_Page extends StatefulWidget {
   const Course_Page({super.key});
@@ -25,11 +21,8 @@ class Course_PageState extends State<Course_Page> {
     coursesFuture = Course.fetchCourses();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xffc19a6b),
@@ -75,8 +68,7 @@ class Course_PageState extends State<Course_Page> {
                                   onTap: () async {
                                     // call of a function to get the data of that course whose id is passed and id is
                                     // passed by tapping the user
-                                    var user = await Course.getCoursebyCode(
-                                        courses[index]['code']);
+                                    var user = await Course.getCoursebyId(courses[index]['id']);
                                     if (user != null) {
                                       Course.id = user['id'];
                                       Course.code = user['code'];
@@ -93,9 +85,16 @@ class Course_PageState extends State<Course_Page> {
 
                                       Navigator.push(
                                           context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  Course_Profile()));
+                                          MaterialPageRoute<bool>(
+                                            builder: (context) => Course_Profile(),
+                                          )).then((result) {
+                                        if (result != null && result) {
+                                          // Set the state of the page here
+                                          setState(() {
+                                            coursesFuture = Course.fetchCourses();
+                                          });
+                                        }
+                                      });
                                     }
                                   },
                                 ),

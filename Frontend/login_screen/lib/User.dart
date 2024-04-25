@@ -1,7 +1,5 @@
 import 'dart:convert';
-import 'dart:ui';
-
-import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:login_screen/Token.dart';
 import 'package:http/http.dart' as http;
 import 'main.dart';
@@ -20,7 +18,12 @@ class User {
   static String _departmentName = '';
   static bool _isSuperUser = false;
 
-  static String ipAddress = MyApp.ip;
+  static const ipAddress = MyApp.ip;
+  static const storage = FlutterSecureStorage(
+    aOptions: AndroidOptions(
+      encryptedSharedPreferences: true,
+    ),
+  );
 
   static int get id => _id;
 
@@ -135,8 +138,6 @@ class User {
       print("Something went wrong. Server Error");
       print(e);
     }
-
-
   }
 
   static void SetUserData(var responseData) {
@@ -211,7 +212,6 @@ class User {
           'Content-Type': 'application/json',
         },
       );
-
       if (response.statusCode == 201) {
         message = 'Registration successful';
         // You can navigate to another screen or show a success message here
@@ -219,7 +219,7 @@ class User {
         message = response.body;
       }
       else {
-        message = 'Failed create user ${response.body}';
+        message = 'Failed to create user ${response.body}';
       }
     } catch (e) {
       // Handle any errors that occurred during the request
@@ -227,6 +227,29 @@ class User {
     }
 
     return message;
+  }
+
+  static Future<bool> deleteUser(int userId) async {
+    try {
+      final accessToken = await storage.read(key: "access_token");
+      final url = Uri.parse('$ipAddress:8000/auth/user/$userId');
+      final response = await http.delete(
+        url,
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+      if (response.statusCode == 204) {
+        print('User deleted successfully');
+        return true;
+      } else {
+        print('Failed to delete User. Status code: ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      print('Exception while deleting User: $e');
+      return false;
+    }
   }
 
 }

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:login_screen/Campus.dart';
 import 'package:login_screen/Department_Page.dart';
@@ -107,7 +106,7 @@ class _Campus_ProfileState extends State<Campus_Profile> {
                   // If user confirms deletion, proceed with deletion
                   if (confirmDelete) {
                     isLoading = true;
-                    bool deleted = await Campus.deleteCampus(Campus.id);
+                    bool deleted = await Campus.deleteCampus(campus_id);
                     if (deleted) {
                       setState(() {
                         isLoading = false;
