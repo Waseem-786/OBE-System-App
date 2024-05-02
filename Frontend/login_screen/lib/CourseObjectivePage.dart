@@ -109,12 +109,7 @@ class _CourseObjectiveState extends State<CourseObjectivePage> {
                   )
                       : const SizedBox(),
 
-                  Custom_Button(onPressedFunction: (){
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => CourseDashboard()),
-                    );
-                  },ButtonText: 'Show Dashboard',)
+
 
 
                 ],

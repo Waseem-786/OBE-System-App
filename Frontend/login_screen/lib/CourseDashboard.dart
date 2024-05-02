@@ -41,7 +41,7 @@ class _CourseDashboardState extends State<CourseDashboard> {
   ];
 
   List<String> screenNames = [
-    'Program_Management',
+    'Objective_Page',
     'Batch_Management',
     'Course_Page',
     'CLO_Page',

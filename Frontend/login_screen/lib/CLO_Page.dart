@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:login_screen/CLO.dart';
 import 'package:login_screen/CLO_Profile.dart';
+import 'package:login_screen/Course.dart';
 
 import 'Create_CLO.dart';
 import 'Custom_Widgets/Custom_Button.dart';
@@ -15,10 +16,11 @@ class CLO_Page extends StatefulWidget {
 class _CLO_PageState extends State<CLO_Page> {
   late Future<List<dynamic>> cloFuture;
 
+
   @override
   void initState() {
     super.initState();
-    cloFuture = CLO.fetchCLO();
+    cloFuture = CLO.fetchCLO(Course.id);
   }
 
   @override
@@ -29,7 +31,7 @@ class _CLO_PageState extends State<CLO_Page> {
     if (currentRoute != null && currentRoute.isCurrent) {
       // Call your refresh function here
       setState(() {
-        cloFuture = CLO.fetchCLO();
+        cloFuture = CLO.fetchCLO(Course.id);
       });
     }
   }
@@ -81,7 +83,7 @@ class _CLO_PageState extends State<CLO_Page> {
                               if (result != null && result) {
                                 // Set the state of the page here
                                 setState(() {
-                                  cloFuture = CLO.fetchCLO();
+                                  cloFuture = CLO.fetchCLO(Course.id);
                                 });
                               }
                             });
