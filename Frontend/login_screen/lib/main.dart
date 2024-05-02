@@ -3,6 +3,7 @@ import 'package:login_screen/Approval_Process.dart';
 import 'package:login_screen/Assessments.dart';
 import 'package:login_screen/Batch_Management.dart';
 import 'package:login_screen/Campus_Page.dart';
+import 'package:login_screen/CourseObjectivePage.dart';
 import 'package:login_screen/Course_Page.dart';
 import 'package:login_screen/Department_Page.dart';
 import 'package:login_screen/Program_Management.dart';
@@ -19,7 +20,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  static const String ip = 'http://192.168.0.105';
+  static const String ip = 'http://192.168.0.108';
 
   const MyApp({super.key});
 
@@ -45,6 +46,7 @@ class MyApp extends StatelessWidget {
         '/Assessments': (context) => Assessments(),
         '/User_Management': (context) => User_Management(),
         '/University_Page': (context) => University_Page(),
+        '/Objective_Page': (context) => CourseObjectivePage(),
       },
     );
   }
