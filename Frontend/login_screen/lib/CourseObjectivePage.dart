@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:login_screen/CourseDashboard.dart';
 import 'package:login_screen/CourseObjective.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Button.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Style.dart';
@@ -107,6 +108,13 @@ class _CourseObjectiveState extends State<CourseObjectivePage> {
                     style: CustomTextStyles.bodyStyle(color: colorMessage),
                   )
                       : const SizedBox(),
+
+                  Custom_Button(onPressedFunction: (){
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => CourseDashboard()),
+                    );
+                  },ButtonText: 'Show Dashboard',)
 
 
                 ],
