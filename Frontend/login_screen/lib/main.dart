@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:login_screen/Approval_Process.dart';
 import 'package:login_screen/Assessments.dart';
 import 'package:login_screen/Batch_Management.dart';
+import 'package:login_screen/CLO_Page.dart';
 import 'package:login_screen/Campus_Page.dart';
-import 'package:login_screen/Course_Assessment_Page.dart';
+import 'package:login_screen/CourseObjectivePage.dart';
 import 'package:login_screen/Course_Page.dart';
 import 'package:login_screen/Department_Page.dart';
 import 'package:login_screen/Program_Management.dart';
@@ -40,12 +41,14 @@ class MyApp extends StatelessWidget {
         '/Program_Management': (context) => Program_Management(),
         '/PLO': (context) => PLO_Page(),
         '/PEO': (context) => PEO_Page(),
-        '/Batch_Management': (context) => Course_Assessment_Page(), // Batch_Management()
+        '/Batch_Management': (context) => Batch_Management(),
         '/Course_Page': (context) => Course_Page(),
         '/Approval_Process': (context) => Approval_Process(),
         '/Assessments': (context) => Assessments(),
         '/User_Management': (context) => User_Management(),
         '/University_Page': (context) => University_Page(),
+        '/Objective_Page': (context) => CourseObjectivePage(),
+        '/CLO_Page': (context) => CLO_Page(),
       },
     );
   }

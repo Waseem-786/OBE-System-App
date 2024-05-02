@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'Course.dart';
 import 'main.dart';
 
 class CLO {
@@ -76,9 +77,9 @@ class CLO {
     }
   }
 
-  static Future<List<dynamic>> fetchCLO() async {
+  static Future<List<dynamic>> fetchCLO(int CourseId) async {
     final accessToken = await storage.read(key: "access_token");
-    final url = Uri.parse('$ipAddress:8000/api/clo');
+    final url = Uri.parse('$ipAddress:8000/api/course/${CourseId}/clo');
     final response = await http.get(
       url,
       headers: {'Authorization': 'Bearer $accessToken'},
@@ -92,13 +93,22 @@ class CLO {
   }
 
   static Future<Map<String, dynamic>?> getCLObyCLOId(int CLO_id) async {
-    final clos = await fetchCLO();
-    for (var clo in clos) {
-      if (clo['id'] == CLO_id) {
-        return clo;
-      }
+    final accessToken = await storage.read(key: "access_token");
+    final url = Uri.parse('$ipAddress:8000/api/clo/$CLO_id');
+    final response = await http.get(
+      url,
+      headers: {'Authorization': 'Bearer $accessToken'},
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body) as Map<String, dynamic>;
+    } else if (response.statusCode == 404) {
+      // Return null if the CLO with the given ID does not exist
+      return null;
+    } else {
+      // Throw an exception for any other error status code
+      throw Exception('Failed to fetch CLO with ID $CLO_id');
     }
-    return null;
   }
 
   static Future<bool> deleteCLO(int cloId) async {

@@ -36,6 +36,7 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
         'Assessments',
         'User Management',
         'University',
+
       ];
       icons = [
         FontAwesomeIcons.cogs,
@@ -45,6 +46,7 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
         FontAwesomeIcons.poll,
         FontAwesomeIcons.users,
         FontAwesomeIcons.landmark,
+
       ];
 
       screenNames = [
@@ -55,6 +57,7 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
         'Assessments',
         'User_Management',
         'University_Page',
+
       ];
       _setUniversityData();
     } else if (User.iscampusLevel()) {
