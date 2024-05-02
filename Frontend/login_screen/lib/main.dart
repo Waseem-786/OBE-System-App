@@ -5,6 +5,7 @@ import 'package:login_screen/Batch_Management.dart';
 import 'package:login_screen/CLO_Page.dart';
 import 'package:login_screen/Campus_Page.dart';
 import 'package:login_screen/CourseObjectivePage.dart';
+import 'package:login_screen/Course_Assessment_Page.dart';
 import 'package:login_screen/Course_Page.dart';
 import 'package:login_screen/Department_Page.dart';
 import 'package:login_screen/Program_Management.dart';
@@ -49,6 +50,8 @@ class MyApp extends StatelessWidget {
         '/University_Page': (context) => University_Page(),
         '/Objective_Page': (context) => CourseObjectivePage(),
         '/CLO_Page': (context) => CLO_Page(),
+        '/Course_Assessment_Page': (context) => Course_Assessment_Page(),
+
       },
     );
   }
