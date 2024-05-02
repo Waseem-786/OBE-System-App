@@ -76,9 +76,9 @@ class CLO {
     }
   }
 
-  static Future<List<dynamic>> fetchCLO() async {
+  static Future<List<dynamic>> fetchCLO(int CourseId) async {
     final accessToken = await storage.read(key: "access_token");
-    final url = Uri.parse('$ipAddress:8000/api/clo');
+    final url = Uri.parse('$ipAddress:8000/api/course/${CourseId}/clo');
     final response = await http.get(
       url,
       headers: {'Authorization': 'Bearer $accessToken'},

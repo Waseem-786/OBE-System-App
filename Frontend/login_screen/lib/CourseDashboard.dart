@@ -44,7 +44,7 @@ class _CourseDashboardState extends State<CourseDashboard> {
     'Program_Management',
     'Batch_Management',
     'Course_Page',
-    'Approval_Process',
+    'CLO_Page',
     'Assessments',
     'User_Management',
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:login_screen/Approval_Process.dart';
 import 'package:login_screen/Assessments.dart';
 import 'package:login_screen/Batch_Management.dart';
+import 'package:login_screen/CLO_Page.dart';
 import 'package:login_screen/Campus_Page.dart';
 import 'package:login_screen/CourseObjectivePage.dart';
 import 'package:login_screen/Course_Page.dart';
@@ -47,6 +48,7 @@ class MyApp extends StatelessWidget {
         '/User_Management': (context) => User_Management(),
         '/University_Page': (context) => University_Page(),
         '/Objective_Page': (context) => CourseObjectivePage(),
+        '/CLO_Page': (context) => CLO_Page(),
       },
     );
   }
