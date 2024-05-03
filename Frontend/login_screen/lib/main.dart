@@ -5,7 +5,7 @@ import 'package:login_screen/Batch_Management.dart';
 import 'package:login_screen/CLO_Page.dart';
 import 'package:login_screen/Campus_Page.dart';
 import 'package:login_screen/CreateCourseObjective.dart';
-import 'package:login_screen/Course_Assessment_Page.dart';
+import 'package:login_screen/Create_Course_Assessment_Page.dart';
 import 'package:login_screen/Course_Page.dart';
 import 'package:login_screen/Department_Page.dart';
 import 'package:login_screen/Program_Management.dart';

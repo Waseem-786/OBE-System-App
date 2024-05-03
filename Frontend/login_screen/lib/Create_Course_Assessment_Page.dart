@@ -61,6 +61,7 @@ class _Create_Course_Assessment_PageState extends State<Create_Course_Assessment
                         controller: countController,
                         hintText: 'Enter  Count',
                         label: 'Enter Count',
+                        Keyboard_Type: TextInputType.number,
                       ),
                       const SizedBox(
                         height: 20,
