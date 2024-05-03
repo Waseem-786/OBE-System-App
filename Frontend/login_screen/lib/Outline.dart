@@ -161,7 +161,7 @@ class Outline
       return false;
     }
   }
-  static  Future<List<dynamic>> fetchSingleOutline(int id) async {
+  static  Future<Map<String, dynamic>?> fetchSingleOutline(int id) async {
     final accessToken = await storage.read(key: "access_token");
     final url = Uri.parse('$ipAddress:8000/api/outline/$id');
     final response = await http.get(
@@ -170,10 +170,10 @@ class Outline
     );
     if (response.statusCode == 200) {
       print(response.body);
-      return jsonDecode(response.body) as List<dynamic>;
+      return jsonDecode(response.body);
     } else {
       print('Failed to load Outline');
-      return [];
+      return {};
     }
   }
 

@@ -70,6 +70,7 @@ class _Create_Course_Assessment_PageState extends State<Create_Course_Assessment
                         controller: weightController,
                         hintText: 'Enter Weightage',
                         label: 'Enter Weightage',
+                        Keyboard_Type: TextInputType.number,
                       ),
                       const SizedBox(
                         height: 20,
@@ -78,6 +79,7 @@ class _Create_Course_Assessment_PageState extends State<Create_Course_Assessment
                         controller: course_outlineController,
                         hintText: 'Enter Course Outline id',
                         label: 'Enter Course Outline id',
+                        Keyboard_Type: TextInputType.number,
                       ),
                       const SizedBox(
                         height: 20,
@@ -86,6 +88,7 @@ class _Create_Course_Assessment_PageState extends State<Create_Course_Assessment
                         controller: closController,
                         hintText: '1,2,3,...',
                         label: 'Enter CLOs number',
+                        Keyboard_Type: TextInputType.number,
                       ),
                       const SizedBox(
                         height: 20,
