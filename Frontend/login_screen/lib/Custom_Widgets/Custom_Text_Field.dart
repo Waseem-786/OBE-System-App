@@ -10,6 +10,7 @@ class CustomTextFormField extends StatelessWidget {
   final String? hintText;
   final Color? borderColor;
   final bool? passField;
+  final TextInputType?  Keyboard_Type;
 
   const CustomTextFormField({
     Key? key,
@@ -18,7 +19,8 @@ class CustomTextFormField extends StatelessWidget {
     this.label,
     this.hintText,
     this.borderColor,
-    this.passField
+    this.passField,
+    this.Keyboard_Type
 
   }) : super(key: key);
 
@@ -57,6 +59,7 @@ class CustomTextFormField extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
         ),
       ),
+      keyboardType: Keyboard_Type,
     );
   }
 }

@@ -1,17 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:login_screen/Course_Assessment.dart';
-import 'Custom_Widgets/DropDown.dart';
 import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Field.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
 
-class Course_Assessment_Page extends StatefulWidget {
+class Create_Course_Assessment_Page extends StatefulWidget {
   @override
-  State<Course_Assessment_Page> createState() => _Course_Assessment_PageState();
+  State<Create_Course_Assessment_Page> createState() => _Create_Course_Assessment_PageState();
 }
 
-class _Course_Assessment_PageState extends State<Course_Assessment_Page> {
+class _Create_Course_Assessment_PageState extends State<Create_Course_Assessment_Page> {
   @override
   // void initState() {
   //   // TODO: implement initState
@@ -30,7 +29,7 @@ class _Course_Assessment_PageState extends State<Course_Assessment_Page> {
   final TextEditingController countController = TextEditingController();
   final TextEditingController weightController = TextEditingController();
   final TextEditingController course_outlineController =
-      TextEditingController();
+  TextEditingController();
   final TextEditingController closController = TextEditingController();
 
   @override
@@ -38,7 +37,7 @@ class _Course_Assessment_PageState extends State<Course_Assessment_Page> {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: const Color(0xffc19a6b),
-          title: Text('Course Assessment Page',
+          title: Text('Create Course Assessment Page',
               style: CustomTextStyles.headingStyle(fontSize: 22)),
         ),
         body: Container(
@@ -95,9 +94,9 @@ class _Course_Assessment_PageState extends State<Course_Assessment_Page> {
                           String name = nameController.text;
                           int? count = int.tryParse(countController.text);
                           double? weight =
-                              double.tryParse(weightController.text);
+                          double.tryParse(weightController.text);
                           int? course_outline_id =
-                              int.tryParse(course_outlineController.text);
+                          int.tryParse(course_outlineController.text);
                           List<int?> clo = closController.text
                               .split(',')
                               .map((e) => int.tryParse(e.trim()))
@@ -118,12 +117,12 @@ class _Course_Assessment_PageState extends State<Course_Assessment_Page> {
                               isLoading = true;
                             });
                             bool created =
-                                await Course_Assessment.createCourseAssessment(
-                                    name,
-                                    count,
-                                    weight,
-                                    course_outline_id,
-                                    clo);
+                            await Course_Assessment.createCourseAssessment(
+                                name,
+                                count,
+                                weight,
+                                course_outline_id,
+                                clo);
                             if (created) {
                               nameController.clear();
                               countController.clear();
@@ -137,7 +136,7 @@ class _Course_Assessment_PageState extends State<Course_Assessment_Page> {
                                 errorColor = Colors
                                     .black12; // Reset errorColor to default value
                                 errorMessage =
-                                    'Course Assessment Created successfully';
+                                'Course Assessment Created successfully';
                               });
                             }
                           }
@@ -152,10 +151,10 @@ class _Course_Assessment_PageState extends State<Course_Assessment_Page> {
                       ),
                       errorMessage != null
                           ? Text(
-                              errorMessage!,
-                              style: CustomTextStyles.bodyStyle(
-                                  color: colorMessage),
-                            )
+                        errorMessage!,
+                        style: CustomTextStyles.bodyStyle(
+                            color: colorMessage),
+                      )
                           : const SizedBox(),
                     ],
                   ),

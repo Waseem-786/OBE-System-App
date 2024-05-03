@@ -51,7 +51,7 @@ class MyApp extends StatelessWidget {
         '/University_Page': (context) => University_Page(),
         '/Objective_Page': (context) => CourseObjectivePage(),
         '/CLO_Page': (context) => CLO_Page(),
-        '/Course_Assessment_Page': (context) => Course_Assessment_Page(),
+        '/Create_Course_Assessment_Page': (context) => Create_Course_Assessment_Page(),
 
       },
     );

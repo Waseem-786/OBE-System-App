@@ -158,7 +158,7 @@ class User_Management_State extends State<User_Management> {
                               builder: (context) => User_Registration()));
                     },
                     ButtonText: 'Add User',
-                    ButtonWidth: 120,
+                    ButtonWidth: 140,
                   )
                 ],
               ),
