@@ -1,0 +1,31 @@
+university --> get, post, delete--> SuperUser
+university --> retrieve, put, patch --> UserUniversity
+
+campus --> get, post, delete--> UniversityAdmin
+campus --> retrieve, put, patch --> UserCampus
+
+department --> get, post, delete--> CampusAdmin
+department --> retrieve, put, patch --> UserDepartment
+
+batch --> get, post, delete--> DepartmentAdmin
+batch --> retrieve, put, patch --> UserDepartment
+
+Section --> get, post, delete--> DepartmentAdmin
+Section --> retrieve, put, patch --> UserDepartment
+
+
+
+UniversityAdmin:
+	Checks User belongs to UniversityAdmin Group
+UserUniversity:
+	Checks User belongs to university which is being requested by User
+
+CampusAdmin:
+	Checks User belongs to CampusAdmin Group
+UserCampus:
+	Checks User belongs to campus which is being requested by User
+
+DepartmentAdmin:
+	Checks User belongs to DepartmentAdmin Group
+UserDepartment:
+	Checks User belongs to department which is being requested by User

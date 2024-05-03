@@ -12,6 +12,8 @@ djoser = "==2.2.2"
 pymongo = "==3.12.3"
 django-cors-headers = "*"
 pytz = "*"
+nltk = "*"
+spacy = "*"
 
 [dev-packages]
 
