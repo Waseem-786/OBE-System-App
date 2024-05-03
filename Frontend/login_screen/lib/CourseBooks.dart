@@ -77,8 +77,37 @@ class CourseBooks {
     }
   }
 
+  static  Future<List<dynamic>> fetchBooksByOutlineId(int outline_id) async {
+    final accessToken = await storage.read(key: "access_token");
+    final url = Uri.parse('$ipAddress:8000/api/outline/$outline_id/book');
+    final response = await http.get(
+      url,
+      headers: {'Authorization': 'Bearer $accessToken'},
+    );
+    print(response.body);
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      print('Failed to load Outline');
+      return [];
+    }
+  }
 
-
+  static  Future<Map<String, dynamic>?> getBookbyId(int id) async {
+    final accessToken = await storage.read(key: "access_token");
+    final url = Uri.parse('$ipAddress:8000/api/book/$id');
+    final response = await http.get(
+      url,
+      headers: {'Authorization': 'Bearer $accessToken'},
+    );
+    if (response.statusCode == 200) {
+      print(response.body);
+      return jsonDecode(response.body);
+    } else {
+      print('Failed to load Course Assessment');
+      return {};
+    }
+  }
 
 }
 
