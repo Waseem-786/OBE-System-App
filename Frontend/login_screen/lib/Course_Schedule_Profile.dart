@@ -42,51 +42,67 @@ class CourseScheduleProfileState extends State<CourseScheduleProfile>{
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xffc19a6b),
-        title: Text('Course Schedule Profile',
+        title: Text(
+          'Course Schedule Profile',
           style: CustomTextStyles.headingStyle(fontSize: 20),
         ),
       ),
-        body: Column(
-          children: [
-            SingleChildScrollView(
-              child: Container(
-                height: 500,
-                color: Colors.grey.shade200,
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // Title for course schedule section.
-                        Text("Course Schedule",
-                            style: CustomTextStyles.headingStyle()),
-                        const SizedBox(height: 10),
-                        // calling of the _buildCourseScheduleInfoCards() for every field of course schedule data that will be stored on the card
-                        ..._buildCourseScheduleInfoCards(), // Spread operator (...) to unpack the list of course schedule info cards into children.
-                      ],
-                    ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          SingleChildScrollView(
+            child: Container(
+              height: 500,
+              color: Colors.grey.shade200,
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Title for course schedule section.
+                      Text("Course Schedule", style: CustomTextStyles.headingStyle()),
+                      const SizedBox(height: 10),
+                      FutureBuilder<List<Widget>>(
+                        future: _buildCourseScheduleInfoCards(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return const CircularProgressIndicator();
+                          } else {
+                            if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            } else {
+                              return Column(
+                                children: snapshot.data ?? [],
+                              );
+                            }
+                          }
+                        },
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
-            Visibility(
-              visible: isLoading,
-              child: const CircularProgressIndicator(),
-            ),
-            errorMessage != null
-                ? Text(
-              errorMessage!,
-              style: CustomTextStyles.bodyStyle(color: colorMessage),
-            )
-                : const SizedBox()
-          ],
-        )
+          ),
+          Visibility(
+            visible: isLoading,
+            child: const CircularProgressIndicator(),
+          ),
+          errorMessage != null
+              ? Text(
+            errorMessage!,
+            style: CustomTextStyles.bodyStyle(color: colorMessage),
+          )
+              : const SizedBox(),
+        ],
+      ),
     );
   }
 
-  List<Widget> _buildCourseScheduleInfoCards() {
-    setCourseScheduleData();
+
+  Future<List<Widget>> _buildCourseScheduleInfoCards() async {
+    await setCourseScheduleData();
     return [
       _buildCourseScheduleDetailCard("Lecture Hours per Week", Course_Schedule.lecture_hours_per_week.toString()),
       _buildCourseScheduleDetailCard("Lab Hours per Week", Course_Schedule.lab_hours_per_week.toString()),
