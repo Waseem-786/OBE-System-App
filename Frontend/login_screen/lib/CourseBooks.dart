@@ -84,7 +84,6 @@ class CourseBooks {
       url,
       headers: {'Authorization': 'Bearer $accessToken'},
     );
-    print(response.body);
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
@@ -108,6 +107,34 @@ class CourseBooks {
       return {};
     }
   }
+
+
+  static Future<bool> deleteBook(int bookId) async {
+    try {
+      final accessToken = await storage.read(key: "access_token");
+      final url = Uri.parse('$ipAddress:8000/api/book/$bookId');
+      final response = await http.delete(
+        url,
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+
+      if (response.statusCode == 204) {
+        print('Book deleted successfully');
+        return true;
+      } else {
+        print('Failed to delete Book. Status code: ${response
+            .statusCode}');
+        return false;
+      }
+    } catch (e) {
+      print('Exception while deleting Book: $e');
+      return false;
+    }
+  }
+
+
 
 }
 
