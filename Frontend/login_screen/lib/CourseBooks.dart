@@ -100,10 +100,9 @@ class CourseBooks {
       headers: {'Authorization': 'Bearer $accessToken'},
     );
     if (response.statusCode == 200) {
-      print(response.body);
       return jsonDecode(response.body);
     } else {
-      print('Failed to load Course Assessment');
+      print('Failed to load Book');
       return {};
     }
   }
@@ -121,11 +120,8 @@ class CourseBooks {
       );
 
       if (response.statusCode == 204) {
-        print('Book deleted successfully');
         return true;
       } else {
-        print('Failed to delete Book. Status code: ${response
-            .statusCode}');
         return false;
       }
     } catch (e) {

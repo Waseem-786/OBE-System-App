@@ -87,8 +87,7 @@ class CourseObjective {
       // Return null if the CLO with the given ID does not exist
       return null;
     } else {
-      // Throw an exception for any other error status code
-      throw Exception('Failed to fetch Objective with ID $ObjectiveId');
+      return {};
     }
   }
 
@@ -106,11 +105,8 @@ class CourseObjective {
       );
 
       if (response.statusCode == 204) {
-        print('Objective deleted successfully');
         return true;
       } else {
-        print('Failed to delete Objective. Status code: ${response
-            .statusCode}');
         return false;
       }
     } catch (e) {
