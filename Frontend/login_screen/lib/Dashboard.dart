@@ -95,8 +95,10 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
       headings = [
         'PLO',
         'PEO',
+        'Batch Management',
       ];
       icons = [
+        FontAwesomeIcons.calendarAlt,
         FontAwesomeIcons.calendarAlt,
         FontAwesomeIcons.calendarAlt,
       ];
@@ -104,6 +106,7 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
       screenNames = [
         'PLO',
         'PEO',
+        'Batch_Management'
       ];
       _setUniversityData();
       _setCampusData();

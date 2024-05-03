@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:login_screen/Approval_Process.dart';
 import 'package:login_screen/Assessments.dart';
+import 'package:login_screen/BatchPage.dart';
 import 'package:login_screen/Batch_Management.dart';
 import 'package:login_screen/CLO_Page.dart';
 import 'package:login_screen/Campus_Page.dart';
@@ -48,7 +49,7 @@ class MyApp extends StatelessWidget {
         '/Program_Management': (context) => Program_Management(),
         '/PLO': (context) => PLO_Page(),
         '/PEO': (context) => PEO_Page(),
-        '/Batch_Management': (context) => Batch_Management(),
+        '/Batch_Management': (context) => BatchPage(),
         '/Course_Page': (context) => Course_Page(),
         '/Approval_Process': (context) => Approval_Process(),
         '/Assessments': (context) => Assessments(),
