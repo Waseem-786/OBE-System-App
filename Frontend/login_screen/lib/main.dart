@@ -23,6 +23,7 @@ import 'package:login_screen/login_page.dart';
 import 'CourseObjectivePage.dart';
 import 'Course_Assessment_Page.dart';
 import 'PEO_Page.dart';
+import 'Show_CLO_PLO_Mapping.dart';
 
 void main() {
   runApp(const MyApp());
@@ -61,6 +62,7 @@ class MyApp extends StatelessWidget {
         '/Course_Schedule_Profile' : (context) => CourseScheduleProfile(),
         '/Create_Course_Schedule': (context) => CreateCourseSchedule(),
         '/Course_Books': (context) => CourseBookPage(),
+        '/Show_CLO_PLO_Mapping': (context) => Show_CLO_PLO_Mapping(),
       },
     );
   }

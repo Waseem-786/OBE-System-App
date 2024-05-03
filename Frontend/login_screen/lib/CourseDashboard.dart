@@ -24,7 +24,7 @@ class _CourseDashboardState extends State<CourseDashboard> {
     'Course Schedule',
     'Course CLO',
     'Course Books',
-    'Mapping PLO',
+    'CLO PLO Mapping',
 
   ];
 
@@ -45,7 +45,7 @@ class _CourseDashboardState extends State<CourseDashboard> {
     'Course_Schedule_Profile',
     'CLO_Page',
     'Course_Books',
-    'User_Management',
+    'Show_CLO_PLO_Mapping',
     'Weekly_Assessment'
   ];
 

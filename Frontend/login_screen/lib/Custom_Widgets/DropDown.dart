@@ -8,6 +8,7 @@ class DropDown extends StatefulWidget {
   final String? label;
   final TextEditingController? controller;
   dynamic selectedValue;
+  final String? keyName; // Updated to be nullable
 
   DropDown({
     required this.fetchData,
@@ -17,6 +18,8 @@ class DropDown extends StatefulWidget {
     this.label,
     this.controller,
     required this.selectedValue,
+    this.keyName = 'name',
+
   });
 
   @override
@@ -30,7 +33,7 @@ class _DropDownState extends State<DropDown> {
       future: widget.fetchData(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator();
+          return Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else {
@@ -88,7 +91,7 @@ class _DropDownState extends State<DropDown> {
                       MediaQuery.of(context).size.width * 0.7, // Limit the width to 70% of the screen width
                     ),
                     child: Text(
-                      item['name'],
+                      item[widget.keyName],
                       style: TextStyle(
                         color: Colors.black,
                       ),

@@ -135,4 +135,42 @@ class CLO {
       return false;
     }
   }
+  static Future<bool> mapCLOwithPLO(int CLO_id, int PLO_id) async {
+    final accessToken = await storage.read(key: "access_token");
+    final url = Uri.parse('$ipAddress:8000/api/plo/clo/mapping');
+    final Map<String, dynamic> requestBody = {
+      'clo': CLO_id,
+      'plo': PLO_id,
+    };
+    final response = await http.post(
+      url,
+      headers: {'Authorization': 'Bearer $accessToken',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(requestBody),
+    );
+
+    if (response.statusCode == 201) {
+      print('CLO with ID $CLO_id mapped to PLO with ID $PLO_id successfully');
+      return true;
+    } else {
+      print('Failed to map CLO with ID $CLO_id to PLO with ID $PLO_id');
+      return false;
+    }
+  }
+  static Future<List<Map<String, dynamic>>> fetchMappedCLOPLOData() async {
+    final accessToken = await storage.read(key: "access_token");
+    final url = Uri.parse('$ipAddress:8000/api/plo/clo/mapping');
+    final response = await http.get(
+      url,
+      headers: {'Authorization': 'Bearer $accessToken'},
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> responseData = jsonDecode(response.body);
+      return responseData.map((data) => data as Map<String, dynamic>).toList();
+    } else {
+      throw Exception('Failed to fetch mapped CLOs and PLOs');
+    }
+  }
 }
