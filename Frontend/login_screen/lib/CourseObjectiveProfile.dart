@@ -122,7 +122,7 @@ class _CourseObjectiveProfileState extends State<CourseObjectiveProfile> {
                     });
 
                     // Delay navigation and state update
-                    await Future.delayed(const Duration(seconds: 2));
+                    await Future.delayed(const Duration(seconds: 0));
 
                     // Navigate back to the previous page and update its state
                     Navigator.of(context).pop(true);

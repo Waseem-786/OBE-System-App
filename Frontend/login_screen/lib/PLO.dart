@@ -78,14 +78,24 @@ class PLO{
   }
 
   static Future<Map<String, dynamic>?> getPLObyPLOId(int PLO_id) async {
-    final plos = await fetchPLO();
-    for (var plo in plos) {
-      if (plo['id'] == PLO_id) {
-        return plo;
-      }
+    final accessToken = await storage.read(key: "access_token");
+    final url = Uri.parse('$ipAddress:8000/api/plo/$PLO_id');
+    final response = await http.get(
+      url,
+      headers: {'Authorization': 'Bearer $accessToken'},
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body) as Map<String, dynamic>;
+    } else if (response.statusCode == 404) {
+      // Return null if the CLO with the given ID does not exist
+      return null;
+    } else {
+      // Throw an exception for any other error status code
+      return {};
     }
-    return null;
   }
+
 
   static Future<bool> deletePLO(int ploId) async {
     try {

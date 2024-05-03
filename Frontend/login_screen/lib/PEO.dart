@@ -65,13 +65,22 @@ class PEO {
   }
 
   static Future<Map<String, dynamic>?> getPEObyPEOId(int PEO_id) async {
-    final peos = await fetchPEO();
-    for (var peo in peos) {
-      if (peo['id'] == PEO_id) {
-        return peo;
-      }
+    final accessToken = await storage.read(key: "access_token");
+    final url = Uri.parse('$ipAddress:8000/api/peo/$PEO_id');
+    final response = await http.get(
+      url,
+      headers: {'Authorization': 'Bearer $accessToken'},
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body) as Map<String, dynamic>;
+    } else if (response.statusCode == 404) {
+      // Return null if the CLO with the given ID does not exist
+      return null;
+    } else {
+      // Throw an exception for any other error status code
+      return {};
     }
-    return null;
   }
 
   static Future<bool> deletePEO(int peoId) async {

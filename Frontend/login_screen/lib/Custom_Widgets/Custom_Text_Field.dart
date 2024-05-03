@@ -6,21 +6,25 @@ import 'Custom_Text_Style.dart';
 class CustomTextFormField extends StatelessWidget {
   final TextEditingController controller;
   final IconData? prefixIcon;
+  final IconData? suffixIcon;
   final String? label;
   final String? hintText;
   final Color? borderColor;
   final bool? passField;
   final TextInputType?  Keyboard_Type;
+  final VoidCallback? onSuffixIconPressed;
 
   const CustomTextFormField({
     Key? key,
     required this.controller,
     this.prefixIcon,
+    this.suffixIcon,
     this.label,
     this.hintText,
     this.borderColor,
     this.passField,
-    this.Keyboard_Type
+    this.Keyboard_Type,
+    this.onSuffixIconPressed
 
   }) : super(key: key);
 
@@ -37,6 +41,12 @@ class CustomTextFormField extends StatelessWidget {
       },
       decoration: InputDecoration(
         prefixIcon: prefixIcon != null ? Icon(prefixIcon) : null,
+        suffixIcon: suffixIcon != null
+            ? IconButton(
+          icon: Icon(suffixIcon),
+          onPressed: onSuffixIconPressed,
+        )
+            : null,
         label: label != null
             ? Text(
           label!,
@@ -60,6 +70,8 @@ class CustomTextFormField extends StatelessWidget {
         ),
       ),
       keyboardType: Keyboard_Type,
+
+
     );
   }
 }
