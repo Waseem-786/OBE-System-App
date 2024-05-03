@@ -48,7 +48,6 @@ class CourseObjective {
       } else {
         print(
             'Failed to create Objective. Status code: ${response.statusCode}');
-        print(response.body);
         return false;
       }
     } catch (e) {

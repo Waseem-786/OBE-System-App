@@ -5,6 +5,7 @@ import 'package:login_screen/Batch_Management.dart';
 import 'package:login_screen/CLO_Page.dart';
 import 'package:login_screen/Campus_Page.dart';
 import 'package:login_screen/Course_Schedule_Profile.dart';
+import 'package:login_screen/CreateCourseBook.dart';
 import 'package:login_screen/CreateCourseObjective.dart';
 import 'package:login_screen/Create_Course_Assessment_Page.dart';
 import 'package:login_screen/Course_Page.dart';
@@ -57,6 +58,7 @@ class MyApp extends StatelessWidget {
         '/Course_Assessment_Page': (context) => Course_Assessment_Page(),
         '/Course_Schedule_Profile' : (context) => CourseScheduleProfile(),
         '/Create_Course_Schedule': (context) => CreateCourseSchedule(),
+        '/Course_Books': (context) => CreateCourseBook(),
       },
     );
   }

@@ -14,16 +14,13 @@ class Create_CLO extends StatefulWidget {
 
 class _Create_CLOState extends State<Create_CLO> {
   int Course_id = Course.id;
-  String?
-  errorMessage;
+  String? errorMessage;
  //variable to show the error when the wrong credentials are entered or the fields are empty
   Color colorMessage = Colors.red;
  // color of the message when the error occurs
-  var isLoading =
-  false;
+  var isLoading = false;
  // variable for use the functionality of loading while request is processed to server
-  Color errorColor = Colors
-      .black12;
+  Color errorColor = Colors.black12;
  // color of border of text fields when the error is not occurred
 
   final TextEditingController CLODescription_Controller = TextEditingController();
@@ -53,6 +50,7 @@ class _Create_CLOState extends State<Create_CLO> {
               hintText: 'Enter CLO Description',
               label: 'Enter CLO Description',),
             const SizedBox(height: 20,),
+
             DropdownButtonFormField<String>(
               value: SelectedBloomTaxonomy,
               onChanged: (value) {
@@ -91,7 +89,7 @@ class _Create_CLOState extends State<Create_CLO> {
               },
               decoration: InputDecoration(
                 labelText: 'BT Level',
-                hintText: 'Select T Level',
+                hintText: 'Select BT Level',
                 border: OutlineInputBorder(
                   borderSide: const BorderSide(
                     color: Colors.black12, // Default border

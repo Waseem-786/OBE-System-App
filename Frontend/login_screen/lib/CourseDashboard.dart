@@ -45,7 +45,7 @@ class _CourseDashboardState extends State<CourseDashboard> {
     'Course_Assessment_Page',
     'CourseScheduleProfile',
     'CLO_Page',
-    'Assessments',
+    'Course_Books',
     'User_Management',
   ];
 
