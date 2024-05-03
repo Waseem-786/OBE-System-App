@@ -28,7 +28,7 @@ class _Course_Assessment_PageState extends State<Course_Assessment_Page> {
   @override
   void initState() {
     super.initState();
-    CourseAssessment = Course_Assessment.fetchCourseAssessment(2);
+    CourseAssessment = Course_Assessment.fetchCourseAssessment(course_outline_id);
   }
 
   @override
@@ -39,7 +39,7 @@ class _Course_Assessment_PageState extends State<Course_Assessment_Page> {
     if (currentRoute != null && currentRoute.isCurrent) {
       // Call your refresh function here
       setState(() {
-        CourseAssessment = Course_Assessment.fetchCourseAssessment(2);
+        CourseAssessment = Course_Assessment.fetchCourseAssessment(course_outline_id);
       });
     }
   }
@@ -97,7 +97,7 @@ class _Course_Assessment_PageState extends State<Course_Assessment_Page> {
                                 if (result != null && result) {
                                   // Set the state of the page here
                                   setState(() {
-                                    CourseAssessment = Course_Assessment.fetchCourseAssessment(2);
+                                    CourseAssessment = Course_Assessment.fetchCourseAssessment(course_outline_id);
                                   });
                                 }
                               });
