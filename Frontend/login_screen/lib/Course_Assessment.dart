@@ -141,7 +141,7 @@ class Course_Assessment
         url,
         headers: {'Authorization': 'Bearer $accessToken'},
       );
-      if (response.statusCode == 200) {
+      if (response.statusCode == 204) {
         print('Course Assessment deleted successfully');
         return true;
       } else {
@@ -153,7 +153,7 @@ class Course_Assessment
       return false;
     }
   }
-  static  Future<List<dynamic>> fetchSingleCourseAssessment(int id) async {
+  static  Future<Map<String, dynamic>?> fetchSingleCourseAssessment(int id) async {
     final accessToken = await storage.read(key: "access_token");
     final url = Uri.parse('$ipAddress:8000/api/assessment/$id');
     final response = await http.get(
@@ -162,10 +162,10 @@ class Course_Assessment
     );
     if (response.statusCode == 200) {
       print(response.body);
-      return jsonDecode(response.body) as List<dynamic>;
+      return jsonDecode(response.body);
     } else {
       print('Failed to load Course Assessment');
-      return [];
+      return {};
     }
   }
 }

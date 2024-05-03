@@ -16,6 +16,7 @@ import 'package:login_screen/Splash_Screen.dart';
 import 'package:login_screen/login_page.dart';
 
 import 'CourseObjectivePage.dart';
+import 'Course_Assessment_Page.dart';
 import 'PEO_Page.dart';
 
 void main() {
@@ -51,7 +52,7 @@ class MyApp extends StatelessWidget {
         '/University_Page': (context) => University_Page(),
         '/Objective_Page': (context) => CourseObjectivePage(),
         '/CLO_Page': (context) => CLO_Page(),
-        '/Create_Course_Assessment_Page': (context) => Create_Course_Assessment_Page(),
+        '/Course_Assessment_Page': (context) => Course_Assessment_Page(),
 
       },
     );

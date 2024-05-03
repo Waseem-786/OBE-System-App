@@ -42,7 +42,7 @@ class _CourseDashboardState extends State<CourseDashboard> {
 
   List<String> screenNames = [
     'Objective_Page',
-    'Create_Course_Assessment_Page',
+    'Course_Assessment_Page',
     'Course_Page',
     'CLO_Page',
     'Assessments',
