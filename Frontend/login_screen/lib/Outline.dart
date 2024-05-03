@@ -5,8 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'main.dart';
 import 'package:http/http.dart' as http;
 
-class Outline
-{
+class Outline {
   static int _id = 0;
   static int _course = 0;
   static int _batch = 0;
@@ -24,6 +23,7 @@ class Outline
   static set id(int value) {
     _id = value;
   }
+
   static int get course => _course;
 
   static set course(int value) {
@@ -41,6 +41,7 @@ class Outline
   static set teacher(int value) {
     _teacher = value;
   }
+
   static Future<bool> createOutline(int course, int batch, int teacher) async {
     try {
       final accessToken = await storage.read(key: "access_token");
@@ -70,7 +71,8 @@ class Outline
     }
   }
 
-  static  Future<List<dynamic>> fetchOutlineByCourse(int course_id) async {
+  static Future<List<dynamic>> fetchOutlineByCourse(
+      int course_id) async {
     final accessToken = await storage.read(key: "access_token");
     final url = Uri.parse('$ipAddress:8000/api/course/$course_id/outline');
     final response = await http.get(
@@ -82,11 +84,12 @@ class Outline
       return jsonDecode(response.body) as List<dynamic>;
     } else {
       print('Failed to load Outline');
-      return [];
+      return []; // Return null instead of an empty map
     }
+
   }
 
-  static  Future<List<dynamic>> fetchOutlineByBatch(int batch_id) async {
+  static  Future<Map<String, dynamic>?> fetchOutlineByBatch(int batch_id) async {
     final accessToken = await storage.read(key: "access_token");
     final url = Uri.parse('$ipAddress:8000/api/batch/$batch_id/outline');
     final response = await http.get(
@@ -95,13 +98,13 @@ class Outline
     );
     if (response.statusCode == 200) {
       print(response.body);
-      return jsonDecode(response.body) as List<dynamic>;
+      return jsonDecode(response.body);
     } else {
       print('Failed to load Outline');
-      return [];
+      return {};
     }
   }
-  static  Future<List<dynamic>> fetchOutlineByTeacher(int teacher_id) async {
+  static  Future<Map<String, dynamic>?> fetchOutlineByTeacher(int teacher_id) async {
     final accessToken = await storage.read(key: "access_token");
     final url = Uri.parse('$ipAddress:8000/api/user/$teacher_id/outline');
     final response = await http.get(
@@ -110,10 +113,10 @@ class Outline
     );
     if (response.statusCode == 200) {
       print(response.body);
-      return jsonDecode(response.body) as List<dynamic>;
+      return jsonDecode(response.body);
     } else {
       print('Failed to load Outline');
-      return [];
+      return {};
     }
   }
   static Future<bool> updateOutline(int id, String course, String batch, String teacher) async {

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:login_screen/Course.dart';
 import 'package:login_screen/CLO_Page.dart';
 import 'package:login_screen/CourseDashboard.dart';
+import 'package:login_screen/Course_Outline_Page.dart';
 import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
 
@@ -62,13 +63,13 @@ class _Course_ProfileState extends State<Course_Profile> {
               child: Custom_Button(
                 onPressedFunction: () {
                           Navigator.push(context, MaterialPageRoute(builder:
-                              (context)=>CourseDashboard()));                  //
+                              (context)=>Course_Outline_Page()));                  //
                   // Implement delete functionality.
                 },
                 BackgroundColor: Colors.green,
                 ForegroundColor: Colors.white,
-                ButtonText: "Show Info",
-                ButtonWidth: 150,
+                ButtonText: "Course Outlines",
+                ButtonWidth: 190,
               ),
             ),
             // Button for delete functionality.
