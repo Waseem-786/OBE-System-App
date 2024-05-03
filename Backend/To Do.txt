@@ -1,0 +1,12 @@
+--> CLO TO ASSESSMENT Mapping Many to Many Field
+--> Tried to Change many to many model into field
+--> Test Complete Course Outline Again
+--> Delete Database
+--> Make Course Outline
+
+--> CLOs Change Justification Document
+
+
+
+--> Approval Process Dynamically
+--> Assessment Creation (Assignment, Quiz, Mid, Final...)

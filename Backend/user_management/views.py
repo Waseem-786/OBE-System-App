@@ -2,14 +2,15 @@ from rest_framework.response import Response
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.models import Permission
 from .models import CustomUser, CustomGroup
 from django.contrib.auth.models import Group
 from university_management.models import University, Campus, Department
-from .serializers import RoleSerializer, CustomUserSerializer, UniversityAdminUserSerializer, CampusAdminUserSerializer, DepartmentAdminUserSerializer, TopLevelRoleSerializer, UniversityLevelRoleSerializer, CampusLevelRoleSerializer, DepartmentLevelRoleSerializer
+from .serializers import RoleSerializer, CustomUserSerializer, UniversityAdminUserSerializer, CampusAdminUserSerializer, DepartmentAdminUserSerializer, TopLevelRoleSerializer, UniversityLevelRoleSerializer, CampusLevelRoleSerializer, DepartmentLevelRoleSerializer, PermissionsSerializer
 from .permissions import IsSuperUser, IsUniversityAdmin, IsCampusAdmin, IsDepartmentAdmin, IsSuper_University_Campus, IsSuper_University, IsSuper_University_Campus_Department
 from rest_framework_simplejwt.authentication import JWTStatelessUserAuthentication
 from django.db.models import Q
-
+from django.db.models import Count
 
 # Top Level Roles
 class TopLevelRoles(APIView):
@@ -39,9 +40,13 @@ class TopLevelRoles(APIView):
         
         # Serialize the data
         serialized_data = TopLevelRoleSerializer(custom_group)
-        
-        # Return the serialized data in the response
-        return Response(serialized_data.data, status=status.HTTP_201_CREATED)
+        if serialized_data.is_valid():
+            serialized_data.save()
+
+            # Return the serialized data in the response
+            return Response(serialized_data.data, status=status.HTTP_201_CREATED)
+        return Response(serialized_data.errors, status=status.HTTP_400_BAD_REQUEST)
+
     
 class UniversityLevelRoles(APIView):
     authentication_classes = [JWTStatelessUserAuthentication]
@@ -475,3 +480,63 @@ class AllUsers(generics.ListAPIView):
     serializer_class = CustomUserSerializer
     authentication_classes = [JWTStatelessUserAuthentication]
     permission_classes = [IsSuperUser]
+
+
+
+class PermissionsView(generics.ListAPIView):
+    queryset = Permission.objects.all()
+    serializer_class = PermissionsSerializer
+    # authentication_classes = [JWTStatelessUserAuthentication]
+    # permission_classes = [IsSuperUser]
+
+class GroupPermissionsView(APIView):
+    # authentication_classes = [JWTStatelessUserAuthentication]
+    # permission_classes = [IsSuperUser]
+
+    def get(self, request, group_id):
+        # Retrieve the group object based on the provided group_id
+        group = get_object_or_404(CustomGroup, id=group_id)
+        
+        # Access the permissions associated with the group
+        permissions = group.group.permissions.all().order_by('id')
+
+        # Serialize the permissions data if needed
+        serialized_data = PermissionsSerializer(permissions, many=True)
+
+        return Response(serialized_data.data, status=status.HTTP_200_OK)
+    
+    
+
+    def post(self, request, group_id):
+        if 'permissions' in request.data:
+            # Retrieve the permissions data from the request
+            permission_ids = request.data.get('permissions', [])
+
+            # Ensure that permission_ids is a list
+            if not isinstance(permission_ids, list):
+                return Response({"permissions": "Invalid permissions data"}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Retrieve the group object based on the provided group_id
+            group = get_object_or_404(CustomGroup, id=group_id)
+            
+            # Get the count of permissions already associated with the group
+            existing_permissions_count = group.group.permissions.filter(id__in=permission_ids).count()
+
+            # Check if any of the provided permissions are already associated with the group
+            if existing_permissions_count > 0:
+                return Response({"message": "One or more permissions are already associated with the group"}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Add permissions to the group
+            for permission_id in permission_ids:
+                # Ensure that permission_id is a valid integer
+                if not isinstance(permission_id, int):
+                    return Response({"permissions": "Invalid permission ID"}, status=status.HTTP_400_BAD_REQUEST)
+                
+                permission = get_object_or_404(Permission, id=permission_id)
+                group.group.permissions.add(permission)
+
+            return Response({"message": "Permissions added successfully"}, status=status.HTTP_201_CREATED)
+        
+        else:
+            # If 'permissions' is not present in the request data, return appropriate response
+            return Response({"permissions": "This field is required"}, status=status.HTTP_400_BAD_REQUEST)

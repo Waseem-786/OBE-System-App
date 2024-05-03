@@ -9,5 +9,7 @@ urlpatterns = [
     path('university/role/assign/<str:group_name>',views.AddUserToUniversityLevelGroupView.as_view()),
     path('campus/role/assign/<str:group_name>',views.AddUserToCampusLevelGroupView.as_view()),
     path('department/role/assign/<str:group_name>',views.AddUserToDepartmentLevelGroupView.as_view()),
-    path('users',views.AllUsers.as_view())
+    path('users',views.AllUsers.as_view()),
+    path('permissions',views.PermissionsView.as_view()),
+    path('groups/<int:group_id>/permissions',views.GroupPermissionsView.as_view()),
 ]

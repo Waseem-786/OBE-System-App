@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'university_management',
     'course_management',
     'program_management',
+    'approval_process',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -152,15 +153,15 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.UserRateThrottle'
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '15/min',
-        'user': '15/min'
+        'anon': '35/min',
+        'user': '35/min'
     }
 }
 
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=3),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=10),
     'ROTATE_REFRESH_TOKENS': False, # Will Think about it
     'BLACKLIST_AFTER_ROTATION': True,
     'UPDATE_LAST_LOGIN': False, # Warning: Updating last_login will dramatically increase the number of database transactions. People abusing the views could slow the server and this could be a security vulnerability. If you really want this, throttle the endpoint with DRF at the very least.
@@ -181,8 +182,8 @@ SIMPLE_JWT = {
 DJOSER = {
     'SERIALIZERS': {
             'user_create': 'user_management.serializers.CustomUserCreateSerializer',
-            'user': 'user_management.serializers.CustomUserCreateSerializer',
-            'current_user': 'user_management.serializers.CustomUserCreateSerializer',
+            'user': 'user_management.serializers.CustomUserSerializer',
+            'current_user': 'user_management.serializers.CustomUserSerializer',
     },
     'PASSWORD_RESET_CONFIRM_URL': 'password-reset/{uid}/{token}',
     'USERNAME_RESET_CONFIRM_URL': 'username-reset/{uid}/{token}',

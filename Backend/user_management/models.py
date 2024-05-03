@@ -1,6 +1,6 @@
 from university_management.models import University, Campus, Department
 from django.db import models
-from django.contrib.auth.models import AbstractUser, Group
+from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 

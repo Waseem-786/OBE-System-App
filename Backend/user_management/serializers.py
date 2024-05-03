@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import CustomUser, CustomGroup
 from djoser.serializers import UserCreateSerializer
+from django.contrib.auth.models import Permission
 
 class TopLevelRoleSerializer(serializers.ModelSerializer):
     group_name = serializers.CharField(source='group.name', read_only=True)
@@ -71,10 +72,16 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ['id', 'username', 'email', 'first_name','last_name', 'university_name', 'campus_name', 'department_name']
+        fields = '__all__'
 
 
 class CustomUserCreateSerializer(UserCreateSerializer):
     class Meta(UserCreateSerializer.Meta):
         model = CustomUser
         UserCreateSerializer.Meta.fields = tuple(UserCreateSerializer.Meta.fields) + ('first_name','last_name','university','campus','department')
+
+
+class PermissionsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Permission
+        fields = '__all__'
