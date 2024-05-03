@@ -4,7 +4,7 @@ import 'package:login_screen/Assessments.dart';
 import 'package:login_screen/Batch_Management.dart';
 import 'package:login_screen/CLO_Page.dart';
 import 'package:login_screen/Campus_Page.dart';
-import 'package:login_screen/CourseObjectivePage.dart';
+import 'package:login_screen/CreateCourseObjective.dart';
 import 'package:login_screen/Course_Assessment_Page.dart';
 import 'package:login_screen/Course_Page.dart';
 import 'package:login_screen/Department_Page.dart';
@@ -15,6 +15,7 @@ import 'package:login_screen/User_Management.dart';
 import 'package:login_screen/Splash_Screen.dart';
 import 'package:login_screen/login_page.dart';
 
+import 'CourseObjectivePage.dart';
 import 'PEO_Page.dart';
 
 void main() {

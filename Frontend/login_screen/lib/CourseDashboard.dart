@@ -73,7 +73,7 @@ class _CourseDashboardState extends State<CourseDashboard> {
 
           SingleChildScrollView(
             child: SizedBox(
-              height: 575,
+              height: 700,
               child: GridView.builder(
                 shrinkWrap: true,
                 gridDelegate:
