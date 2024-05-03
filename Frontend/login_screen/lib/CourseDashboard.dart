@@ -43,19 +43,11 @@ class _CourseDashboardState extends State<CourseDashboard> {
   List<String> screenNames = [
     'Objective_Page',
     'Course_Assessment_Page',
-    'Course_Page',
+    'CourseScheduleProfile',
     'CLO_Page',
     'Assessments',
     'User_Management',
-
   ];
-
-
-
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
