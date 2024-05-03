@@ -57,10 +57,68 @@ class CourseObjective {
     }
   }
 
+  static  Future<List<dynamic>> fetchObjectivesByCourseId(int course_id) async {
+    final accessToken = await storage.read(key: "access_token");
+    final url = Uri.parse('$ipAddress:8000/api/course/$course_id/objective');
+    final response = await http.get(
+      url,
+      headers: {'Authorization': 'Bearer $accessToken'},
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body) as List<dynamic>;
+    } else {
+      print('Failed to load Outline');
+      return [];
+    }
+  }
+
+  static Future<Map<String, dynamic>?> getObjectivebyObjectiveId(int
+  ObjectiveId)
+  async {
+    final accessToken = await storage.read(key: "access_token");
+    final url = Uri.parse('$ipAddress:8000/api/objective/$ObjectiveId');
+    final response = await http.get(
+      url,
+      headers: {'Authorization': 'Bearer $accessToken'},
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body) as Map<String, dynamic>;
+    } else if (response.statusCode == 404) {
+      // Return null if the CLO with the given ID does not exist
+      return null;
+    } else {
+      // Throw an exception for any other error status code
+      throw Exception('Failed to fetch Objective with ID $ObjectiveId');
+    }
+  }
 
 
+  static Future<bool> deleteObjective(int ObjectiveId) async {
+    try {
+      final accessToken = await storage.read(key: "access_token");
 
+      final url = Uri.parse('$ipAddress:8000/api/objective/$ObjectiveId');
+      final response = await http.delete(
+        url,
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
 
+      if (response.statusCode == 204) {
+        print('Objective deleted successfully');
+        return true;
+      } else {
+        print('Failed to delete Objective. Status code: ${response
+            .statusCode}');
+        return false;
+      }
+    } catch (e) {
+      print('Exception while deleting Objective: $e');
+      return false;
+    }
+  }
 
 
 
