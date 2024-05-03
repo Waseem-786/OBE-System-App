@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Style.dart';
@@ -21,39 +19,41 @@ class _CourseDashboardState extends State<CourseDashboard> {
 
 
   List<String> headings = [
-  'Course Objective',
-  'Course Assessment',
-  'Course Schedule',
-  'Course CLO',
-  'Course Books',
-  'Mapping PLO',
+    'Course Objective',
+    'Course Assessment',
+    'Course Schedule',
+    'Course CLO',
+    'Course Books',
+    'Mapping PLO',
 
   ];
 
   List<IconData> icons = [
-  FontAwesomeIcons.bullseye,
-  FontAwesomeIcons.pollH,
-  FontAwesomeIcons.calendar,
-  FontAwesomeIcons.fileAlt,
-  FontAwesomeIcons.bookOpen,
-  FontAwesomeIcons.projectDiagram,
+    FontAwesomeIcons.bullseye,
+    FontAwesomeIcons.pollH,
+    FontAwesomeIcons.calendar,
+    FontAwesomeIcons.fileAlt,
+    FontAwesomeIcons.bookOpen,
+    FontAwesomeIcons.projectDiagram,
+    FontAwesomeIcons.calendarAlt,
 
   ];
 
   List<String> screenNames = [
     'Objective_Page',
     'Course_Assessment_Page',
-    'CourseScheduleProfile',
+    'Course_Schedule_Profile',
     'CLO_Page',
     'Course_Books',
     'User_Management',
+    'Weekly_Assessment'
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(backgroundColor: const Color(0xffc19a6b),
-      title: Text('Course Dashboard',style: CustomTextStyles.headingStyle(fontSize: 22),),
+        title: Text('Course Dashboard',style: CustomTextStyles.headingStyle(fontSize: 22),),
       ),
       body: Column(
         children: [
@@ -78,14 +78,6 @@ class _CourseDashboardState extends State<CourseDashboard> {
                   return Padding(
                     padding: const EdgeInsets.all(7.0),
                     child: InkWell(
-                      // onTap: () {
-                      //   // Navigate to the corresponding location
-                      //   // For simplicity, let's print the location for now
-                      //   // print(screenNames[index]);
-                      //
-                      // Navigator.push(context, MaterialPageRoute(builder: (context)=> screenNames[index]));
-                      //
-                      // },
                       onTap: () {
                         Navigator.pushNamed(
                             context, '/${screenNames[index]}');
@@ -151,4 +143,3 @@ class _CourseDashboardState extends State<CourseDashboard> {
     );
   }
 }
-
