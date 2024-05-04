@@ -1,19 +1,22 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:login_screen/Batch.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Button.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Field.dart';
 import 'package:login_screen/Department.dart';
-
+import 'package:login_screen/Section.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
 
-class CreateBatch extends StatefulWidget {
+
+class CreateSection extends StatefulWidget {
+  const CreateSection({super.key});
+
   @override
-  State<CreateBatch> createState() => _CreateBatchState();
+  State<CreateSection> createState() => _CreateSectionState();
 }
 
-class _CreateBatchState extends State<CreateBatch> {
+class _CreateSectionState extends State<CreateSection> {
+
 
   String?errorMessage;
   //variable to show the error when the wrong credentials are entered or the fields are empty
@@ -24,8 +27,7 @@ class _CreateBatchState extends State<CreateBatch> {
   Color errorColor = Colors.black12;
   // color of border of text fields when the error is not occurred
 
-  final TextEditingController BatchNameController = TextEditingController();
-
+  final TextEditingController SectionNameController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +38,7 @@ class _CreateBatchState extends State<CreateBatch> {
         title: Container(
           margin: const EdgeInsets.only(left: 90),
           child: Text(
-            "Create Batch",
+            "Create Section",
             style: CustomTextStyles.headingStyle(fontSize: 20),
           ),
         ),
@@ -48,15 +50,15 @@ class _CreateBatchState extends State<CreateBatch> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 20,),
-            CustomTextFormField(controller: BatchNameController,
-              hintText: 'Enter Batch Name',
-              label: 'Enter Batch Name',
+            CustomTextFormField(controller: SectionNameController,
+              hintText: 'Enter Section Name',
+              label: 'Enter Section Name',
             ),
             const SizedBox(height: 20,),
             Custom_Button(
               onPressedFunction: () async {
-                String BatchName = BatchNameController.text;
-                if (BatchName.isEmpty) {
+                String SectionName = SectionNameController.text;
+                if (SectionName.isEmpty) {
                   setState(() {
                     colorMessage = Colors.red;
                     errorColor = Colors.red;
@@ -66,23 +68,24 @@ class _CreateBatchState extends State<CreateBatch> {
                   setState(() {
                     isLoading = true;
                   });
-                  bool created = await Batch.createBatch(BatchName,
-                      Department.id);
+                  bool created = await Section.createSection(SectionName,
+                      Batch.id);
+
                   if (created) {
-                    BatchNameController.clear();
+                    SectionNameController.clear();
 
                     setState(() {
                       isLoading = false;
                       colorMessage = Colors.green;
                       errorColor =
                           Colors.black12; // Reset errorColor to default value
-                      errorMessage = 'Batch Created successfully';
+                      errorMessage = 'Section Created successfully';
                     });
                   }
                 }
               },
-              ButtonWidth: 160,
-              ButtonText: 'Create Batch',),
+              ButtonWidth: 180,
+              ButtonText: 'Create Section',),
             const SizedBox(height: 20),
             Visibility(
               visible: isLoading,

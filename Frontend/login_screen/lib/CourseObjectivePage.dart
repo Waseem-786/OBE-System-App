@@ -98,7 +98,6 @@ class _CourseObjectivePageState extends State<CourseObjectivePage> {
                                     // call of a function to get the data of that course whose id is passed and id is
                                     // passed by tapping the user
                                     var objective = await CourseObjective.getObjectivebyObjectiveId(objectives[index]['id']);
-                                    print(objective);
                                     if (objective != null) {
 
                                       CourseObjective.id=objective['id'];

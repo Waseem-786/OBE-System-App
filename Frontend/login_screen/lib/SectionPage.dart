@@ -1,30 +1,32 @@
 
+
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:login_screen/Batch.dart';
+import 'package:login_screen/CreateSection.dart';
 import 'package:login_screen/Department.dart';
-import 'package:login_screen/SectionPage.dart';
+import 'package:login_screen/Section.dart';
 import 'CreateBatch.dart';
 import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
 
-class BatchPage extends StatefulWidget {
-  const BatchPage({super.key});
+class SectionPage extends StatefulWidget {
+  const SectionPage({super.key});
 
   @override
-  State<BatchPage> createState() => _BatchPageState();
+  State<SectionPage> createState() => _SectionPageState();
 }
 
-class _BatchPageState extends State<BatchPage> {
+class _SectionPageState extends State<SectionPage> {
 
-  late Future<List<dynamic>> batchFuture;
+  late Future<List<dynamic>> sectionFuture;
 
   @override
   void initState() {
     super.initState();
-    batchFuture = Batch.fetchBatchBydeptId(Department.id);
+    sectionFuture = Section.fetchSectionbyBatchId(Batch.id);
   }
 
 
@@ -37,10 +39,11 @@ class _BatchPageState extends State<BatchPage> {
     if (currentRoute != null && currentRoute.isCurrent) {
       // Call your refresh function here
       setState(() {
-        batchFuture = Batch.fetchBatchBydeptId(Department.id);
+        sectionFuture = Section.fetchSectionbyBatchId(Batch.id);
       });
     }
   }
+
 
 
 
@@ -52,7 +55,7 @@ class _BatchPageState extends State<BatchPage> {
         backgroundColor: const Color(0xffc19a6b),
         title: Center(
           child: Text(
-            'Batch Page',
+            'Section Page',
             style: CustomTextStyles.headingStyle(fontSize: 20),
           ),
         ),
@@ -62,7 +65,7 @@ class _BatchPageState extends State<BatchPage> {
         child: Column(
           children: [
             FutureBuilder(
-                future: batchFuture,
+                future: sectionFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
@@ -71,12 +74,12 @@ class _BatchPageState extends State<BatchPage> {
                       child: Text('Error: ${snapshot.error}'),
                     );
                   } else {
-                    final batches = snapshot.data!;
+                    final sections = snapshot.data!;
                     return Expanded(
                         child: ListView.builder(
-                            itemCount: batches.length,
+                            itemCount: sections.length,
                             itemBuilder: (context, index) {
-                              final batch = batches[index];
+                              final section = sections[index];
                               return Card(
                                 color: Colors.white,
                                 elevation: 5,
@@ -85,37 +88,11 @@ class _BatchPageState extends State<BatchPage> {
                                   title: Padding(
                                     padding: const EdgeInsets.all(20.0),
                                     child: Text(
-                                      batch['name'],
+                                      section['name'],
                                       style: CustomTextStyles.bodyStyle(
                                           fontSize: 17),
                                     ),
                                   ),
-                                  onTap: () async {
-                                    // call of a function to get the data of that course whose id is passed and id is
-                                    // passed by tapping the user
-                                    var batch = await Batch.getBatchbyBatchId(batches[index]['id']);
-
-                                    if (batch != null) {
-
-                                      Batch.id=batch['id'];
-                                      Batch.name=batch['name'];
-
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute<bool>(
-                                            builder: (context) =>
-                                                SectionPage(),
-                                          )).then((result) {
-                                        if (result != null && result) {
-                                          // Set the state of the page here
-                                          setState(() {
-                                            batchFuture=Batch.fetchBatchBydeptId(Department.id)
-                                            ;
-                                          });
-                                        }
-                                      });
-                                    }
-                                  },
                                 ),
                               );
                             }));
@@ -128,10 +105,10 @@ class _BatchPageState extends State<BatchPage> {
                   onPressedFunction: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => CreateBatch()),
+                      MaterialPageRoute(builder: (context) => CreateSection()),
                     );
                   },
-                  ButtonText: 'Add Batch',
+                  ButtonText: 'Add Section',
                   ButtonWidth: 200,
                 ),
               ),
@@ -139,6 +116,7 @@ class _BatchPageState extends State<BatchPage> {
           ],
         ),
       ),
+
 
     );
   }
