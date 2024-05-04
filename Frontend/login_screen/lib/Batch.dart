@@ -26,7 +26,7 @@ class Batch{
   static const storage = FlutterSecureStorage(
       aOptions: AndroidOptions(encryptedSharedPreferences: true));
 
-  static Future<bool> createBatch(String name,int deptId)
+  static Future<bool> createBatch(String name,int deptId ,List<String> sections)
   async {
     try {
       final accessToken = await storage.read(key: "access_token");
@@ -39,7 +39,8 @@ class Batch{
         },
         body: jsonEncode({
           'name': name,
-          'department' : deptId
+          'department' : deptId,
+          'sections' : sections
         }),
       );
       if (response.statusCode == 201) {

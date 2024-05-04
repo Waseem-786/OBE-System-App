@@ -94,8 +94,6 @@ class _CreateObjectiveState extends State<CreateCourseObjective> {
                   Custom_Button(
                     onPressedFunction: () async {
 
-
-
                       List<String> objectiveDescription = objectiveControllers
                           .map((controller) => controller.text)
                           .toList();
