@@ -58,7 +58,7 @@ class Section{
 
   static  Future<List<dynamic>> fetchSectionbyBatchId(int batchId) async {
     final accessToken = await storage.read(key: "access_token");
-    final url = Uri.parse('$ipAddress:8000/api/section/$batchId');
+    final url = Uri.parse('$ipAddress:8000/api/batch/$batchId/section');
     final response = await http.get(
       url,
       headers: {'Authorization': 'Bearer $accessToken'},
@@ -70,8 +70,6 @@ class Section{
       return [];
     }
   }
-
-
 
 
 }

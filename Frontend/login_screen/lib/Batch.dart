@@ -15,13 +15,24 @@ class Batch{
     _id = value;
   }
 
-  static String? _name;
+  static String _name = "";
+  static List<dynamic> _sections = [];
 
-  static String? get name => _name;
+  static List<dynamic> get sections => _sections;
 
-  static set name(String? value) {
+  static set sections(List<dynamic> value) {
+    _sections = value;
+  }
+
+  static String get name => _name;
+
+  static set name(String value) {
     _name = value;
   }
+
+
+
+
 
   static const storage = FlutterSecureStorage(
       aOptions: AndroidOptions(encryptedSharedPreferences: true));
@@ -81,19 +92,13 @@ class Batch{
     );
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body) as Map<String, dynamic>;
+      return jsonDecode(response.body);
     } else if (response.statusCode == 404) {
-      // Return null if the CLO with the given ID does not exist
       return null;
     } else {
       return {};
     }
   }
-
-
-
-
-
 
 
 }

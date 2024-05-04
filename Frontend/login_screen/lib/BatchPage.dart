@@ -91,31 +91,33 @@ class _BatchPageState extends State<BatchPage> {
                                     ),
                                   ),
                                   onTap: () async {
-                                    // call of a function to get the data of that course whose id is passed and id is
-                                    // passed by tapping the user
-                                    var batch = await Batch.getBatchbyBatchId(batches[index]['id']);
+                                    // Ensure batches[index]['id'] is not null before proceeding
+                                    if (batches[index]['id'] != null) {
+                                      // Call getBatchbyBatchId only if id is not null
+                                      var batch = await Batch.getBatchbyBatchId(batches[index]['id']);
 
-                                    if (batch != null) {
+                                      if (batch != null) {
+                                        Batch.id = batch['id'];
+                                        Batch.name = batch['name'];
+                                        Batch.sections = batch['section_names'];
 
-                                      Batch.id=batch['id'];
-                                      Batch.name=batch['name'];
-
-                                      Navigator.push(
+                                        Navigator.push(
                                           context,
                                           MaterialPageRoute<bool>(
-                                            builder: (context) =>
-                                                SectionPage(),
-                                          )).then((result) {
-                                        if (result != null && result) {
-                                          // Set the state of the page here
-                                          setState(() {
-                                            batchFuture=Batch.fetchBatchBydeptId(Department.id)
-                                            ;
-                                          });
-                                        }
-                                      });
+                                            builder: (context) => SectionPage(),
+                                          ),
+                                        ).then((result) {
+                                          if (result != null && result) {
+                                            // Set the state of the page here
+                                            setState(() {
+                                              batchFuture = Batch.fetchBatchBydeptId(Department.id);
+                                            });
+                                          }
+                                        });
+                                      }
                                     }
                                   },
+
                                 ),
                               );
                             }));
