@@ -169,7 +169,6 @@ class Create_Course_State extends State<Create_Course> {
               ),
               Custom_Button(
                 onPressedFunction: () async {
-                  print("Hi");
                   String CourseCode = CourseCodeController.text;
                   String CourseTitle = CourseTitleController.text;
                   int? theoryCredits =

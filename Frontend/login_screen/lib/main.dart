@@ -2,24 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:login_screen/Approval_Process.dart';
 import 'package:login_screen/Assessments.dart';
 import 'package:login_screen/BatchPage.dart';
-import 'package:login_screen/Batch_Management.dart';
 import 'package:login_screen/CLO_Page.dart';
-import 'package:login_screen/Campus_Page.dart';
 import 'package:login_screen/CourseBookPage.dart';
 import 'package:login_screen/Course_Schedule_Profile.dart';
-import 'package:login_screen/CreateCourseBook.dart';
-import 'package:login_screen/CreateCourseObjective.dart';
-import 'package:login_screen/Create_Course_Assessment_Page.dart';
 import 'package:login_screen/Course_Page.dart';
 import 'package:login_screen/Create_Course_Schedule.dart';
-import 'package:login_screen/Department_Page.dart';
 import 'package:login_screen/Program_Management.dart';
 import 'package:login_screen/PLO_Page.dart';
 import 'package:login_screen/University_Page.dart';
 import 'package:login_screen/User_Management.dart';
 import 'package:login_screen/Splash_Screen.dart';
-import 'package:login_screen/login_page.dart';
-
+import 'package:login_screen/Weekly_Topics_Page.dart';
 import 'CourseObjectivePage.dart';
 import 'Course_Assessment_Page.dart';
 import 'PEO_Page.dart';
@@ -63,6 +56,7 @@ class MyApp extends StatelessWidget {
         '/Create_Course_Schedule': (context) => CreateCourseSchedule(),
         '/Course_Books': (context) => CourseBookPage(),
         '/Show_CLO_PLO_Mapping': (context) => Show_CLO_PLO_Mapping(),
+        '/Weekly_Topics_Page' : (context) => WeeklyTopicsPage(),
       },
     );
   }

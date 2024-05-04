@@ -25,7 +25,7 @@ class _CourseDashboardState extends State<CourseDashboard> {
     'Course CLO',
     'Course Books',
     'CLO PLO Mapping',
-
+    'Weekly Topics'
   ];
 
   List<IconData> icons = [
@@ -35,6 +35,7 @@ class _CourseDashboardState extends State<CourseDashboard> {
     FontAwesomeIcons.fileAlt,
     FontAwesomeIcons.bookOpen,
     FontAwesomeIcons.projectDiagram,
+    FontAwesomeIcons.calendarAlt,
     FontAwesomeIcons.calendarAlt,
 
   ];
@@ -46,7 +47,7 @@ class _CourseDashboardState extends State<CourseDashboard> {
     'CLO_Page',
     'Course_Books',
     'Show_CLO_PLO_Mapping',
-    'Weekly_Assessment'
+    'Weekly_Topics_Page'
   ];
 
   @override

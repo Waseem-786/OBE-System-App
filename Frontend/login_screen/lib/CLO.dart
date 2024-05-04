@@ -88,7 +88,8 @@ class CLO {
     if (response.statusCode == 200) {
       return jsonDecode(response.body) as List<dynamic>;
     } else {
-      throw Exception('Failed to Load CLOs');
+      print('Failed to fetch CLOs');
+      return [];
     }
   }
 
