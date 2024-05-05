@@ -130,4 +130,29 @@ class University {
       return false;
     }
   }
+  static Future<bool> updateCourseAssessment(int id,String name,String mission,String vision) async {
+    try {
+      final accessToken = await storage.read(key: "access_token");
+      final url = Uri.parse('$ipAddress:8000/api/university/$id');
+      final response = await http.patch(
+        url,
+        headers: {'Authorization': 'Bearer $accessToken', 'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'name': name,
+          'mission': mission,
+          'vision': vision,
+        }),
+      );
+      if (response.statusCode == 200) {
+        print('University updated successfully');
+        return true;
+      } else {
+        print('Failed to update University. Status code: ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      print('Exception while updating University: $e');
+      return false;
+    }
+  }
 }

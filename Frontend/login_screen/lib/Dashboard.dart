@@ -132,7 +132,7 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
         'Approval Process',
         'Assessments',
         'User Management',
-        'Role Management'
+        'Role Management',
         'University',
       ];
       icons = [
@@ -157,7 +157,7 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
         'Approval_Process',
         'Assessments',
         'User_Management',
-        'Role Page'
+        'Role Page',
         'University_Page',
       ];
     }

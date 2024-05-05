@@ -70,6 +70,43 @@ class _University_PageState extends State<University_Page> {
                               style: CustomTextStyles.bodyStyle(fontSize: 17),
                             ),
                           ),
+                          trailing: InkWell(
+                              onTap: () async {
+                                // call of a function to get the data of that user whose id is passed and id is
+                                // passed by tapping the user
+                                var university = await University.getUniversityById(
+                                    universities[index]['id']);
+                                if (university != null) {
+                                  University.id = university['id'];
+                                  University.name = university['name'];
+                                  University.vision = university['vision'];
+                                  University.mission = university['mission'];
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute<bool>(
+                                        builder: (context) => Create_University(
+                                          isUpdate: true,
+                                          UniversityData: university,
+                                        ),
+                                      )).then((result) {
+                                    if (result != null && result) {
+                                      // Set the state of the page here
+                                      setState(() {
+                                        universitiesFuture = University.fetchUniversities();
+                                      });
+                                    }
+                                  });
+                                }
+                              },
+                              child: Container(
+                                  height: 40,
+                                  width: 40,
+                                  child: Icon(
+                                    size: 32,
+                                    Icons.edit_square,
+                                    color: Color(0xffc19a6b),
+                                  ))
+                          ),
                           onTap: () async {
                             // call of a function to get the data of that user whose id is passed and id is
                             // passed by tapping the user

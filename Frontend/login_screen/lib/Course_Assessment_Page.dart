@@ -120,7 +120,8 @@ class _Course_Assessment_PageState extends State<Course_Assessment_Page> {
                                 height: 40,
                                 width: 40,
                                 child: Icon(
-                                  Icons.edit,
+                                  size: 32,
+                                  Icons.edit_square,
                                   color: Color(0xffc19a6b),
                                 )),
                           ),

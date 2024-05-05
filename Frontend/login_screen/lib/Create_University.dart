@@ -6,6 +6,11 @@ import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
 
 class Create_University extends StatefulWidget {
+  final bool isUpdate;
+  final Map<String, dynamic>? UniversityData;
+
+  Create_University({this.isUpdate = false, this.UniversityData});
+
   @override
   State<Create_University> createState() => _Create_UniversityState();
 }
@@ -19,21 +24,25 @@ class _Create_UniversityState extends State<Create_University> {
   Color errorColor = Colors
       .black12; // color of border of text fields when the error is not occurred
 
-  final TextEditingController UniversityNameController =
-      TextEditingController();
-  final TextEditingController UniversityMissionController =
-      TextEditingController();
-  final TextEditingController UniversityVisionController =
-      TextEditingController();
+  late  TextEditingController UniversityNameController;
+  late TextEditingController UniversityMissionController;
+  late TextEditingController UniversityVisionController;
 
   @override
+  void initState() {
+    UniversityNameController = TextEditingController(text: widget.UniversityData?['name'] ?? '');
+    UniversityMissionController = TextEditingController(text: widget.UniversityData?['mission'] ?? '');
+    UniversityVisionController = TextEditingController(text: widget.UniversityData?['vision'] ?? '');
+  }
+  @override
   Widget build(BuildContext context) {
+    String buttonText = widget.isUpdate ? 'Update' : 'Create';
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xffc19a6b),
         title: Center(
           child: Text(
-            'Create University',
+            'University Form Page',
             style: CustomTextStyles.headingStyle(fontSize: 20),
           ),
         ),
@@ -88,9 +97,16 @@ class _Create_UniversityState extends State<Create_University> {
                   setState(() {
                     isLoading = true;
                   });
-                  bool created = await University.createUniversity(
-                      UniversityName, UniversityMission, UniversityVision);
-                  if (created) {
+                  bool result;
+                  if(widget.isUpdate)
+                    {
+                      result = await University.updateCourseAssessment(widget.UniversityData?['id'], UniversityName, UniversityMission, UniversityVision);
+                    }
+                  else
+                    {
+                      result = await University.createUniversity(UniversityName, UniversityMission, UniversityVision);
+                    }
+                  if (result) {
                     //Clear all the fields
                     UniversityNameController.clear();
                     UniversityMissionController.clear();
@@ -101,12 +117,12 @@ class _Create_UniversityState extends State<Create_University> {
                       colorMessage = Colors.green;
                       errorColor =
                           Colors.black12; // Reset errorColor to default value
-                      errorMessage = 'University Created successfully';
+                      errorMessage = widget.isUpdate ? 'University updated successfully' : 'University created successfully';
                     });
                   }
                 }
               },
-              ButtonText: 'Create University',
+              ButtonText: buttonText,
               ButtonWidth: 200,
             ),
             const SizedBox(height: 20),

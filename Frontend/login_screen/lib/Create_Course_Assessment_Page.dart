@@ -158,7 +158,7 @@ class _Create_Course_Assessment_PageState
                                 isLoading = false;
                                 colorMessage = Colors.green;
                                 errorColor = Colors.black12; // Reset errorColor to default value
-                                errorMessage = widget.isUpdate ? 'Course updated successfully' : 'Course created successfully';
+                                errorMessage = widget.isUpdate ? 'Course Assessment updated successfully' : 'Course Assessment created successfully';
                               });
                             }
                           }
