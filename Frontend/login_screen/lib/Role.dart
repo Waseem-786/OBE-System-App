@@ -17,7 +17,7 @@ class Role {
   static String? get name => _name;
 
   static set name(String? value) {
-    name = value;
+    _name = value;
   }
 
   static int _group=0;
@@ -275,5 +275,29 @@ class Role {
     }
   }
 
+  static Future<bool> deleteCourse(int roleId) async {
+    try {
+      final accessToken = await storage.read(key: "access_token");
+
+      final url = Uri.parse('$ipAddress:8000/api/course/$roleId');
+      final response = await http.delete(
+        url,
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+
+      if (response.statusCode == 204) {
+        print('Role deleted successfully');
+        return true;
+      } else {
+        print('Failed to delete Role. Status code: ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      print('Exception while deleting Role: $e');
+      return false;
+    }
+  }
 
 }

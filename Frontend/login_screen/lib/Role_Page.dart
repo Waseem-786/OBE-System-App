@@ -12,6 +12,7 @@ import 'package:login_screen/University.dart';
 import 'CreateBatch.dart';
 import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
+import 'RoleProfile.dart';
 
 class Role_Page extends StatefulWidget {
   const Role_Page({super.key});
@@ -96,7 +97,6 @@ class _Role_PageState extends State<Role_Page> {
                                     if (roles[index]['id'] != null) {
                                       // Call getBatchbyBatchId only if id is not null
                                       var role = await Role.getRolebyRoleId(roles[index]['id']);
-
                                       if (role != null) {
 
                                         Role.id=role['id'];
@@ -108,6 +108,7 @@ class _Role_PageState extends State<Role_Page> {
                                         Role.department_name=role['department_name'];
                                         Role.group=role['group'];
                                         Role.name=role['group_name'];
+                                        print("hi");
                                         Role.user=role['user'];
                                         Role.group_permissions=role['group_permissions'];
 
@@ -115,7 +116,7 @@ class _Role_PageState extends State<Role_Page> {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute<bool>(
-                                            builder: (context) => (),
+                                            builder: (context) => RoleProfile(),
                                           ),
                                         ).then((result) {
                                           if (result != null && result) {
