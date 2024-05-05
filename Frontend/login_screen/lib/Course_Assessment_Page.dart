@@ -14,21 +14,20 @@ import 'package:login_screen/University.dart';
 import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
 
-class Course_Assessment_Page extends StatefulWidget{
-
+class Course_Assessment_Page extends StatefulWidget {
   @override
   State<Course_Assessment_Page> createState() => _Course_Assessment_PageState();
 }
 
 class _Course_Assessment_PageState extends State<Course_Assessment_Page> {
-
   final int course_outline_id = Outline.id;
   late Future<List<dynamic>> CourseAssessment;
 
   @override
   void initState() {
     super.initState();
-    CourseAssessment = Course_Assessment.fetchCourseAssessment(course_outline_id);
+    CourseAssessment =
+        Course_Assessment.fetchCourseAssessment(course_outline_id);
   }
 
   @override
@@ -39,7 +38,8 @@ class _Course_Assessment_PageState extends State<Course_Assessment_Page> {
     if (currentRoute != null && currentRoute.isCurrent) {
       // Call your refresh function here
       setState(() {
-        CourseAssessment = Course_Assessment.fetchCourseAssessment(course_outline_id);
+        CourseAssessment =
+            Course_Assessment.fetchCourseAssessment(course_outline_id);
       });
     }
   }
@@ -49,9 +49,8 @@ class _Course_Assessment_PageState extends State<Course_Assessment_Page> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xffc19a6b),
-        title: Text(
-            'Course Assessment Page',style: CustomTextStyles.headingStyle(fontSize: 22)
-        ),
+        title: Text('Course Assessment Page',
+            style: CustomTextStyles.headingStyle(fontSize: 22)),
       ),
       body: Column(
         children: [
@@ -76,17 +75,69 @@ class _Course_Assessment_PageState extends State<Course_Assessment_Page> {
                         child: ListTile(
                           title: Padding(
                             padding: const EdgeInsets.all(20.0),
-                            child: Text(item['name'], style: CustomTextStyles.bodyStyle(fontSize: 17)),
+                            child: Text(item['name'],
+                                style:
+                                    CustomTextStyles.bodyStyle(fontSize: 17)),
+                          ),
+                          trailing: InkWell(
+                            onTap: () async {
+                              var itemData = await Course_Assessment
+                                  .fetchSingleCourseAssessment(
+                                      courseAssessments[index]['id']);
+                              if (itemData != null) {
+                                Course_Assessment.id = itemData['id'];
+                                Course_Assessment.name = itemData['name'];
+                                Course_Assessment.count = itemData['count'];
+                                Course_Assessment.weight =
+                                    double.tryParse(itemData['weight'])!;
+                                Course_Assessment.clo =
+                                    List<int>.from(itemData['clo']);
+                                Course_Assessment.course_outline =
+                                    itemData['course_outline'];
+
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute<bool>(
+                                    builder: (context) =>
+                                        Create_Course_Assessment_Page(
+                                      isUpdate: true,
+                                      courseAssessmentData: itemData,
+                                    ),
+                                  ),
+                                ).then((result) {
+                                  if (result != null && result) {
+                                    // Set the state of the page here
+                                    setState(() {
+                                      CourseAssessment = Course_Assessment
+                                          .fetchCourseAssessment(
+                                              course_outline_id);
+                                    });
+                                  }
+                                });
+                              }
+                            },
+                            child: Container(
+                                height: 40,
+                                width: 40,
+                                child: Icon(
+                                  Icons.edit,
+                                  color: Color(0xffc19a6b),
+                                )),
                           ),
                           onTap: () async {
-                            var itemData = await Course_Assessment.fetchSingleCourseAssessment(courseAssessments[index]['id']);
+                            var itemData = await Course_Assessment
+                                .fetchSingleCourseAssessment(
+                                    courseAssessments[index]['id']);
                             if (itemData != null) {
                               Course_Assessment.id = itemData['id'];
                               Course_Assessment.name = itemData['name'];
                               Course_Assessment.count = itemData['count'];
-                              Course_Assessment.weight = double.tryParse(itemData['weight'])!;
-                              Course_Assessment.clo = List<int>.from(itemData['clo']);
-                              Course_Assessment.course_outline = itemData['course_outline'];
+                              Course_Assessment.weight =
+                                  double.tryParse(itemData['weight'])!;
+                              Course_Assessment.clo =
+                                  List<int>.from(itemData['clo']);
+                              Course_Assessment.course_outline =
+                                  itemData['course_outline'];
 
                               Navigator.push(
                                   context,
@@ -97,7 +148,9 @@ class _Course_Assessment_PageState extends State<Course_Assessment_Page> {
                                 if (result != null && result) {
                                   // Set the state of the page here
                                   setState(() {
-                                    CourseAssessment = Course_Assessment.fetchCourseAssessment(course_outline_id);
+                                    CourseAssessment =
+                                        Course_Assessment.fetchCourseAssessment(
+                                            course_outline_id);
                                   });
                                 }
                               });
@@ -119,7 +172,8 @@ class _Course_Assessment_PageState extends State<Course_Assessment_Page> {
                 onPressedFunction: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => Create_Course_Assessment_Page()),
+                    MaterialPageRoute(
+                        builder: (context) => Create_Course_Assessment_Page()),
                   );
                 },
                 ButtonText: 'Add Course Assessment',
@@ -131,5 +185,4 @@ class _Course_Assessment_PageState extends State<Course_Assessment_Page> {
       ),
     );
   }
-
 }

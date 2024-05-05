@@ -6,11 +6,18 @@ import 'Custom_Widgets/Custom_Text_Field.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
 
 class Create_Course_Assessment_Page extends StatefulWidget {
+  final bool isUpdate;
+  final Map<String, dynamic>? courseAssessmentData;
+
+  Create_Course_Assessment_Page({this.isUpdate = false, this.courseAssessmentData});
+
   @override
-  State<Create_Course_Assessment_Page> createState() => _Create_Course_Assessment_PageState();
+  State<Create_Course_Assessment_Page> createState() =>
+      _Create_Course_Assessment_PageState();
 }
 
-class _Create_Course_Assessment_PageState extends State<Create_Course_Assessment_Page> {
+class _Create_Course_Assessment_PageState
+    extends State<Create_Course_Assessment_Page> {
   @override
   // void initState() {
   //   // TODO: implement initState
@@ -25,19 +32,29 @@ class _Create_Course_Assessment_PageState extends State<Create_Course_Assessment
   Color errorColor = Colors.black12;
   // color of border of text fields when the error is not occurred
 
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController countController = TextEditingController();
-  final TextEditingController weightController = TextEditingController();
-  final TextEditingController course_outlineController =
-  TextEditingController();
-  final TextEditingController closController = TextEditingController();
+  late TextEditingController nameController;
+  late TextEditingController countController;
+  late TextEditingController weightController;
+  late TextEditingController course_outlineController;
+  late TextEditingController closController;
+
+  @override
+  void initState() {
+    super.initState();
+    nameController = TextEditingController(text: widget.courseAssessmentData?['name'] ?? '');
+    countController = TextEditingController(text: widget.courseAssessmentData?['count']?.toString() ?? '');
+    weightController = TextEditingController(text: widget.courseAssessmentData?['weight']?.toString() ?? '');
+    course_outlineController = TextEditingController(text: widget.courseAssessmentData?['course_outline']?.toString() ?? '');
+    closController = TextEditingController(text: widget.courseAssessmentData?['clo']?.join(',') ?? '');
+  }
 
   @override
   Widget build(BuildContext context) {
+    String buttonText = widget.isUpdate ? 'Update' : 'Create';
     return Scaffold(
         appBar: AppBar(
           backgroundColor: const Color(0xffc19a6b),
-          title: Text('Create Course Assessment Page',
+          title: Text('Course Assessment Form',
               style: CustomTextStyles.headingStyle(fontSize: 22)),
         ),
         body: Container(
@@ -76,18 +93,18 @@ class _Create_Course_Assessment_PageState extends State<Create_Course_Assessment
                         height: 20,
                       ),
                       CustomTextFormField(
-                        controller: course_outlineController,
-                        hintText: 'Enter Course Outline id',
-                        label: 'Enter Course Outline id',
+                        controller: closController,
+                        hintText: '1,2,3,...',
+                        label: 'Enter CLOs number',
                         Keyboard_Type: TextInputType.number,
                       ),
                       const SizedBox(
                         height: 20,
                       ),
                       CustomTextFormField(
-                        controller: closController,
-                        hintText: '1,2,3,...',
-                        label: 'Enter CLOs number',
+                        controller: course_outlineController,
+                        hintText: 'Enter Course Outline id',
+                        label: 'Enter Course Outline id',
                         Keyboard_Type: TextInputType.number,
                       ),
                       const SizedBox(
@@ -97,20 +114,11 @@ class _Create_Course_Assessment_PageState extends State<Create_Course_Assessment
                         onPressedFunction: () async {
                           String name = nameController.text;
                           int? count = int.tryParse(countController.text);
-                          double? weight =
-                          double.tryParse(weightController.text);
-                          int? course_outline_id =
-                          int.tryParse(course_outlineController.text);
-                          List<int?> clo = closController.text
-                              .split(',')
-                              .map((e) => int.tryParse(e.trim()))
-                              .toList();
+                          double? weight = double.tryParse(weightController.text);
+                          int? course_outline_id = int.tryParse(course_outlineController.text);
+                          List<int?> clo = closController.text.split(',').map((e) => int.tryParse(e.trim())).toList();
 
-                          if (name.isEmpty ||
-                              count == null ||
-                              weight == null ||
-                              course_outline_id == null ||
-                              clo.isEmpty) {
+                          if (name.isEmpty || count == null || weight == null || course_outline_id == null || clo.isEmpty) {
                             setState(() {
                               colorMessage = Colors.red;
                               errorColor = Colors.red;
@@ -120,14 +128,26 @@ class _Create_Course_Assessment_PageState extends State<Create_Course_Assessment
                             setState(() {
                               isLoading = true;
                             });
-                            bool created =
-                            await Course_Assessment.createCourseAssessment(
+                            bool result;
+                            if (widget.isUpdate) {
+                              result = await Course_Assessment.updateCourseAssessment(
+                                widget.courseAssessmentData?['id'],
                                 name,
                                 count,
                                 weight,
                                 course_outline_id,
-                                clo);
-                            if (created) {
+                                clo,
+                              );
+                            } else {
+                              result = await Course_Assessment.createCourseAssessment(
+                                name,
+                                count,
+                                weight,
+                                course_outline_id,
+                                clo,
+                              );
+                            }
+                            if (result) {
                               nameController.clear();
                               countController.clear();
                               weightController.clear();
@@ -137,16 +157,14 @@ class _Create_Course_Assessment_PageState extends State<Create_Course_Assessment
                               setState(() {
                                 isLoading = false;
                                 colorMessage = Colors.green;
-                                errorColor = Colors
-                                    .black12; // Reset errorColor to default value
-                                errorMessage =
-                                'Course Assessment Created successfully';
+                                errorColor = Colors.black12; // Reset errorColor to default value
+                                errorMessage = widget.isUpdate ? 'Course updated successfully' : 'Course created successfully';
                               });
                             }
                           }
                         },
                         ButtonWidth: 160,
-                        ButtonText: 'Create',
+                        ButtonText: buttonText,
                       ),
                       const SizedBox(height: 20),
                       Visibility(
