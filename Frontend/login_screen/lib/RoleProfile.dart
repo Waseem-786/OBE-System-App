@@ -180,7 +180,7 @@ class _RoleProfileState extends State<RoleProfile> {
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Text(
-            "$label: ${value ?? 'Not provided'}",
+            "$label: ${value ?? 'Null'}",
             style: CustomTextStyles.bodyStyle(fontSize: 19),
           ),
         ),

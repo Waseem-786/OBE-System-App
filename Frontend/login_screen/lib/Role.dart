@@ -227,6 +227,22 @@ class Role {
     }
   }
 
+  static Future<List<dynamic>> fetchCampusLevelRoles(int campus_id) async {
+    final accessToken = await storage.read(key: "access_token");
+    final url = Uri.parse('$ipAddress:8000/api/campus/role/$campus_id');
+    final response = await http.get(
+      url,
+      headers: {'Authorization': 'Bearer $accessToken'},
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body) as List<dynamic>;
+    } else {
+      throw Exception('Failed to Load Roles');
+    }
+  }
+
+
   static Future<bool> createRoleByDepartmentPerson(
       String name, int department_id) async {
     try {
@@ -257,6 +273,24 @@ class Role {
     }
   }
 
+  static Future<List<dynamic>> fetchDeptLevelRoles(int department_id)
+  async {
+    final accessToken = await storage.read(key: "access_token");
+    final url = Uri.parse('$ipAddress:8000/api/department/role/$department_id');
+    final response = await http.get(
+      url,
+      headers: {'Authorization': 'Bearer $accessToken'},
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body) as List<dynamic>;
+    } else {
+      throw Exception('Failed to Load Roles');
+    }
+  }
+
+
+
   static Future<Map<String, dynamic>?> getRolebyRoleId(int roleId)
   async {
     final accessToken = await storage.read(key: "access_token");
@@ -278,8 +312,7 @@ class Role {
   static Future<bool> deleteCourse(int roleId) async {
     try {
       final accessToken = await storage.read(key: "access_token");
-
-      final url = Uri.parse('$ipAddress:8000/api/course/$roleId');
+      final url = Uri.parse('$ipAddress:8000/api/role/$roleId');
       final response = await http.delete(
         url,
         headers: {
@@ -292,6 +325,7 @@ class Role {
         return true;
       } else {
         print('Failed to delete Role. Status code: ${response.statusCode}');
+        print(response.body);
         return false;
       }
     } catch (e) {

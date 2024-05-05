@@ -10,9 +10,11 @@ import 'package:login_screen/Role.dart';
 import 'package:login_screen/SectionPage.dart';
 import 'package:login_screen/University.dart';
 import 'CreateBatch.dart';
+import 'Create_Role.dart';
 import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
 import 'RoleProfile.dart';
+import 'User.dart';
 
 class Role_Page extends StatefulWidget {
   const Role_Page({super.key});
@@ -25,10 +27,23 @@ class _Role_PageState extends State<Role_Page> {
 
   late Future<List<dynamic>> roleFuture;
 
+  void fetchRolesBasedOnUserRole() {
+    if (User.isSuperUser) {
+        roleFuture = Role.fetchTopLevelRoles();
+    } else if (User.isUniLevel()) {
+        roleFuture = Role.fetchUniLevelRoles(University.id);
+    } else if (User.iscampusLevel()) {
+        roleFuture = Role.fetchCampusLevelRoles(Campus.id);
+    } else if (User.isdeptLevel()) {
+        roleFuture = Role.fetchDeptLevelRoles(Department.id);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    roleFuture = Role.fetchTopLevelRoles();
+    print(Campus.id);
+    fetchRolesBasedOnUserRole();
   }
 
   @override
@@ -39,7 +54,7 @@ class _Role_PageState extends State<Role_Page> {
     if (currentRoute != null && currentRoute.isCurrent) {
       // Call your refresh function here
       setState(() {
-        roleFuture = Role.fetchTopLevelRoles();
+        fetchRolesBasedOnUserRole();
       });
     }
   }
@@ -108,7 +123,6 @@ class _Role_PageState extends State<Role_Page> {
                                         Role.department_name=role['department_name'];
                                         Role.group=role['group'];
                                         Role.name=role['group_name'];
-                                        print("hi");
                                         Role.user=role['user'];
                                         Role.group_permissions=role['group_permissions'];
 
@@ -122,8 +136,9 @@ class _Role_PageState extends State<Role_Page> {
                                           if (result != null && result) {
                                             // Set the state of the page here
                                             setState(() {
-                                              roleFuture = Role.fetchTopLevelRoles();
-
+                                              // roleFuture = Role.fetchTopLevelRoles();
+                                               fetchRolesBasedOnUserRole();
+                                              // roleFuture=Role.fetchUniLevelRoles(University.id);
                                             });
                                           }
                                         });
@@ -143,10 +158,10 @@ class _Role_PageState extends State<Role_Page> {
                   onPressedFunction: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => CreateBatch()),
+                      MaterialPageRoute(builder: (context) => Create_Role()),
                     );
                   },
-                  ButtonText: 'Add Batch',
+                  ButtonText: 'Add Role',
                   ButtonWidth: 200,
                 ),
               ),
