@@ -145,9 +145,9 @@ class Outline {
     }
   }
   static Future<bool> deleteOutline(int id) async {
+    final accessToken = await storage.read(key: "access_token");
+    final url = Uri.parse('$ipAddress:8000/api/outline/$id');
     try {
-      final accessToken = await storage.read(key: "access_token");
-      final url = Uri.parse('$ipAddress:8000/api/outline/$id');
       final response = await http.delete(
         url,
         headers: {'Authorization': 'Bearer $accessToken'},
@@ -164,6 +164,7 @@ class Outline {
       return false;
     }
   }
+
   static  Future<Map<String, dynamic>?> fetchSingleOutline(int id) async {
     final accessToken = await storage.read(key: "access_token");
     final url = Uri.parse('$ipAddress:8000/api/outline/$id');
@@ -172,11 +173,30 @@ class Outline {
       headers: {'Authorization': 'Bearer $accessToken'},
     );
     if (response.statusCode == 200) {
-      print(response.body);
       return jsonDecode(response.body);
     } else {
       print('Failed to load Outline');
       return {};
+    }
+  }
+
+  static  Future<Map<String, dynamic>?> fetchCompleteOutline(int id) async {
+    final accessToken = await storage.read(key: "access_token");
+    final url = Uri.parse('$ipAddress:8000/api/complete-outline/$id');
+    try{
+      final response = await http.get(
+        url,
+        headers: {'Authorization': 'Bearer $accessToken'},
+      );
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        print('Failed to load Outline');
+        return null;
+      }
+    } catch(e){
+      print("Exception while fetching complete outline: $e");
+      return null;
     }
   }
 

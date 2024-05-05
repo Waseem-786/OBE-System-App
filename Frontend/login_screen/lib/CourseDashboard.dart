@@ -19,6 +19,7 @@ class _CourseDashboardState extends State<CourseDashboard> {
 
 
   List<String> headings = [
+    'Complete Outline',
     'Course Objective',
     'Course Assessment',
     'Course Schedule',
@@ -29,6 +30,7 @@ class _CourseDashboardState extends State<CourseDashboard> {
   ];
 
   List<IconData> icons = [
+    FontAwesomeIcons.list,
     FontAwesomeIcons.bullseye,
     FontAwesomeIcons.pollH,
     FontAwesomeIcons.calendar,
@@ -41,6 +43,7 @@ class _CourseDashboardState extends State<CourseDashboard> {
   ];
 
   List<String> screenNames = [
+    'Course_Outline_Profile',
     'Objective_Page',
     'Course_Assessment_Page',
     'Course_Schedule_Profile',
@@ -58,12 +61,6 @@ class _CourseDashboardState extends State<CourseDashboard> {
       ),
       body: Column(
         children: [
-
-
-          const SizedBox(
-            height: 50,
-          ),
-
           SingleChildScrollView(
             child: SizedBox(
               height: 700,

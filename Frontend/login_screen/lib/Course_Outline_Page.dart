@@ -17,7 +17,6 @@ class _Course_Outline_PageState extends State<Course_Outline_Page> {
   @override
   void initState() {
     CourseOutlines = Outline.fetchOutlineByCourse(Course.id);
-    print(CourseOutlines);
   }
 
   @override
