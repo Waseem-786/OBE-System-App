@@ -2,12 +2,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Field.dart';
+import 'package:login_screen/Custom_Widgets/UpdateWidget.dart';
 import 'Campus.dart';
 import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
 import 'University.dart';
 
 class Create_Campus extends StatefulWidget {
+  final bool isUpdate;
+  final Map<String, dynamic>? CampusData;
+
+  Create_Campus({this.isUpdate = false, this.CampusData});
+
   @override
   State<Create_Campus> createState() => _Create_CampusState();
 }
@@ -23,36 +29,28 @@ class _Create_CampusState extends State<Create_Campus> {
   Color errorColor = Colors
       .black12; // color of border of text fields when the error is not occurred
 
-  // for Encryption purpose
-  final storage = const FlutterSecureStorage(
-    aOptions: AndroidOptions(
-      encryptedSharedPreferences: true,
-    ),
-  );
-
+  late TextEditingController CampusNameController;
+  late TextEditingController CampusMissionController;
+  late TextEditingController CampusVisionController;
   @override
   void initState() {
-    super.initState();
-    storage.read(key: "access_token").then((accessToken) {
-      // show the users of that person(authority) who is logged in
-      myToken = accessToken;
-    });
+    CampusNameController =
+        TextEditingController(text: widget.CampusData?['name'] ?? '');
+    CampusMissionController =
+        TextEditingController(text: widget.CampusData?['mission'] ?? '');
+    CampusVisionController =
+        TextEditingController(text: widget.CampusData?['vision'] ?? '');
   }
-
-  final TextEditingController CampusNameController = TextEditingController();
-  final TextEditingController CampusMissionController = TextEditingController();
-  final TextEditingController CampusVisionController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    String buttonText = widget.isUpdate ? 'Update' : 'Create';
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xffc19a6b),
-        title: Center(
-          child: Text(
-            'Campus Page',
-            style: CustomTextStyles.headingStyle(fontSize: 20),
-          ),
+        title: Text(
+          'Campus Form Page',
+          style: CustomTextStyles.headingStyle(fontSize: 20),
         ),
       ),
       body: Padding(
@@ -90,6 +88,20 @@ class _Create_CampusState extends State<Create_Campus> {
             ),
             Custom_Button(
               onPressedFunction: () async {
+                if (widget.isUpdate) {
+                  // Show confirmation dialog
+                  bool confirmUpdate = await showDialog(
+                    context: context,
+                    builder: (context) => const UpdateWidget(
+                      title: "Confirm Update",
+                      content: "Are you sure you want to update Campus?",
+                    ),
+                  );
+                  if (!confirmUpdate) {
+                    return; // Cancel the update if user selects 'No' in the dialog
+                  }
+                }
+                // Continue with update or create logic
                 String CampusName = CampusNameController.text;
                 String CampusMission = CampusMissionController.text;
                 String CampusVision = CampusVisionController.text;
@@ -105,9 +117,15 @@ class _Create_CampusState extends State<Create_Campus> {
                   setState(() {
                     isLoading = true;
                   });
-                  bool created = await Campus.createCampus(
-                      CampusName, CampusMission, CampusVision, University_id);
-                  if (created) {
+                  bool result;
+                  if (widget.isUpdate) {
+                    result = await Campus.updateCampus(widget.CampusData?['id'],
+                        CampusName, CampusMission, CampusVision);
+                  } else {
+                    result = await Campus.createCampus(
+                        CampusName, CampusMission, CampusVision, University_id);
+                  }
+                  if (result) {
                     // Clear the text fields
                     CampusNameController.clear();
                     CampusMissionController.clear();
@@ -118,13 +136,17 @@ class _Create_CampusState extends State<Create_Campus> {
                       colorMessage = Colors.green;
                       errorColor =
                           Colors.black12; // Reset errorColor to default value
-                      errorMessage = 'Campus Created successfully';
+                      errorMessage = widget.isUpdate
+                          ? 'Campus Updated successfully'
+                          : 'Campus Created successfully';
                     });
                   }
                 }
               },
-              ButtonText: 'Create Campus',
-              ButtonWidth: 200,
+              BackgroundColor: Color(0xffc19a6b),
+              ForegroundColor: Colors.white,
+              ButtonText: buttonText,
+              ButtonWidth: 120,
             ),
             const SizedBox(height: 20),
             Visibility(

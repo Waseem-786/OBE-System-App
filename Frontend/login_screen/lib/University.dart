@@ -130,7 +130,7 @@ class University {
       return false;
     }
   }
-  static Future<bool> updateCourseAssessment(int id,String name,String mission,String vision) async {
+  static Future<bool> updateUniversity(int id,String name,String mission,String vision) async {
     try {
       final accessToken = await storage.read(key: "access_token");
       final url = Uri.parse('$ipAddress:8000/api/university/$id');

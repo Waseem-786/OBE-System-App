@@ -4,12 +4,14 @@ import 'package:login_screen/Course_Assessment.dart';
 import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Field.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
+import 'Custom_Widgets/UpdateWidget.dart';
 
 class Create_Course_Assessment_Page extends StatefulWidget {
   final bool isUpdate;
   final Map<String, dynamic>? courseAssessmentData;
 
-  Create_Course_Assessment_Page({this.isUpdate = false, this.courseAssessmentData});
+  Create_Course_Assessment_Page(
+      {this.isUpdate = false, this.courseAssessmentData});
 
   @override
   State<Create_Course_Assessment_Page> createState() =>
@@ -41,11 +43,16 @@ class _Create_Course_Assessment_PageState
   @override
   void initState() {
     super.initState();
-    nameController = TextEditingController(text: widget.courseAssessmentData?['name'] ?? '');
-    countController = TextEditingController(text: widget.courseAssessmentData?['count']?.toString() ?? '');
-    weightController = TextEditingController(text: widget.courseAssessmentData?['weight']?.toString() ?? '');
-    course_outlineController = TextEditingController(text: widget.courseAssessmentData?['course_outline']?.toString() ?? '');
-    closController = TextEditingController(text: widget.courseAssessmentData?['clo']?.join(',') ?? '');
+    nameController =
+        TextEditingController(text: widget.courseAssessmentData?['name'] ?? '');
+    countController = TextEditingController(
+        text: widget.courseAssessmentData?['count']?.toString() ?? '');
+    weightController = TextEditingController(
+        text: widget.courseAssessmentData?['weight']?.toString() ?? '');
+    course_outlineController = TextEditingController(
+        text: widget.courseAssessmentData?['course_outline']?.toString() ?? '');
+    closController = TextEditingController(
+        text: widget.courseAssessmentData?['clo']?.join(',') ?? '');
   }
 
   @override
@@ -70,6 +77,7 @@ class _Create_Course_Assessment_PageState
                         controller: nameController,
                         hintText: 'Enter Assignment Name',
                         label: 'Enter Assignment Name',
+                        borderColor: errorColor,
                       ),
                       const SizedBox(
                         height: 20,
@@ -79,6 +87,7 @@ class _Create_Course_Assessment_PageState
                         hintText: 'Enter  Count',
                         label: 'Enter Count',
                         Keyboard_Type: TextInputType.number,
+                        borderColor: errorColor,
                       ),
                       const SizedBox(
                         height: 20,
@@ -88,6 +97,7 @@ class _Create_Course_Assessment_PageState
                         hintText: 'Enter Weightage',
                         label: 'Enter Weightage',
                         Keyboard_Type: TextInputType.number,
+                        borderColor: errorColor,
                       ),
                       const SizedBox(
                         height: 20,
@@ -97,6 +107,7 @@ class _Create_Course_Assessment_PageState
                         hintText: '1,2,3,...',
                         label: 'Enter CLOs number',
                         Keyboard_Type: TextInputType.number,
+                        borderColor: errorColor,
                       ),
                       const SizedBox(
                         height: 20,
@@ -106,19 +117,43 @@ class _Create_Course_Assessment_PageState
                         hintText: 'Enter Course Outline id',
                         label: 'Enter Course Outline id',
                         Keyboard_Type: TextInputType.number,
+                        borderColor: errorColor,
                       ),
                       const SizedBox(
                         height: 20,
                       ),
                       Custom_Button(
                         onPressedFunction: () async {
+                          if (widget.isUpdate) {
+                            // Show confirmation dialog
+                            bool confirmUpdate = await showDialog(
+                              context: context,
+                              builder: (context) => const UpdateWidget(
+                                title: "Confirm Update",
+                                content:
+                                    "Are you sure you want to update Course Assessment?",
+                              ),
+                            );
+                            if (!confirmUpdate) {
+                              return; // Cancel the update if user selects 'No' in the dialog
+                            }
+                          }
                           String name = nameController.text;
                           int? count = int.tryParse(countController.text);
-                          double? weight = double.tryParse(weightController.text);
-                          int? course_outline_id = int.tryParse(course_outlineController.text);
-                          List<int?> clo = closController.text.split(',').map((e) => int.tryParse(e.trim())).toList();
+                          double? weight =
+                              double.tryParse(weightController.text);
+                          int? course_outline_id =
+                              int.tryParse(course_outlineController.text);
+                          List<int?> clo = closController.text
+                              .split(',')
+                              .map((e) => int.tryParse(e.trim()))
+                              .toList();
 
-                          if (name.isEmpty || count == null || weight == null || course_outline_id == null || clo.isEmpty) {
+                          if (name.isEmpty ||
+                              count == null ||
+                              weight == null ||
+                              course_outline_id == null ||
+                              clo.isEmpty) {
                             setState(() {
                               colorMessage = Colors.red;
                               errorColor = Colors.red;
@@ -130,7 +165,8 @@ class _Create_Course_Assessment_PageState
                             });
                             bool result;
                             if (widget.isUpdate) {
-                              result = await Course_Assessment.updateCourseAssessment(
+                              result = await Course_Assessment
+                                  .updateCourseAssessment(
                                 widget.courseAssessmentData?['id'],
                                 name,
                                 count,
@@ -139,7 +175,8 @@ class _Create_Course_Assessment_PageState
                                 clo,
                               );
                             } else {
-                              result = await Course_Assessment.createCourseAssessment(
+                              result = await Course_Assessment
+                                  .createCourseAssessment(
                                 name,
                                 count,
                                 weight,
@@ -157,14 +194,19 @@ class _Create_Course_Assessment_PageState
                               setState(() {
                                 isLoading = false;
                                 colorMessage = Colors.green;
-                                errorColor = Colors.black12; // Reset errorColor to default value
-                                errorMessage = widget.isUpdate ? 'Course Assessment updated successfully' : 'Course Assessment created successfully';
+                                errorColor = Colors
+                                    .black12; // Reset errorColor to default value
+                                errorMessage = widget.isUpdate
+                                    ? 'Course Assessment updated successfully'
+                                    : 'Course Assessment created successfully';
                               });
                             }
                           }
                         },
-                        ButtonWidth: 160,
+                        BackgroundColor: Color(0xffc19a6b),
+                        ForegroundColor: Colors.white,
                         ButtonText: buttonText,
+                        ButtonWidth: 120,
                       ),
                       const SizedBox(height: 20),
                       Visibility(
@@ -173,10 +215,10 @@ class _Create_Course_Assessment_PageState
                       ),
                       errorMessage != null
                           ? Text(
-                        errorMessage!,
-                        style: CustomTextStyles.bodyStyle(
-                            color: colorMessage),
-                      )
+                              errorMessage!,
+                              style: CustomTextStyles.bodyStyle(
+                                  color: colorMessage),
+                            )
                           : const SizedBox(),
                     ],
                   ),

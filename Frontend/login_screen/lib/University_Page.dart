@@ -37,10 +37,8 @@ class _University_PageState extends State<University_Page> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xffc19a6b),
-        title: Center(
-          child: Text('University Page',
-              style: CustomTextStyles.headingStyle(fontSize: 22)),
-        ),
+        title: Text('University Page',
+            style: CustomTextStyles.headingStyle(fontSize: 22)),
       ),
       body: Column(
         children: [

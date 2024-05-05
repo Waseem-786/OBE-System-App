@@ -43,10 +43,8 @@ class _Campus_PageState extends State<Campus_Page> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xffc19a6b),
-        title: Center(
-          child: Text(
-            'Campus Page',style: CustomTextStyles.headingStyle(fontSize: 22)
-          ),
+        title: Text(
+          'Campus Page',style: CustomTextStyles.headingStyle(fontSize: 22)
         ),
       ),
       body: Column(
@@ -74,6 +72,43 @@ class _Campus_PageState extends State<Campus_Page> {
                             padding: const EdgeInsets.all(20.0),
                             child: Text(campus['name'], style: CustomTextStyles.bodyStyle(fontSize: 17)),
                           ),
+                          trailing: InkWell(
+                              onTap: () async {
+                                var campusData = await Campus.getCampusById(campuses[index]['id']);
+                                if (campusData != null) {
+                                  Campus.id = campusData['id'];
+                                  Campus.name = campusData['name'];
+                                  Campus.mission = campusData['mission'];
+                                  Campus.vision = campusData['vision'];
+                                  Campus.university_id = campusData['university'];
+                                  Campus.university_name = campusData['university_name'];
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute<bool>(
+                                        builder: (context) =>
+                                    Create_Campus(
+                                      isUpdate: true,
+                                      CampusData: campusData,
+                                    ),
+                                      )).then((result) {
+                                    if (result != null && result) {
+                                      // Set the state of the page here
+                                      setState(() {
+                                        campusesFuture = Campus.fetchCampusesByUniversityId(university_id);
+                                      });
+                                    }
+                                  });
+                                  // Perform actions with campusData
+                                }
+                              },
+                              child: Container(
+                                  height: 40,
+                                  width: 40,
+                                  child: Icon(
+                                    size: 32,
+                                    Icons.edit_square,
+                                    color: Color(0xffc19a6b),
+                                  ))),
                           onTap: () async {
                             var campusData = await Campus.getCampusById(campuses[index]['id']);
                             if (campusData != null) {
