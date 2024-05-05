@@ -16,6 +16,7 @@ class Batch{
   }
 
   static String _name = "";
+
   static List<dynamic> _sections = [];
 
   static List<dynamic> get sections => _sections;

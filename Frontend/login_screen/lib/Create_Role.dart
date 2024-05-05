@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
@@ -6,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:login_screen/Campus.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Button.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Style.dart';
+import 'package:login_screen/Department.dart';
 import 'package:login_screen/University.dart';
+import 'package:login_screen/User.dart';
 import 'Custom_Widgets/Custom_Text_Field.dart';
 import 'Role.dart';
 
@@ -73,12 +74,24 @@ class _Create_Role_Page extends State<Create_Role> {
                     isLoading = true;
                   });
 
-                  bool created = await Role.createRoleByCampusPerson
-                    (RoleName, Campus.name);
-                  // Role.createRoleByUniversityPerson
-                  //   (RoleName, University.name);
+                  bool created=false;
 
-                  //print(University.name);
+                  if(User.isSuperUser){
+                    created = await Role.createRoleBySuperUser(RoleName);
+                  }
+                  else if(User.isUniLevel()){
+                    created= await Role.createRoleByUniversityPerson(RoleName,
+                        University.id);
+                  }
+                  else if(User.iscampusLevel()){
+                    created=await Role.createRoleByCampusPerson
+                      (RoleName, Campus.id);
+                  }
+                  else if(User.isdeptLevel()){
+                    created= await Role.createRoleByDepartmentPerson
+                      (RoleName, Department.id);
+                  }
+
 
                   if (created) {
                     Role_Controller.clear();

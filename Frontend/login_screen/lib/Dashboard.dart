@@ -271,7 +271,7 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
                         children: [
                           Text(User.username,
                               style:
-                                  CustomTextStyles.bodyStyle(fontSize: 27)),
+                              CustomTextStyles.bodyStyle(fontSize: 27)),
                           Text(
                             User.email,
                             style: CustomTextStyles.bodyStyle(),
@@ -297,7 +297,7 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
                     child: GridView.builder(
                       shrinkWrap: true,
                       gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
+                      const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
                         crossAxisSpacing: 4,
                         mainAxisSpacing: 4,
@@ -342,7 +342,7 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
                                   child: Center(
                                     child: Column(
                                       mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                                      MainAxisAlignment.center,
                                       children: [
                                         Icon(
                                           icons[index],
@@ -355,7 +355,7 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
                                         Text(
                                           headings[index],
                                           style:
-                                              CustomTextStyles.headingStyle(
+                                          CustomTextStyles.headingStyle(
                                             color: Colors.white,
                                             fontSize: 19,
                                           ),
