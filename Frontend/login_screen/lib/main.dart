@@ -7,6 +7,7 @@ import 'package:login_screen/CourseBookPage.dart';
 import 'package:login_screen/Course_Schedule_Profile.dart';
 import 'package:login_screen/Course_Page.dart';
 import 'package:login_screen/Create_Course_Schedule.dart';
+import 'package:login_screen/Create_Role.dart';
 import 'package:login_screen/Program_Management.dart';
 import 'package:login_screen/PLO_Page.dart';
 import 'package:login_screen/University_Page.dart';
@@ -57,6 +58,8 @@ class MyApp extends StatelessWidget {
         '/Course_Books': (context) => CourseBookPage(),
         '/Show_CLO_PLO_Mapping': (context) => Show_CLO_PLO_Mapping(),
         '/Weekly_Topics_Page' : (context) => WeeklyTopicsPage(),
+        '/Role Page' : (context) => Create_Role(),
+
       },
     );
   }
