@@ -33,7 +33,7 @@ class Section{
   async {
     try {
       final accessToken = await storage.read(key: "access_token");
-      final url = Uri.parse('$ipAddress:8000/api/section/$batchId');
+      final url = Uri.parse('$ipAddress:8000/api/section');
       final response = await http.post(
         url,
         headers: {
@@ -42,6 +42,7 @@ class Section{
         },
         body: jsonEncode({
           'name': name,
+          'batch' :batchId
         }),
       );
       if (response.statusCode == 201) {

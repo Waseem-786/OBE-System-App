@@ -3,9 +3,12 @@ import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:login_screen/Campus.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Button.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Style.dart';
+import 'package:login_screen/University.dart';
 import 'Custom_Widgets/Custom_Text_Field.dart';
+import 'Role.dart';
 
 class Create_Role extends StatefulWidget {
   const Create_Role({super.key});
@@ -16,54 +19,18 @@ class Create_Role extends StatefulWidget {
 
 class _Create_Role_Page extends State<Create_Role> {
 
-  final TextEditingController RoleController = TextEditingController();
-  String Create_success='';
+  //int departmentid = User.departmentid;
 
+  String?errorMessage;
+  //variable to show the error when the wrong credentials are entered or the fields are empty
+  Color colorMessage = Colors.red;
+  // color of the message when the error occurs
+  var isLoading = false;
+  // variable for use the functionality of loading while request is processed to server
+  Color errorColor = Colors.black12;
+  // color of border of text fields when the error is not occurred
 
-  Future<void> _Create_Role() async{
-  {
-
-  String role= RoleController.text;
-
-  print(role);
-  print('hi');
-  if(role.isNotEmpty){
-
-  String apiUrl = 'http://192.168.0.112:8000/api/role';
-
-
-  try{
-
-  var response = await http.post(
-  Uri.parse(apiUrl),
-  body: {'name': role},
-  );
-  print(response);
-  if (response.statusCode == 200) {
-    // Role created successfully
-    print('Role created successfully');
-    // You can add further actions here, such as navigating to another screen
-  } else {
-    print(response.body);
-    // Handle other status codes appropriately
-    print('Failed to create role. Status code: ${response.statusCode}');
-  }
-
-  }
-  catch (e) {
-    // Handle any exceptions
-    print('Error creating role: $e');
-  }
-  } else {
-    // Handle case where role is empty
-    print('Role name cannot be empty');
-  }
-  }
-
-
-  }
-
-
+  final TextEditingController Role_Controller = TextEditingController();
 
 
   Widget build(BuildContext context) {
@@ -71,47 +38,75 @@ class _Create_Role_Page extends State<Create_Role> {
     return Scaffold(
 
       appBar: AppBar(
-        backgroundColor: Color(0xffc19a6b),
+        backgroundColor: const Color(0xffc19a6b),
         title: Container(
-          margin: EdgeInsets.only(left: 25),
-          child: Text('Create Roles',style: TextStyle(fontWeight: FontWeight
-              .bold, fontFamily: 'Merri' ),),
-        ),),
-
+          margin: const EdgeInsets.only(left: 90),
+          child: Text(
+            "Create Role",
+            style: CustomTextStyles.headingStyle(fontSize: 20),
+          ),
+        ),
+      ),
       body: Container(
-        color: Colors.white,
-        width: double.infinity,
-        height: double.infinity,
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const SizedBox(height: 20,),
+            CustomTextFormField(controller: Role_Controller,
+              hintText: 'Enter Role here e.g. Dean',
+              label: 'Enter Role',
+            ),
+            const SizedBox(height: 20,),
+            Custom_Button(
+              onPressedFunction: () async {
+                String RoleName = Role_Controller.text;
+                if (RoleName.isEmpty) {
+                  setState(() {
+                    colorMessage = Colors.red;
+                    errorColor = Colors.red;
+                    errorMessage = 'Please enter all fields';
+                  });
+                } else {
+                  setState(() {
+                    isLoading = true;
+                  });
 
-        child: ListView(
-          children:[
-            Container(
-              margin:EdgeInsets.only(top: 250) ,
-              padding: EdgeInsets.all(16),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
+                  bool created = await Role.createRoleByCampusPerson
+                    (RoleName, Campus.name);
+                  // Role.createRoleByUniversityPerson
+                  //   (RoleName, University.name);
 
-                children: [
+                  //print(University.name);
 
+                  if (created) {
+                    Role_Controller.clear();
 
-                  CustomTextFormField(controller: RoleController,
-                    label: 'Enter Role',
-                    hintText: 'Enter Role Here',),
-
-                  SizedBox(height: 20,),
-
-                  Custom_Button(onPressedFunction:_Create_Role,
-                    ButtonText: 'Create Role',
-                  ),
-
-                  SizedBox(height: 20,),
-
-                  Text(Create_success,style: CustomTextStyles.bodyStyle(),)
-
-                ],
-              ),
-            )],
+                    setState(() {
+                      isLoading = false;
+                      colorMessage = Colors.green;
+                      errorColor =
+                          Colors.black12; // Reset errorColor to default value
+                      errorMessage = 'Role Created successfully';
+                    });
+                  }
+                }
+              },
+              ButtonWidth: 160,
+              ButtonText: 'Create Role',),
+            const SizedBox(height: 20),
+            Visibility(
+              visible: isLoading,
+              child: const CircularProgressIndicator(),
+            ),
+            errorMessage != null
+                ? Text(
+              errorMessage!,
+              style: CustomTextStyles.bodyStyle(color: colorMessage),
+            )
+                : const SizedBox(),
+          ],
         ),
       ),
 

@@ -35,7 +35,7 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
         'Approval Process',
         'Assessments',
         'User Management',
-        'Role Management'
+        'Role Management',
         'University',
 
       ];
@@ -58,8 +58,9 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
         'Approval_Process',
         'Assessments',
         'User_Management',
+        'Role Page',
         'University_Page',
-        'Role Page'
+
 
       ];
       _setUniversityData();
@@ -71,8 +72,8 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
         'Approval Process',
         'Assessments',
         'User Management',
-        'Role Management'
-        'University',
+        'Role Management',
+        'University'
       ];
       icons = [
         FontAwesomeIcons.cogs,
@@ -92,8 +93,8 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
         'Approval_Process',
         'Assessments',
         'User_Management',
-        'Role Page'
-        'University_Page',
+        'Role Page',
+        'University_Page'
       ];
       _setUniversityData();
       _setCampusData();
