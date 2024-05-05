@@ -141,8 +141,7 @@ class WeeklyTopics{
   static Future<bool> deleteWeeklyTopic(int weeklyTopicId) async {
     try {
       final accessToken = await storage.read(key: "access_token");
-
-      final url = Uri.parse('$ipAddress:8000/api/weekly-topic/$weeklyTopicId');
+      final url = Uri.parse('$ipAddress:8000/api/weekly-topics/$weeklyTopicId');
       final response = await http.delete(
         url,
         headers: {

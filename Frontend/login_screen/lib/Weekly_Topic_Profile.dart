@@ -36,7 +36,7 @@ class WeeklyTopicProfileState extends State<WeeklyTopicProfile>{
         children: [
           SingleChildScrollView(
             child: Container(
-              height: 500,
+              height: 450,
               color: Colors.grey.shade200,
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
