@@ -114,7 +114,27 @@ class CourseObjective {
       return false;
     }
   }
-
-
-
+  static Future<bool> updateObjective(int id,String desc) async {
+    try {
+      final accessToken = await storage.read(key: "access_token");
+      final url = Uri.parse('$ipAddress:8000/api/objective/$id');
+      final response = await http.patch(
+        url,
+        headers: {'Authorization': 'Bearer $accessToken', 'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'description': desc,
+        }),
+      );
+      if (response.statusCode == 200) {
+        print('Objective updated successfully');
+        return true;
+      } else {
+        print('Failed to update Objective. Status code: ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      print('Exception while updating Objective: $e');
+      return false;
+    }
+  }
 }

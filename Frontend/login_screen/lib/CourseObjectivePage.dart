@@ -2,15 +2,13 @@ import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:login_screen/CourseDashboard.dart';
 import 'package:login_screen/CourseObjective.dart';
 import 'package:login_screen/CourseObjectiveProfile.dart';
 import 'package:login_screen/CreateCourseObjective.dart';
-import 'package:login_screen/Create_Campus.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Button.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Style.dart';
+import 'package:login_screen/UpdateObjective.dart';
 import 'Course.dart';
-import 'Custom_Widgets/Custom_Text_Field.dart';
 
 
 class CourseObjectivePage extends StatefulWidget {
@@ -94,6 +92,40 @@ class _CourseObjectivePageState extends State<CourseObjectivePage> {
                                           fontSize: 17),
                                     ),
                                   ),
+                                  trailing: InkWell(
+                                      onTap: () async {
+                                        var objectiveData = await CourseObjective.getObjectivebyObjectiveId(objectives[index]['id']);
+                                        if (objectiveData != null) {
+                                          CourseObjective.id=objectiveData['id'];
+                                          CourseObjective.description=objectiveData['description'];
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute<bool>(
+                                                builder: (context) =>
+                                                    UpdateObjective(
+                                                      isUpdate: true,
+                                                      ObjectiveData: objectiveData,
+                                                    ),
+                                              )).then((result) {
+                                            if (result != null && result) {
+                                              // Set the state of the page here
+                                              setState(() {
+                                                objectiveFuture = CourseObjective.fetchObjectivesByCourseId(Course.id)
+                                                ;
+                                              });
+                                            }
+                                          });
+                                        }
+                                      },
+                                      child: Container(
+                                          height: 40,
+                                          width: 40,
+                                          child: Icon(
+                                            size: 32,
+                                            Icons.edit_square,
+                                            color: Color(0xffc19a6b),
+                                          ))),
+
                                   onTap: () async {
                                     // call of a function to get the data of that course whose id is passed and id is
                                     // passed by tapping the user
