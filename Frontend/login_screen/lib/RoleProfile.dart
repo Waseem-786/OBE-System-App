@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:login_screen/Group_Users.dart';
 import 'package:login_screen/Role.dart';
 
 import 'Custom_Widgets/Custom_Button.dart';
@@ -57,18 +58,39 @@ class _RoleProfileState extends State<RoleProfile> {
               ),
             ),
 
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Custom_Button(
-                onPressedFunction: () {
-                //   Navigator.push(context, MaterialPageRoute(builder:
-                //       (context)=>Course_Outline_Page()));
-                },
-                BackgroundColor: Colors.green,
-                ForegroundColor: Colors.white,
-                ButtonText: "Show Users",
-                ButtonWidth: 190,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 20.0,bottom: 20, left:
+                  10,right: 10),
+                  child: Custom_Button(
+                    onPressedFunction: () {
+                       Navigator.push(context, MaterialPageRoute(builder:
+                           (context)=>Group_Users()));
+                    },
+                    BackgroundColor: Colors.green,
+                    ForegroundColor: Colors.white,
+                    ButtonText: "Show Users",
+                    ButtonWidth: 160,
+                  ),
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.only(top: 20.0,bottom: 20,left:
+                  10,right: 10),
+                  child: Custom_Button(
+                    onPressedFunction: () {
+                      //   Navigator.push(context, MaterialPageRoute(builder:
+                      //       (context)=>Course_Outline_Page()));
+                    },
+                    BackgroundColor: Colors.green,
+                    ForegroundColor: Colors.white,
+                    ButtonText: "Permissions",
+                    ButtonWidth: 160,
+                  ),
+                ),
+              ],
             ),
             // Button for delete functionality.
             Padding(
@@ -117,7 +139,7 @@ class _RoleProfileState extends State<RoleProfile> {
                   // If user confirms deletion, proceed with deletion
                   if (confirmDelete) {
                     isLoading = true;
-                    bool deleted = await Role.deleteCourse(Role.id);
+                    bool deleted = await Role.deleteRole(Role.id);
                     if (deleted) {
                       setState(() {
                         isLoading = false;

@@ -145,7 +145,8 @@ class Role {
     if (response.statusCode == 200) {
       return jsonDecode(response.body) as List<dynamic>;
     } else {
-      throw Exception('Failed to Load Roles');
+      print('Failed to load Roles');
+      return [];
     }
   }
 
@@ -192,7 +193,8 @@ class Role {
     if (response.statusCode == 200) {
       return jsonDecode(response.body) as List<dynamic>;
     } else {
-      throw Exception('Failed to Load Roles');
+      print('Failed to load Roles');
+      return [];
     }
   }
 
@@ -238,7 +240,8 @@ class Role {
     if (response.statusCode == 200) {
       return jsonDecode(response.body) as List<dynamic>;
     } else {
-      throw Exception('Failed to Load Roles');
+      print('Failed to load Roles');
+      return [];
     }
   }
 
@@ -285,7 +288,8 @@ class Role {
     if (response.statusCode == 200) {
       return jsonDecode(response.body) as List<dynamic>;
     } else {
-      throw Exception('Failed to Load Roles');
+      print('Failed to load Roles');
+      return [];
     }
   }
 
@@ -309,7 +313,7 @@ class Role {
     }
   }
 
-  static Future<bool> deleteCourse(int roleId) async {
+  static Future<bool> deleteRole(int roleId) async {
     try {
       final accessToken = await storage.read(key: "access_token");
       final url = Uri.parse('$ipAddress:8000/api/role/$roleId');
@@ -331,6 +335,22 @@ class Role {
     } catch (e) {
       print('Exception while deleting Role: $e');
       return false;
+    }
+  }
+
+  static  Future<List<dynamic>> fetchUserbyGroupId(int groupId) async {
+    final accessToken = await storage.read(key: "access_token");
+    final url = Uri.parse('$ipAddress:8000/api/groups/$groupId/users');
+    final response = await http.get(
+      url,
+      headers: {'Authorization': 'Bearer $accessToken'},
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body) as List<dynamic>;
+    } else {
+      print('Failed to load Users');
+      print(response.body);
+      return [];
     }
   }
 
