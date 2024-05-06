@@ -73,6 +73,43 @@ class _Department_PageState extends State<Department_Page> {
                             padding: const EdgeInsets.all(20.0),
                             child: Text(department['name'], style: CustomTextStyles.bodyStyle(fontSize: 17)),
                           ),
+                          trailing: InkWell(
+                              onTap: () async {
+                                var DeptData = await Department.getDepartmentById(departments[index]['id']);
+                                if (DeptData != null) {
+                                  Department.id = DeptData['id'];
+                                  Department.name = DeptData['name'];
+                                  Department.mission = DeptData['mission'];
+                                  Department.vision = DeptData['vision'];
+                                  Department.campus_id = DeptData['campus'];
+                                  Department.campus_name = DeptData['campus_name'];
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute<bool>(
+                                        builder: (context) =>
+                                            Create_Department(
+                                              isUpdate: true,
+                                              DeptData: DeptData,
+                                            ),
+                                      )).then((result) {
+                                    if (result != null && result) {
+                                      // Set the state of the page here
+                                      setState(() {
+                                        departmentFuture = Department.getDepartmentsbyCampusid(campus_id);
+                                      });
+                                    }
+                                  });
+                                  // Perform actions with campusData
+                                }
+                              },
+                              child: Container(
+                                  height: 40,
+                                  width: 40,
+                                  child: Icon(
+                                    size: 32,
+                                    Icons.edit_square,
+                                    color: Color(0xffc19a6b),
+                                  ))),
                           onTap: () async {
                             var departmentData = await Department.getDepartmentById(departments[index]['id']);
                             if (departmentData != null) {
