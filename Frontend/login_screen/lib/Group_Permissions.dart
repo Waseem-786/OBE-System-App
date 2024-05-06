@@ -1,24 +1,23 @@
 
 import 'package:flutter/material.dart';
-import 'package:login_screen/Role.dart';
-import 'package:login_screen/User_Profile.dart';
 
 import 'Custom_Widgets/Custom_Text_Style.dart';
+import 'Role.dart';
 
-class Group_Users extends StatefulWidget {
-  const Group_Users({super.key});
+class Group_Permissions extends StatefulWidget {
+  const Group_Permissions({super.key});
 
   @override
-  State<Group_Users> createState() => _Group_UsersState();
+  State<Group_Permissions> createState() => _Group_PermissionsState();
 }
 
-class _Group_UsersState extends State<Group_Users> {
+class _Group_PermissionsState extends State<Group_Permissions> {
 
-  late Future<List<dynamic>> userFuture;
+  late Future<List<dynamic>> permissionFuture;
 
   void initState() {
     super.initState();
-    userFuture = Role.fetchUserbyGroupId(Role.group);
+    permissionFuture = Role.fetchPermissionsbyGroupId(Role.group);
   }
 
   @override
@@ -29,10 +28,11 @@ class _Group_UsersState extends State<Group_Users> {
     if (currentRoute != null && currentRoute.isCurrent) {
       // Call your refresh function here
       setState(() {
-        userFuture = Role.fetchUserbyGroupId(Role.group);
+        permissionFuture = Role.fetchPermissionsbyGroupId(Role.group);
       });
     }
   }
+
 
 
   @override
@@ -43,7 +43,7 @@ class _Group_UsersState extends State<Group_Users> {
         backgroundColor: const Color(0xffc19a6b),
         title: Center(
           child: Text(
-            'Group Users Page',
+            'Group Permissions Page',
             style: CustomTextStyles.headingStyle(fontSize: 20),
           ),
         ),
@@ -53,7 +53,7 @@ class _Group_UsersState extends State<Group_Users> {
         child: Column(
           children: [
             FutureBuilder(
-                future: userFuture,
+                future: permissionFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
@@ -62,14 +62,13 @@ class _Group_UsersState extends State<Group_Users> {
                       child: Text('Error: ${snapshot.error}'),
                     );
                   } else {
-                    final users = snapshot.data!;
+                    final permissions = snapshot.data!;
                     return Expanded(
                         child: ListView.builder(
-                            itemCount: users.length,
+                            itemCount: permissions.length,
                             itemBuilder: (context, index) {
-                              final user = users[index];
-                              final firstName = user['first_name'];
-                              final lastName = user['last_name'];
+                              final permission = permissions[index];
+                              final name = permission['name'];
                               return Card(
                                 color: Colors.white,
                                 elevation: 5,
@@ -78,39 +77,38 @@ class _Group_UsersState extends State<Group_Users> {
                                   title: Padding(
                                     padding: const EdgeInsets.all(20.0),
                                     child: Text(
-                                      '$firstName $lastName',
+                                      '${(index+1).toString()}. $name',
                                       style: CustomTextStyles.bodyStyle(
                                           fontSize: 17),
                                     ),
                                   ),
-                                  onTap: () async {
-                                    Navigator.push(context, MaterialPageRoute(builder: (context)=>User_Profile(user_data: user)));
-                                    // call of a function to get the data of that course whose id is passed and id is
-                                    // passed by tapping the user
-                                    // var objective = await CourseObjective.getObjectivebyObjectiveId(objectives[index]['id']);
-                                    // if (objective != null) {
-                                    //
-                                    //   CourseObjective.id=objective['id'];
-                                    //   CourseObjective.description=objective['description'];
-                                    //
-                                    //
-                                    //
-                                    //   Navigator.push(
-                                    //       context,
-                                    //       MaterialPageRoute<bool>(
-                                    //         builder: (context) =>
-                                    //             CourseObjectiveProfile(),
-                                    //       )).then((result) {
-                                    //     if (result != null && result) {
-                                    //       // Set the state of the page here
-                                    //       setState(() {
-                                    //         objectiveFuture = CourseObjective.fetchObjectivesByCourseId(Course.id)
-                                    //         ;
-                                    //       });
-                                    //     }
-                                    //   });
-                                    // }
-                                  },
+                                  // onTap: () async {
+                                  //   // call of a function to get the data of that course whose id is passed and id is
+                                  //   // passed by tapping the user
+                                  //   var objective = await CourseObjective.getObjectivebyObjectiveId(objectives[index]['id']);
+                                  //   if (objective != null) {
+                                  //
+                                  //     CourseObjective.id=objective['id'];
+                                  //     CourseObjective.description=objective['description'];
+                                  //
+                                  //
+                                  //
+                                  //     Navigator.push(
+                                  //         context,
+                                  //         MaterialPageRoute<bool>(
+                                  //           builder: (context) =>
+                                  //               CourseObjectiveProfile(),
+                                  //         )).then((result) {
+                                  //       if (result != null && result) {
+                                  //         // Set the state of the page here
+                                  //         setState(() {
+                                  //           objectiveFuture = CourseObjective.fetchObjectivesByCourseId(Course.id)
+                                  //           ;
+                                  //         });
+                                  //       }
+                                  //     });
+                                  //   }
+                                  // },
                                 ),
                               );
                             }));
@@ -134,6 +132,7 @@ class _Group_UsersState extends State<Group_Users> {
           ],
         ),
       ),
+
 
 
     );

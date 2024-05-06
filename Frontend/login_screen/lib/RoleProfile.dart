@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:login_screen/Group_Permissions.dart';
 import 'package:login_screen/Group_Users.dart';
 import 'package:login_screen/Role.dart';
 
@@ -81,8 +82,8 @@ class _RoleProfileState extends State<RoleProfile> {
                   10,right: 10),
                   child: Custom_Button(
                     onPressedFunction: () {
-                      //   Navigator.push(context, MaterialPageRoute(builder:
-                      //       (context)=>Course_Outline_Page()));
+                        Navigator.push(context, MaterialPageRoute(builder:
+                           (context)=>Group_Permissions()));
                     },
                     BackgroundColor: Colors.green,
                     ForegroundColor: Colors.white,

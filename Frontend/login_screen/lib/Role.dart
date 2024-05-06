@@ -354,4 +354,20 @@ class Role {
     }
   }
 
+  static  Future<List<dynamic>> fetchPermissionsbyGroupId(int groupId) async {
+    final accessToken = await storage.read(key: "access_token");
+    final url = Uri.parse('$ipAddress:8000/api/groups/$groupId/permissions');
+    final response = await http.get(
+      url,
+      headers: {'Authorization': 'Bearer $accessToken'},
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body) as List<dynamic>;
+    } else {
+      print('Failed to load Permissions');
+      return [];
+    }
+  }
+
+
 }
