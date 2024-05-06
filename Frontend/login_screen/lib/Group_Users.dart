@@ -85,52 +85,12 @@ class _Group_UsersState extends State<Group_Users> {
                                   ),
                                   onTap: () async {
                                     Navigator.push(context, MaterialPageRoute(builder: (context)=>User_Profile(user_data: user)));
-                                    // call of a function to get the data of that course whose id is passed and id is
-                                    // passed by tapping the user
-                                    // var objective = await CourseObjective.getObjectivebyObjectiveId(objectives[index]['id']);
-                                    // if (objective != null) {
-                                    //
-                                    //   CourseObjective.id=objective['id'];
-                                    //   CourseObjective.description=objective['description'];
-                                    //
-                                    //
-                                    //
-                                    //   Navigator.push(
-                                    //       context,
-                                    //       MaterialPageRoute<bool>(
-                                    //         builder: (context) =>
-                                    //             CourseObjectiveProfile(),
-                                    //       )).then((result) {
-                                    //     if (result != null && result) {
-                                    //       // Set the state of the page here
-                                    //       setState(() {
-                                    //         objectiveFuture = CourseObjective.fetchObjectivesByCourseId(Course.id)
-                                    //         ;
-                                    //       });
-                                    //     }
-                                    //   });
-                                    // }
                                   },
                                 ),
                               );
                             }));
                   }
                 }),
-            // Center(
-            //   child: Container(
-            //     margin: const EdgeInsets.only(bottom: 20, top: 12),
-            //     child: Custom_Button(
-            //       onPressedFunction: () {
-            //         Navigator.push(
-            //           context,
-            //           MaterialPageRoute(builder: (context) => CreateCourseObjective()),
-            //         );
-            //       },
-            //       ButtonText: 'Add Objective',
-            //       ButtonWidth: 200,
-            //     ),
-            //   ),
-            // ),
           ],
         ),
       ),

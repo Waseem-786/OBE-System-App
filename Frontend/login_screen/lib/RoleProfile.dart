@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:login_screen/Add_Group_User.dart';
 import 'package:login_screen/Group_Permissions.dart';
 import 'package:login_screen/Group_Users.dart';
 import 'package:login_screen/Role.dart';
@@ -93,6 +94,44 @@ class _RoleProfileState extends State<RoleProfile> {
                 ),
               ],
             ),
+
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 5.0,bottom: 20, left:
+                  10,right: 10),
+                  child: Custom_Button(
+                    onPressedFunction: () {
+                       Navigator.push(context, MaterialPageRoute(builder:
+                          (context)=>Add_Group_User()));
+                    },
+                    BackgroundColor: Colors.green,
+                    ForegroundColor: Colors.white,
+                    ButtonText: "Add Users",
+                    ButtonWidth: 160,
+                  ),
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.only(top: 5.0,bottom: 20,left:
+                  10,right: 10),
+                  child: Custom_Button(
+                    onPressedFunction: () {
+                      // Navigator.push(context, MaterialPageRoute(builder:
+                      //     (context)=>Group_Permissions()));
+                    },
+                    BackgroundColor: Colors.green,
+                    ForegroundColor: Colors.white,
+                    ButtonText: "Add Permissions",
+                    ButtonWidth: 160,
+                  ),
+                ),
+              ],
+            ),
+
+
             // Button for delete functionality.
             Padding(
               padding: const EdgeInsets.only(bottom:  20.0),
