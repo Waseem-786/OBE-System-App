@@ -4,7 +4,9 @@ import 'package:login_screen/Course.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Button.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Field.dart';
 
+import 'Campus.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
+import 'Custom_Widgets/DropDown.dart';
 
 class Create_Course extends StatefulWidget {
   @override
@@ -27,23 +29,22 @@ class Create_Course_State extends State<Create_Course> {
       TextEditingController();
   final TextEditingController CourseLabCreditsController =
       TextEditingController();
-  final TextEditingController CourseTypeController = TextEditingController();
   final TextEditingController CourseDescriptionController =
       TextEditingController();
 
+  final TextEditingController PreReqController  = TextEditingController();
   String? SelectedCourseReqElec;
-  String? SelectedCoursePrerequisite;
+  String? SelectedCourseType;
+  dynamic SelectedCoursePrerequisite;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xffc19a6b),
-        title: Center(
-          child: Text(
-            'Create Course',
-            style: CustomTextStyles.headingStyle(fontSize: 20),
-          ),
+        title: Text(
+          'Create Course',
+          style: CustomTextStyles.headingStyle(fontSize: 20),
         ),
       ),
       body: SingleChildScrollView(
@@ -57,7 +58,7 @@ class Create_Course_State extends State<Create_Course> {
               CustomTextFormField(
                 controller: CourseCodeController,
                 label: 'Course Code',
-                hintText: 'Enter Course Code',
+                hintText: 'MGT-271',
                 borderColor: errorColor,
               ),
               const SizedBox(
@@ -66,7 +67,7 @@ class Create_Course_State extends State<Create_Course> {
               CustomTextFormField(
                 controller: CourseTitleController,
                 label: 'Course Title',
-                hintText: 'Enter Course Title',
+                hintText: 'Machine Learning',
                 borderColor: errorColor,
               ),
               const SizedBox(
@@ -75,8 +76,9 @@ class Create_Course_State extends State<Create_Course> {
               CustomTextFormField(
                 controller: CourseTheoryCreditsController,
                 label: 'Theory Credits',
-                hintText: 'Enter Theory Credit Hours',
+                hintText: '2',
                 borderColor: errorColor,
+                Keyboard_Type: TextInputType.number,
               ),
               const SizedBox(
                 height: 20,
@@ -84,17 +86,37 @@ class Create_Course_State extends State<Create_Course> {
               CustomTextFormField(
                 controller: CourseLabCreditsController,
                 label: 'Lab Credits',
-                hintText: 'Enter Lab Credit Hours',
+                hintText: '1',
                 borderColor: errorColor,
+                Keyboard_Type: TextInputType.number,
               ),
               const SizedBox(
                 height: 20,
               ),
-              CustomTextFormField(
-                controller: CourseTypeController,
-                label: 'Course Type',
-                hintText: 'Enter Course Type',
-                borderColor: errorColor,
+              Row(
+                children: [
+                  Radio<String>(
+                      value: 'Required',
+                      groupValue: SelectedCourseType,
+                      onChanged: (value) {
+                        setState(() {
+                          SelectedCourseType = value as String;
+                        });
+                      }),
+                  Text('Lecture', style: CustomTextStyles.bodyStyle()),
+                  Radio<String>(
+                      value: 'Lab',
+                      groupValue: SelectedCourseType,
+                      onChanged: (value) {
+                        setState(() {
+                          SelectedCourseType = value as String;
+                        });
+                      }),
+                  Text(
+                    'Lab',
+                    style: CustomTextStyles.bodyStyle(),
+                  )
+                ],
               ),
               const SizedBox(
                 height: 20,
@@ -127,33 +149,18 @@ class Create_Course_State extends State<Create_Course> {
               const SizedBox(
                 height: 20,
               ),
-              DropdownButtonFormField<String>(
-                value: SelectedCoursePrerequisite,
-                onChanged: (value) {
+              DropDown(
+                fetchData: ( )=> Course.fetchCoursesbyCampusId(Campus.id),
+                selectedValue: SelectedCoursePrerequisite,
+                keyName: 'title',
+                controller: PreReqController,
+                hintText: 'Select Requisite',
+                label: "Pre Requisite",
+                onValueChanged: (dynamic id) {
                   setState(() {
-                    SelectedCoursePrerequisite = value as String;
+                    SelectedCoursePrerequisite = id;
                   });
-                },
-                decoration: InputDecoration(
-                  labelText: 'Course Prerequisite',
-                  hintText: 'Select Course Prerequisite',
-                  border: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Colors.black12, // Default border
-                      // color
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: errorColor),
-                  ),
-                ),
-                items: ['FOP', 'OOP', 'None'].map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
+                }
               ),
               const SizedBox(
                 height: 20,
@@ -175,17 +182,16 @@ class Create_Course_State extends State<Create_Course> {
                       int.tryParse(CourseTheoryCreditsController.text);
                   int? labCredits =
                       int.tryParse(CourseLabCreditsController.text);
-                  String CourseType = CourseTypeController.text;
+                  String? CourseType = SelectedCourseType;
                   String? ReqEelc = SelectedCourseReqElec;
-                  String? PreReq = SelectedCoursePrerequisite;
+                  int? PreReq = SelectedCoursePrerequisite;
                   String Description = CourseDescriptionController.text;
                   labCredits ??= 0;
                   if (CourseCode.isEmpty ||
                       CourseTitle.isEmpty ||
                       theoryCredits == null ||
-                      CourseType.isEmpty ||
+                      CourseType == null ||
                       ReqEelc == null ||
-                      PreReq == null ||
                       Description.isEmpty) {
                     setState(() {
                       colorMessage = Colors.red;
@@ -205,14 +211,16 @@ class Create_Course_State extends State<Create_Course> {
                         CourseType,
                         ReqEelc,
                         PreReq,
-                        Description);
+                        Description,
+                        Campus.id
+                    );
                     if (created) {
                       //Clear all the fields and deselect the radio button and dropdown
                       CourseCodeController.clear();
                       CourseTitleController.clear();
                       CourseTheoryCreditsController.clear();
                       CourseLabCreditsController.clear();
-                      CourseTypeController.clear();
+                      SelectedCourseType = null;
                       SelectedCourseReqElec = null;
                       SelectedCoursePrerequisite = null;
                       CourseDescriptionController.clear();

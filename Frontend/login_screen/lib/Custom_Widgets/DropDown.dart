@@ -81,25 +81,37 @@ class _DropDownState extends State<DropDown> {
                   }
                 }
               },
-              items: data.map<DropdownMenuItem<dynamic>>((item) {
-                final uniqueValue = item['id'];
-                return DropdownMenuItem<dynamic>(
-                  value: uniqueValue,
-                  child: Container(
-                    constraints: BoxConstraints(
-                      maxWidth:
-                      MediaQuery.of(context).size.width * 0.7, // Limit the width to 70% of the screen width
-                    ),
-                    child: Text(
-                      item[widget.keyName],
-                      style: TextStyle(
-                        color: Colors.black,
-                      ),
-                      overflow: TextOverflow.ellipsis,
+              items: [
+                const DropdownMenuItem<dynamic>(
+                  value: null,
+                  child: Text(
+                    'None',
+                    style: TextStyle(
+                      color: Colors.black,
                     ),
                   ),
-                );
-              }).toList(),
+                ),
+                ...data.map<DropdownMenuItem<dynamic>>((item) {
+                  final uniqueValue = item['id'];
+                  return DropdownMenuItem<dynamic>(
+                    value: uniqueValue,
+                    child: Container(
+                      constraints: BoxConstraints(
+                        maxWidth:
+                        MediaQuery.of(context).size.width *
+                            0.7, // Limit the width to 70% of the screen width
+                      ),
+                      child: Text(
+                        item[widget.keyName],
+                        style: TextStyle(
+                          color: Colors.black,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ],
             ),
           );
         }

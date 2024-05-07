@@ -2,9 +2,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:login_screen/CourseBooks.dart';
-import 'package:login_screen/CourseObjectiveProfile.dart';
 import 'package:login_screen/CreateCourseBook.dart';
-import 'package:login_screen/CreateCourseObjective.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Button.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Style.dart';
 import 'package:login_screen/Outline.dart';
@@ -46,11 +44,9 @@ class _CourseBookPageState extends State<CourseBookPage> {
 
       appBar: AppBar(
         backgroundColor: const Color(0xffc19a6b),
-        title: Center(
-          child: Text(
-            'Course Book Page',
-            style: CustomTextStyles.headingStyle(fontSize: 20),
-          ),
+        title: Text(
+          'Course Book Page',
+          style: CustomTextStyles.headingStyle(fontSize: 20),
         ),
       ),
       body: Center(
@@ -85,6 +81,42 @@ class _CourseBookPageState extends State<CourseBookPage> {
                                           fontSize: 17),
                                     ),
                                   ),
+                                  trailing: InkWell(
+                                      onTap: () async {
+                                        var bookData = await CourseBooks.getBookbyId(books[index]['id']);
+                                        if (bookData != null) {
+                                          CourseBooks.id=bookData['id'];
+                                          CourseBooks.bookTitle=bookData['title'];
+                                          CourseBooks.bookType=bookData['book_type'];
+                                          CourseBooks.description=bookData['description'];
+                                          CourseBooks.link=bookData['link'];
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute<bool>(
+                                                builder: (context) =>
+                                                    CreateCourseBook(
+                                                        isUpdate : true,
+                                                        BookData : bookData
+                                                    ),
+                                              )).then((result) {
+                                            if (result != null && result) {
+                                              // Set the state of the page here
+                                              setState(() {
+                                                bookFuture = CourseBooks.fetchBooksByOutlineId(Outline.id);
+                                              });
+                                            }
+                                          });
+                                        }
+                                      },
+                                      child: Container(
+                                          height: 40,
+                                          width: 40,
+                                          child: Icon(
+                                            size: 32,
+                                            Icons.edit_square,
+                                            color: Color(0xffc19a6b),
+                                          ))),
+
                                   onTap: () async {
                                     // call of a function to get the data of that course whose id is passed and id is
                                     // passed by tapping the user

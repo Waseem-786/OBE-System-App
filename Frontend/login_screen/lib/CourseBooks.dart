@@ -129,9 +129,32 @@ class CourseBooks {
       return false;
     }
   }
-
-
-
+  static Future<bool> updateCourseBook(int id,String bookTitle, String? bookType, String description, String link) async {
+    try {
+      final accessToken = await storage.read(key: "access_token");
+      final url = Uri.parse('$ipAddress:8000/api/book/$id');
+      final response = await http.patch(
+        url,
+        headers: {'Authorization': 'Bearer $accessToken', 'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'title': bookTitle,
+          'book_type': bookType,
+          'description': description,
+          'link': link,
+        }),
+      );
+      if (response.statusCode == 200) {
+        print('Course Book updated successfully');
+        return true;
+      } else {
+        print('Failed to update Course Book. Status code: ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      print('Exception while updating Course Book: $e');
+      return false;
+    }
+  }
 }
 
 

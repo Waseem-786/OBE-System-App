@@ -136,6 +136,31 @@ class CLO {
       return false;
     }
   }
+  static Future<bool> updateCLO(int id,String description, String BT, int BTLevel) async {
+    try {
+      final accessToken = await storage.read(key: "access_token");
+      final url = Uri.parse('$ipAddress:8000/api/clo/$id');
+      final response = await http.patch(
+        url,
+        headers: {'Authorization': 'Bearer $accessToken', 'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'description': description,
+          'bloom_taxonomy': BT,
+          'level': BTLevel,
+        }),
+      );
+      if (response.statusCode == 200) {
+        print('CLO updated successfully');
+        return true;
+      } else {
+        print('Failed to update CLO. Status code: ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      print('Exception while updating CLO: $e');
+      return false;
+    }
+  }
   static Future<bool> mapCLOwithPLO(int CLO_id, int PLO_id) async {
     final accessToken = await storage.read(key: "access_token");
     final url = Uri.parse('$ipAddress:8000/api/plo/clo/mapping');

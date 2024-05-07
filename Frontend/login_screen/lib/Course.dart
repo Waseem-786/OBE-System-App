@@ -82,29 +82,35 @@ class Course {
   static const storage = FlutterSecureStorage(
       aOptions: AndroidOptions(encryptedSharedPreferences: true));
 
-  static Future<bool> createCourse(String code, String title, int theoryCredits,int labCredits,String courseType,
-      String reqElec, String preReq, String description) async {
+  static Future<bool> createCourse(String code, String title, int theoryCredits, int labCredits, String courseType,
+      String reqElec, int? preReq, String description, int campus) async {
     try {
       final accessToken = await storage.read(key: "access_token");
       final url = Uri.parse('$ipAddress:8000/api/course');
+      final Map<String, dynamic> requestBody = {
+        'code': code,
+        'title': title,
+        'theory_credits': theoryCredits,
+        'lab_credits': labCredits,
+        'course_type': courseType,
+        'required_elective': reqElec,
+        'description': description,
+        'campus': campus
+      };
+
+      if (preReq != null) {
+        requestBody['prerequisite'] = preReq;
+      }
+
       final response = await http.post(
         url,
         headers: {
           'Authorization': 'Bearer $accessToken',
           'Content-Type': 'application/json',
         },
-        body: jsonEncode({
-          'code' : code,
-          'title': title,
-          'theory_credits':theoryCredits,
-          'lab_credits': labCredits,
-          'course_type':courseType,
-          'required_elective':reqElec,
-          'prerequisite':1,
-          'description':description,
-          'university':11
-        }),
+        body: jsonEncode(requestBody),
       );
+      print(response.body);
       if (response.statusCode == 201) {
         print('Course Created successfully');
         return true;
@@ -130,6 +136,22 @@ class Course {
       return jsonDecode(response.body) as List<dynamic>;
     } else {
       throw Exception('Failed to Load Courses');
+    }
+  }
+
+  static Future<List<dynamic>> fetchCoursesbyCampusId(int campusId) async {
+    final accessToken = await storage.read(key: "access_token");
+    final url = Uri.parse('$ipAddress:8000/api/campus/$campusId/course');
+    final response = await http.get(
+      url,
+      headers: {'Authorization': 'Bearer $accessToken'},
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body) as List<dynamic>;
+    } else {
+      print('Failed to Load Courses');
+      return [];
     }
   }
 
@@ -167,4 +189,6 @@ class Course {
       return false;
     }
   }
+
+
 }
