@@ -3,8 +3,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.views import APIView, status
-from .models import University, Campus, Department, Section, Batch, BatchSection
-from .serializers import UniversitySerializer, CampusSerializer, DepartmentSerializer, BatchSerializer, SectionSerializer, BatchSectionSerializer
+from .models import University, Campus, Department, Section, Batch
+from .serializers import UniversitySerializer, CampusSerializer, DepartmentSerializer, BatchSerializer, SectionSerializer
 from rest_framework_simplejwt.authentication import JWTStatelessUserAuthentication
 from user_management.permissions import IsSuperUser, IsUniversityAdmin, IsCampusAdmin, IsDepartmentAdmin, IsSuper_University, IsSuper_University_Campus, IsSuper_University_Campus_Department
 from university_management.permissions import IsUserUniversity, IsUserCampus, IsUserDepartment
@@ -13,34 +13,34 @@ from university_management.permissions import IsUserUniversity, IsUserCampus, Is
 class UniversityView(generics.ListCreateAPIView):
     queryset = University.objects.all()
     serializer_class = UniversitySerializer
-    permission_classes = [IsSuperUser]
+    permission_classes = [IsSuper_University]
     authentication_classes = [JWTStatelessUserAuthentication]
 
 class SingleUniversityView(generics.RetrieveUpdateDestroyAPIView):
     queryset = University.objects.all()
     serializer_class = UniversitySerializer
-    permission_classes = [IsUserUniversity]
+    permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
-    def get_permissions(self):
-        if self.request.method == 'DELETE':
-            return [IsSuperUser]
-        return super().get_permissions()
+    # def get_permissions(self):
+    #     if self.request.method == 'DELETE':
+    #         return [IsSuperUser]
+    #     return super().get_permissions()
         
 class CampusView(generics.ListCreateAPIView):
     queryset = Campus.objects.all()
     serializer_class = CampusSerializer
-    permission_classes = [IsUniversityAdmin]
+    permission_classes = [IsSuper_University_Campus]
     authentication_classes = [JWTStatelessUserAuthentication]
 
 class SingleCampusView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Campus.objects.all()
     serializer_class = CampusSerializer
-    permission_classes = [IsUserCampus]
+    permission_classes = [IsSuper_University_Campus]
     authentication_classes = [JWTStatelessUserAuthentication]
-    def get_permissions(self):
-        if self.request.method == 'DELETE':
-            return [IsUniversityAdmin]
-        return super().get_permissions()
+    # def get_permissions(self):
+    #     if self.request.method == 'DELETE':
+    #         return [IsUniversityAdmin]
+    #     return super().get_permissions()
 
 class AllCampuses_For_SpecificUniversity_View(generics.ListAPIView):    
     serializer_class = CampusSerializer
@@ -53,18 +53,18 @@ class AllCampuses_For_SpecificUniversity_View(generics.ListAPIView):
 class DepartmentView(generics.ListCreateAPIView):
     queryset = Department.objects.all()
     serializer_class = DepartmentSerializer
-    permission_classes = [IsCampusAdmin]
+    permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
 
 class SingleDepartmentView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Department.objects.all()
     serializer_class = DepartmentSerializer
-    permission_classes = [IsUserDepartment]
+    permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
-    def get_permissions(self):
-        if self.request.method == 'DELETE':
-            return [IsCampusAdmin]
-        return super().get_permissions()
+    # def get_permissions(self):
+    #     if self.request.method == 'DELETE':
+    #         return [IsCampusAdmin]
+    #     return super().get_permissions()
     
 class AllDepartment_For_SpecificCampus_View(generics.ListAPIView):    
     serializer_class = DepartmentSerializer
@@ -80,64 +80,77 @@ class BatchView(generics.ListCreateAPIView):
     authentication_classes = [JWTStatelessUserAuthentication]
     permission_classes = [IsDepartmentAdmin]
 
-class SectionView(APIView):
-    permission_classes = [IsDepartmentAdmin]
-    authentication_classes = [JWTStatelessUserAuthentication]
+    def perform_create(self, serializer):
+        sections_data = serializer.validated_data.get('sections', [])  # Get sections data from request
+        batch_instance = serializer.save()  # Save the batch instance
 
-    def get(self, request, batchId):
-        # Query all sections associated with the batch ID
-        sections = Section.objects.filter(batchsection__batch_id=batchId)
+        for section_name in sections_data:
+            section_instance, _ = Section.objects.get_or_create(name=section_name)  # Get or create section
 
-        if not sections:
-            return Response({"error": "No sections found for the given batch ID"}, status=status.HTTP_404_NOT_FOUND)
-        # Serialize the sections data
-        serializer = SectionSerializer(sections, many=True)
-        
-        # Return the serialized data as the API response
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    
-    def post(self, request, batchId):
-        if 'name' not in request.data:
-            return Response({"name": "This field is required"}, status=status.HTTP_400_BAD_REQUEST)
-        
-        section_name = request.data['name']
-        batch = get_object_or_404(Batch, id=batchId)
-        
-        try:
-            with transaction.atomic():
-                section, created = Section.objects.get_or_create(name=section_name)
-                
-                # Check if the section was already created
-                if not created:
-                    # Check if the section is already associated with the batch
-                    if BatchSection.objects.filter(batch=batch, section=section).exists():
-                        return Response({"message": "Section already exists for this Batch"}, status=status.HTTP_200_OK)
-                
-                # Create BatchSection object to map the section with the batch
-                batch = BatchSection.objects.create(batch=batch, section=section)
-                # Serialize the data
-                serialized_data = BatchSectionSerializer(batch)
-                if serialized_data.is_valid():
-                    serialized_data.save()
-                    return Response(serialized_data.data, status=status.HTTP_201_CREATED)
-                return Response(serialized_data.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        except Exception as e:
-            # If an error occurs during section creation or batch-section association, rollback the transaction
-            return Response({"error": "Failed to create section"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            # Check if the section is already associated with the batch
+            if batch_instance.sections.filter(name=section_name).exists():
+                return Response({"error": f"Section '{section_name}' is already associated with this batch."},
+                                status=status.HTTP_400_BAD_REQUEST)
+            
+            batch_instance.sections.add(section_instance)  # Add section to batch
 
 class SingleBatchView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Batch.objects.all()
     serializer_class = BatchSerializer
     permission_classes = [IsDepartmentAdmin]
     authentication_classes = [JWTStatelessUserAuthentication]
+
     def get_permissions(self):
         if self.request.method == 'PATCH' or self.request.method == 'PUT':
             return [IsUserDepartment]
         return super().get_permissions()
-    
-class SingleSectionView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Section.objects.all()
-    serializer_class = BatchSectionSerializer
+
+class Batch_of_SpecificDepartment(generics.ListAPIView):
+    serializer_class = BatchSerializer
     permission_classes = [IsDepartmentAdmin]
     authentication_classes = [JWTStatelessUserAuthentication]
+    def get_queryset(self):
+        deparmtnet_id = self.kwargs['department_id']
+        queryset = Batch.objects.filter(department__id=deparmtnet_id)
+        return queryset
+
+class AllSections_of_SpecificBatch_View(generics.ListAPIView):
+    serializer_class = SectionSerializer
+    permission_classes = [IsDepartmentAdmin]
+    authentication_classes = [JWTStatelessUserAuthentication]
+
+    def get_queryset(self):
+        batch_id = self.kwargs['pk']
+        batch = get_object_or_404(Batch, id=batch_id)
+        return batch.sections.all()
+
+class CreateSectionView(APIView):
+    permission_classes = [IsDepartmentAdmin]
+    authentication_classes = [JWTStatelessUserAuthentication]
+
+    def post(self, request):
+        batch_id = request.data.get('batch')
+        section_name = request.data.get('name')
+
+        batch = get_object_or_404(Batch, id=batch_id)
+
+        # Get or create the section
+        section_instance, _ = Section.objects.get_or_create(name=section_name)
+
+        # Check if the section is already associated with the batch
+        if section_instance in batch.sections.all():
+            return Response({"error": f"Section '{section_name}' is already associated with this batch."},
+                            status=status.HTTP_400_BAD_REQUEST)
+        
+        batch.sections.add(section_instance)  # Add section to batch
+
+        return Response({"message": f"Section '{section_name}' has been successfully associated with the batch."},
+                        status=status.HTTP_201_CREATED)
+    
+
+class SingleSectionView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Section.objects.all()
+    serializer_class = SectionSerializer
+    permission_classes = [IsDepartmentAdmin]
+    authentication_classes = [JWTStatelessUserAuthentication]
+    

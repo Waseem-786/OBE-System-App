@@ -5,28 +5,28 @@ from rest_framework_simplejwt.authentication import JWTStatelessUserAuthenticati
 from user_management.permissions import IsSuperUser, IsUniversityAdmin, IsCampusAdmin, IsDepartmentAdmin, IsSuper_University, IsSuper_University_Campus, IsSuper_University_Campus_Department
 
 from .models import CourseInformation, CourseSchedule, CourseObjective, CourseAssessment, CourseBooks, CourseLearningOutcomes, CourseOutline, WeeklyTopic, PLO_CLO_Mapping
-from .serializers import CourseInformationSerializer, CourseScheduleSerializer, CourseObjectiveSerializer, CourseAssessmentSerializer, CourseBookSerializer, CourseLearningOutcomesSerializer, CourseOutlineSerializer, PLO_CLO_Mapping_Serializer, WeeklyTopicSerializer
+from .serializers import CourseInformationSerializer, CourseScheduleSerializer, CourseObjectiveSerializer, CourseObjectiveListSerializer, CourseAssessmentSerializer, CourseBookSerializer, CourseLearningOutcomesSerializer, CourseOutlineSerializer, PLO_CLO_Mapping_Serializer, WeeklyTopicSerializer, CompleteOutlineSerializer
 # Create your views here.
 class CourseInformationView(generics.ListCreateAPIView):
     queryset = CourseInformation.objects.all()
     serializer_class = CourseInformationSerializer
-    permission_classes = [IsUniversityAdmin]
+    permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
 
 class SingleCourseView(generics.RetrieveUpdateDestroyAPIView):
     queryset = CourseInformation.objects.all()
     serializer_class = CourseInformationSerializer
-    permission_classes = [IsUniversityAdmin]
+    permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
 
 class Course_of_Specific_Campus(generics.ListAPIView):
     serializer_class = CourseInformationSerializer
-    permission_classes = [IsUniversityAdmin]
+    permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
 
     def get_queryset(self):
         pk = self.kwargs['pk']
-        queryset = CourseInformation.objects.filter(university__id=pk)
+        queryset = CourseInformation.objects.filter(campus__id=pk)
         return queryset
     
 class CourseLearningOutcomesView(generics.CreateAPIView):
@@ -92,7 +92,7 @@ class CourseObjectiveCreateView(generics.CreateAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class CourseObjective_SpecificCourse_View(generics.ListAPIView):
-    serializer_class = CourseObjectiveSerializer
+    serializer_class = CourseObjectiveListSerializer
     permission_classes = [IsUniversityAdmin]
     authentication_classes = [JWTStatelessUserAuthentication]
 
@@ -103,7 +103,7 @@ class CourseObjective_SpecificCourse_View(generics.ListAPIView):
     
 class SingleCourseObjectiveView(generics.RetrieveUpdateDestroyAPIView):
     queryset = CourseObjective.objects.all()
-    serializer_class = CourseObjectiveSerializer
+    serializer_class = CourseObjectiveListSerializer
     permission_classes = [IsUniversityAdmin]
     authentication_classes = [JWTStatelessUserAuthentication]
 
@@ -294,3 +294,11 @@ class WeeklyTopicRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = WeeklyTopicSerializer
     permission_classes = [IsUniversityAdmin]
     authentication_classes = [JWTStatelessUserAuthentication]
+
+
+
+class CompleteOutlineView(APIView):
+    def get(self, request, pk):
+        outline = get_object_or_404(CourseOutline, id=pk)
+        serialized_data =  CompleteOutlineSerializer(outline)
+        return Response(serialized_data.data, status=status.HTTP_200_OK)

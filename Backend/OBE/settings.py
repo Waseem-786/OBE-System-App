@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'university_management',
     'course_management',
     'program_management',
+    'assessment_management',
     'approval_process',
     'django.contrib.admin',
     'django.contrib.auth',

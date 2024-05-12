@@ -1,0 +1,22 @@
+Assessment Type / Exam
+Instructor/Teacher  (FK)
+Batch  (FK)
+Course (FK)
+Total Marks
+Questions
+	Question 1, 
+		CLO(s)  (FK)
+		Description
+		Parts (a,b,c...)
+		Marks
+
+	Question 2, 
+		CLO(s)
+		Description
+		Parts (a,b,c...)
+		Marks
+	....
+
+
+
+Course Assessment  (FK)  --> we will fetch course_outline using batch, course, teacher. And then use that id to fecth CourseAssessment.

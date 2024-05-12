@@ -17,9 +17,10 @@ urlpatterns = [
 
     path('outline',views.CourseOutlineCreateView.as_view()),
     path('course/<int:pk>/outline',views.CourseOutline_SpecificCourse_View.as_view()),
-    path('batch/<int:pk>/outline',views.CourseOutline_SpecificBatch_View.as_view()),
+    path('batch/<int:pk>/outline',views.CourseOutline_SpecificBatch_View.as_view()),  
     path('user/<int:pk>/outline',views.CourseOutline_SpecificTeacher_View.as_view()),
     path('outline/<int:pk>',views.SingleCourseOutlineView.as_view()),
+    path('complete-outline/<int:pk>',views.CompleteOutlineView.as_view()),
 
     path('schedule',views.CourseScheduleCreateView.as_view()),
     path('outline/<int:pk>/schedule',views.CourseSchedule_SpecificOutline_View.as_view()),

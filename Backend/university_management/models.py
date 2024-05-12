@@ -28,13 +28,21 @@ class Department(models.Model):
 
 class Batch(models.Model):
     name = models.CharField(max_length=200)
-    department = models.ForeignKey(Department,on_delete=models.CASCADE,related_name='batch')
+    department = models.ForeignKey(Department, on_delete=models.CASCADE, related_name='batches')
+
+    # ManyToManyField to establish relationship with Section
+    sections = models.ManyToManyField('Section')
+
+    class Meta:
+        unique_together = ('name', 'department')
+    
+    def __str__(self) -> str:
+        return f"{self.name} - {self.department.name}"
+    
 
 class Section(models.Model):
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200, unique=True)
 
-class BatchSection(models.Model):
-    batch = models.ForeignKey(Batch, on_delete=models.CASCADE)
-    section = models.ForeignKey(Section, on_delete=models.CASCADE)
-    class Meta:
-        unique_together = ('batch', 'section')
+    def __str__(self) -> str:
+        return self.name
+    

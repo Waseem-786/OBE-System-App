@@ -25,6 +25,7 @@ urlpatterns = [
     path('api/',include('university_management.urls')),
     path('api/',include('course_management.urls')),
     path('api/',include('program_management.urls')),
+    path('api/',include('assessment_management.urls')),
     path('api/',include('approval_process.urls')),
 ]
 

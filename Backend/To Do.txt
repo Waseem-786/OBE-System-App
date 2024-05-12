@@ -1,8 +1,4 @@
---> CLO TO ASSESSMENT Mapping Many to Many Field
---> Tried to Change many to many model into field
---> Test Complete Course Outline Again
---> Delete Database
---> Make Course Outline
+Change Endpoint for getting and creating groups
 
 --> CLOs Change Justification Document
 

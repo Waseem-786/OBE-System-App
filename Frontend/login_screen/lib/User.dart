@@ -252,4 +252,103 @@ class User {
     }
   }
 
+  //Get all Users of Specific Group/Role
+  static  Future<List> fetchUserbyGroupId(int groupId) async {
+    final accessToken = await storage.read(key: "access_token");
+    final url = Uri.parse('$ipAddress:8000/api/groups/$groupId/users');
+    final response = await http.get(
+      url,
+      headers: {'Authorization': 'Bearer $accessToken'},
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      print('Failed to load Users');
+      print(response.body);
+      return [];
+    }
+  }
+
+  //Add Users to Specific Group
+  static Future<String> addUserToGroup(int groupId, List<String> usernames) async {
+    final accessToken = await storage.read(key: "access_token");
+    final url = Uri.parse('$ipAddress:8000/api/groups/$groupId');
+
+    final Map<String, dynamic> data = {
+      'usernames': usernames,
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Authorization': 'Bearer $accessToken'},
+      body: jsonEncode(data),
+    );
+
+    if (response.statusCode == 201 || response.statusCode == 200 || response.statusCode == 400) {
+      // Return the message from the response
+      final responseData = jsonDecode(response.body);
+      return responseData['message'];
+    } else {
+      // Return error message
+      return 'Error: ${response.statusCode}';
+    }
+  }
+
+  //Get All users of Specific University
+  Future<List> getUsersByUniversityId(int universityId) async {
+    final accessToken = await storage.read(key: "access_token");
+    final url = Uri.parse('$ipAddress:8000/api/university/$universityId/users');
+
+    final response = await http.get(
+      url,
+      headers: {'Authorization': 'Bearer $accessToken'},
+    );
+
+    if (response.statusCode == 200) {
+      // Return the users as a list
+      return jsonDecode(response.body);
+    } else {
+      // If there's an error, return an empty list
+      return [];
+    }
+  }
+
+  //Get All users of Specific Campus
+  Future<List> getUsersByCampusId(int campusId) async {
+    final accessToken = await storage.read(key: "access_token");
+    final url = Uri.parse('$ipAddress:8000/api/campus/$campusId/users');
+
+    final response = await http.get(
+      url,
+      headers: {'Authorization': 'Bearer $accessToken'},
+    );
+
+    if (response.statusCode == 200) {
+      // Return the users as a list
+      return jsonDecode(response.body);
+    } else {
+      // If there's an error, return an empty list
+      return [];
+    }
+  }
+
+  //Get All users of Specific Department
+  Future<List> getUsersByDepartmentId(int departmentId) async {
+    final accessToken = await storage.read(key: "access_token");
+    final url = Uri.parse('$ipAddress:8000/api/department/$departmentId/users');
+
+    final response = await http.get(
+      url,
+      headers: {'Authorization': 'Bearer $accessToken'},
+    );
+
+    if (response.statusCode == 200) {
+      // Return the users as a list
+      return jsonDecode(response.body);
+    } else {
+      // If there's an error, return an empty list
+      return [];
+    }
+  }
+
 }

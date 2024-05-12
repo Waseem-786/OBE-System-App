@@ -4,6 +4,7 @@ import 'package:login_screen/Role.dart';
 import 'package:login_screen/User_Profile.dart';
 
 import 'Custom_Widgets/Custom_Text_Style.dart';
+import 'User.dart';
 
 class Group_Users extends StatefulWidget {
   const Group_Users({super.key});
@@ -18,7 +19,7 @@ class _Group_UsersState extends State<Group_Users> {
 
   void initState() {
     super.initState();
-    userFuture = Role.fetchUserbyGroupId(Role.group);
+    userFuture = User.fetchUserbyGroupId(Role.group);
   }
 
   @override
@@ -29,7 +30,7 @@ class _Group_UsersState extends State<Group_Users> {
     if (currentRoute != null && currentRoute.isCurrent) {
       // Call your refresh function here
       setState(() {
-        userFuture = Role.fetchUserbyGroupId(Role.group);
+        userFuture = User.fetchUserbyGroupId(Role.group);
       });
     }
   }

@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:login_screen/Permission.dart';
 
 import 'Custom_Widgets/Custom_Text_Style.dart';
 import 'Role.dart';
@@ -17,7 +18,7 @@ class _Group_PermissionsState extends State<Group_Permissions> {
 
   void initState() {
     super.initState();
-    permissionFuture = Role.fetchPermissionsbyGroupId(Role.group);
+    permissionFuture = Permission.fetchPermissionsbyGroupId(Role.group);
   }
 
   @override
@@ -28,7 +29,7 @@ class _Group_PermissionsState extends State<Group_Permissions> {
     if (currentRoute != null && currentRoute.isCurrent) {
       // Call your refresh function here
       setState(() {
-        permissionFuture = Role.fetchPermissionsbyGroupId(Role.group);
+        permissionFuture = Permission.fetchPermissionsbyGroupId(Role.group);
       });
     }
   }

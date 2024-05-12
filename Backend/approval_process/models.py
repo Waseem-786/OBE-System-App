@@ -1,43 +1,38 @@
-from django.db import models
-from user_management.models import CustomUser
-from university_management.models import University, Campus
+# from django.db import models
+# from user_management.models import CustomGroup
 
-class ChainOfCommand(models.Model):
-    ENTITY_TYPE_CHOICES = [
-        ('CLO', 'CLO'),
-        ('PLO', 'PLO'),
-        # Add more entity types as needed
-    ]
-    
-    SCOPE_CHOICES = [
-        ('University', 'University'),
-        ('Campus', 'Campus'),
-    ]
+# class EntityType(models.Model):
+#     name = models.CharField(max_length=100, unique=True)
 
-    entity_type = models.CharField(max_length=100, choices=ENTITY_TYPE_CHOICES)
-    scope = models.CharField(max_length=100, choices=SCOPE_CHOICES)
-    university = models.ForeignKey(University, on_delete=models.CASCADE, null=True, blank=True)
-    campus = models.ForeignKey(Campus, on_delete=models.CASCADE, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+#     def __str__(self):
+#         return self.name
 
-# Model for recording the approval status for different entities
-class Approval(models.Model):
-    STATUS_CHOICES = [
-        ('Pending', 'Pending'),
-        ('Approved', 'Approved'),
-        ('Rejected', 'Rejected'),
-    ]
+# class ApprovalGroup(models.Model):
+#     entity_type = models.ForeignKey(EntityType, on_delete=models.CASCADE)
+#     group = models.ForeignKey(CustomGroup, on_delete=models.CASCADE)
+#     order = models.PositiveIntegerField()  # Lower order goes first in approval chain
+#     status = models.CharField(max_length=20, choices=[
+#         ('Pending', 'Pending'),
+#         ('Approved', 'Approved'),
+#         ('Rejected', 'Rejected'),
+#     ], default='Pending')
 
-    entity_type = models.CharField(max_length=100)  # Example: 'CLO', 'PEO', etc.
-    entity_id = models.IntegerField()  # ID of the entity being approved
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
-    approved_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='%(class)s_approved_by')
-    rejected_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='%(class)s_rejected_by')
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+#     class Meta:
+#         unique_together = (('entity_type', 'order'),)  # Ensure unique order per entity type
 
-class ChainOfCommandUser(models.Model):
-    chain_of_command = models.ForeignKey(ChainOfCommand, on_delete=models.CASCADE)
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    order = models.IntegerField(default=0)
+# class ApprovalRequest(models.Model):
+#     entity_type = models.ForeignKey(EntityType, on_delete=models.CASCADE)
+#     entity_id = models.PositiveIntegerField()  # Reference ID for the updated entity
+#     previous_data = models.JSONField(blank=True, null=True)  # Store previous data
+#     new_data = models.JSONField()
+#     justification = models.TextField()
+#     status = models.CharField(max_length=20, choices=[
+#         ('Pending', 'Pending'),
+#         ('Approved', 'Approved'),
+#         ('Rejected', 'Rejected'),
+#     ], default='Pending')
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)
+
+#     def __str__(self):
+#         return f"Approval for {self.entity_type} (ID: {self.entity_id})"

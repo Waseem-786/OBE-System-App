@@ -3,59 +3,26 @@ from .models import CustomUser, CustomGroup
 from djoser.serializers import UserCreateSerializer
 from django.contrib.auth.models import Permission
 
-class TopLevelRoleSerializer(serializers.ModelSerializer):
-    group_name = serializers.CharField(source='group.name', read_only=True)
-    class Meta:
-        model = CustomGroup
-        fields = ['id','group_name']
-
-class UniversityLevelRoleSerializer(serializers.ModelSerializer):
-    university_name = serializers.CharField(source='university.name', read_only=True)
-    group_name = serializers.CharField(source='group.name', read_only=True)
-    class Meta:
-        model = CustomGroup
-        fields = ['id','group_name','university','university_name']
-
-
-class CampusLevelRoleSerializer(serializers.ModelSerializer):
-    university_name = serializers.CharField(source='university.name', read_only=True)
-    campus_name = serializers.CharField(source='campus.name', read_only=True)
-    group_name = serializers.CharField(source='group.name', read_only=True)
-    class Meta:
-        model = CustomGroup
-        fields = ['id','group_name','university','university_name','campus','campus_name']
-
-class DepartmentLevelRoleSerializer(serializers.ModelSerializer):
+class RoleSerializer(serializers.ModelSerializer):
     university_name = serializers.CharField(source='university.name', read_only=True)
     campus_name = serializers.CharField(source='campus.name', read_only=True)
     department_name = serializers.CharField(source='department.name', read_only=True)
     group_name = serializers.CharField(source='group.name', read_only=True)
+    group_permissions = serializers.SerializerMethodField()
+    user_names = serializers.SerializerMethodField()
+
     class Meta:
         model = CustomGroup
-        fields = ['id','group_name','university','university_name','campus','campus_name','department','department_name']
+        fields = ['id', 'group', 'group_name', 'group_permissions', 'user', 'user_names', 'university', 'university_name', 'campus', 'campus_name', 'department', 'department_name']
 
+    def get_group_permissions(self, obj):
+        return obj.group.permissions.values_list('name', flat=True)
 
-class RoleSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CustomGroup
-        fields = '__all__'
+    def get_user_names(self, obj):
+        # Fetching all user names associated with the custom group
+        return [user.username for user in obj.user.all()]
 
-class UniversityAdminUserSerializer(serializers.ModelSerializer):
-    university_name = serializers.CharField(source='university.name', read_only=True)
-
-    class Meta:
-        model = CustomUser
-        fields = ['id', 'username', 'email', 'first_name','last_name', 'university', 'university_name']
-
-class CampusAdminUserSerializer(serializers.ModelSerializer):
-    university_name = serializers.CharField(source='university.name', read_only=True)
-    campus_name = serializers.CharField(source='campus.name', read_only=True)
-
-    class Meta:
-        model = CustomUser
-        fields = ['id', 'username', 'email', 'first_name','last_name', 'university', 'university_name','campus','campus_name']
-
-class DepartmentAdminUserSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     university_name = serializers.CharField(source='university.name', read_only=True)
     campus_name = serializers.CharField(source='campus.name', read_only=True)
     department_name = serializers.CharField(source='department.name', read_only=True)
@@ -85,3 +52,9 @@ class PermissionsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Permission
         fields = '__all__'
+
+class GroupSerializer(serializers.ModelSerializer):
+    group_name = serializers.CharField(source='group.name', read_only=True)
+    class Meta:
+        model = CustomGroup
+        fields = ['id', 'group', 'group_name']

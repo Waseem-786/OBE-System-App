@@ -77,19 +77,17 @@ class _Create_Role_Page extends State<Create_Role> {
                   bool created=false;
 
                   if(User.isSuperUser){
-                    created = await Role.createRoleBySuperUser(RoleName);
+                    created = await Role.createTopLevelRole(RoleName);
                   }
                   else if(User.isUniLevel()){
-                    created= await Role.createRoleByUniversityPerson(RoleName,
+                    created= await Role.createUniversityLevelRole(RoleName,
                         University.id);
                   }
                   else if(User.iscampusLevel()){
-                    created=await Role.createRoleByCampusPerson
-                      (RoleName, Campus.id);
+                    created=await Role.createCampusLevelRole(RoleName, Campus.id);
                   }
                   else if(User.isdeptLevel()){
-                    created= await Role.createRoleByDepartmentPerson
-                      (RoleName, Department.id);
+                    created= await Role.createDepartmentLevelRole(RoleName, Department.id);
                   }
 
 

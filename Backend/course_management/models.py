@@ -15,9 +15,15 @@ class CourseInformation(models.Model):
     description = models.CharField(max_length=1000)
     campus = models.ForeignKey(Campus, on_delete=models.CASCADE)
 
+    def __str__(self) -> str:
+        return self.title    
+
 class CourseObjective(models.Model):
     course = models.ForeignKey(CourseInformation, on_delete=models.CASCADE)
     description = models.TextField()
+
+    def __str__(self) -> str:
+        return self.description
     
 class CourseLearningOutcomes(models.Model):
     course = models.ForeignKey(CourseInformation, on_delete=models.CASCADE)
@@ -29,6 +35,10 @@ class CourseLearningOutcomes(models.Model):
     ]
     bloom_taxonomy = models.CharField(max_length=20, choices=BLOOM_TAXONOMY_CHOICES)
     level = models.IntegerField()
+
+    def __str__(self) -> str:
+        return self.description
+    
 
 class CourseOutline(models.Model):
     course = models.ForeignKey(CourseInformation, on_delete=models.CASCADE)
@@ -51,7 +61,8 @@ class CourseAssessment(models.Model):
     weight = models.DecimalField(max_digits=5, decimal_places=2)
     clo = models.ManyToManyField(CourseLearningOutcomes)
     def __str__(self):
-        return f"Course Assessment Structure for {self.course_outline}"
+        return self.name
+        
 
 
 class CourseBooks(models.Model):
@@ -64,6 +75,9 @@ class CourseBooks(models.Model):
     book_type = models.CharField(max_length=20, choices=BOOK_TYPES)
     description = models.TextField()
     link = models.URLField()
+
+    def __str__(self) -> str:
+        return self.title
 
 class WeeklyTopic(models.Model):
     WEEK_CHOICES = [
@@ -90,7 +104,6 @@ class WeeklyTopic(models.Model):
 
     def __str__(self):
         return f"Week {self.week_number}: {self.topic}"
-    
 
 class CourseDepartment(models.Model):
     department = models.ForeignKey(Department, on_delete=models.CASCADE)
@@ -103,3 +116,7 @@ class PLO_CLO_Mapping(models.Model):
 
     class Meta:
         unique_together = ('plo', 'clo')
+    
+    def __str__(self) -> str:
+        return f"PLO: {self.plo.name}*********CLO: {self.clo}"
+    
