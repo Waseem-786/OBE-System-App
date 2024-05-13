@@ -2,9 +2,13 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:login_screen/Custom_Widgets/DetailCard.dart';
+import 'package:login_screen/Permission.dart';
 import 'CourseBooks.dart';
 import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
+import 'Custom_Widgets/DeleteAlert.dart';
+import 'Custom_Widgets/PermissionBasedButton.dart';
 
 class CourseBookProfile extends StatefulWidget {
   const CourseBookProfile({super.key});
@@ -21,8 +25,15 @@ class _CourseBookProfileState extends State<CourseBookProfile> {
   Color colorMessage = Colors.red; // color of the message when the error occurs
   var isLoading = false; // variable for use the functionality of loading while request is processed to server
 
+  final bookId = CourseBooks.id;
+  late Future<bool> hasDeleteBookPermissionFuture;
 
-
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    hasDeleteBookPermissionFuture = Permission.searchPermissionByCodename("delete_book");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,151 +45,95 @@ class _CourseBookProfileState extends State<CourseBookProfile> {
                 style: CustomTextStyles.headingStyle(fontSize: 22))),
       ),
 
-        body: Column(
-          children: [
-            SingleChildScrollView(
-              child: Container(
-                height: 600,
-                color: Colors.grey.shade200,
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // Title for course details section.
-                        Text("Book Details",
-                            style: CustomTextStyles.headingStyle()),
-                        const SizedBox(height: 10),
-
-                        // calling of the _buildCLOInfoCards() for every field of clo data that will be stored on the card
-                        ..._buildBookInfoCards(), // Spread operator (...) to
-                        // unpack the list of clo info cards into children.
-                      ],
-                    ),
-                  ),
+      body: Container(
+        color: Colors.grey.shade200,
+        height: double.infinity,
+        padding: const EdgeInsets.all(10),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Center(child: Text(
+                  "Book Details", style: CustomTextStyles.headingStyle())),
+              const SizedBox(height: 20),
+              ..._buildBookInfoCards(),
+              SizedBox(height: 20),
+              Center(child: _actionButtons()),
+              SizedBox(height: 10),
+              Center(
+                child: Visibility(
+                  visible: isLoading,
+                  child: const CircularProgressIndicator(),
                 ),
               ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-
-            // Button for delete functionality.
-            Padding(
-              padding: const EdgeInsets.only(bottom: 20.0),
-              child: Custom_Button(
-                onPressedFunction: () async {
-                  // Show confirmation dialog
-                  bool confirmDelete = await showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      backgroundColor:
-                      Colors.red, // Set background color to red for danger
-                      title: const Row(
-                        children: [
-                          Icon(Icons.warning,
-                              color: Colors.yellow), // Add warning icon
-                          SizedBox(width: 10),
-                          Text("Confirm Deletion",
-                              style: TextStyle(color: Colors.white)),
-                        ],
-                      ),
-                      content: const Text(
-                          "Are you sure you want to delete this Book?",
-                          style: TextStyle(color: Colors.white)),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            // Dismiss the dialog and confirm deletion
-                            Navigator.of(context).pop(true);
-                          },
-                          child: const Text("Yes",
-                              style: TextStyle(color: Colors.white)),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            // Dismiss the dialog and cancel deletion
-                            Navigator.of(context).pop(false);
-                          },
-                          child: const Text("No",
-                              style: TextStyle(color: Colors.white)),
-                        ),
-                      ],
-                    ),
-                  );
-
-                  // If user confirms deletion, proceed with deletion
-                  if (confirmDelete) {
-                    isLoading = true;
-                    bool deleted = await CourseBooks.deleteBook(CourseBooks.id);
-                    if (deleted) {
-                      setState(() {
-                        isLoading = false;
-                        colorMessage = Colors.green;
-                        errorMessage = 'Book is deleted successfully';
-                      });
-
-                      // Delay navigation and state update
-                      await Future.delayed(const Duration(seconds: 2));
-
-                      // Navigate back to the previous page and update its state
-                      Navigator.of(context).pop(true);
-                    } else {
-                      setState(() {
-                        isLoading = false;
-                        colorMessage = Colors.red;
-                        errorMessage = 'Failed to delete Book';
-                      });
-                    }
-                  }
-                },
-                BackgroundColor: Colors.red,
-                ForegroundColor: Colors.white,
-                ButtonText: "Delete",
-                ButtonWidth: 120,
-              ),
-            ),
-            Visibility(
-              visible: isLoading,
-              child: const CircularProgressIndicator(),
-            ),
-            errorMessage != null
-                ? Text(
-              errorMessage!,
-              style: CustomTextStyles.bodyStyle(color: colorMessage),
-            )
-                : const SizedBox()
-          ],
-        ));
-
-
-  }
-
-  List<Widget> _buildBookInfoCards() {
-    return [
-      _buildBookDetailCard("Book Title", CourseBooks.bookTitle),
-      _buildBookDetailCard("Book Type", CourseBooks.bookType),
-      _buildBookDetailCard("Book Description", CourseBooks.description),
-      _buildBookDetailCard("Book Link", CourseBooks.link),
-    ];
-  }
-
-  Widget _buildBookDetailCard(String label, String? value) {
-    return SizedBox(
-      width: double.infinity,
-      child: Card(
-        color: Colors.white,
-        elevation: 5,
-        margin: const EdgeInsets.all(10),
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Text(
-            "$label: ${value ?? 'Not provided'}",
-            style: CustomTextStyles.bodyStyle(fontSize: 19),
+              if (errorMessage != null)
+                Center(
+                  child: Text(errorMessage!,
+                      style: CustomTextStyles.bodyStyle(color: colorMessage)),
+                ),
+            ],
           ),
         ),
       ),
     );
+  }
+
+  List<Widget> _buildBookInfoCards() {
+    return [
+      DetailCard(
+          label: "Book Title", value: CourseBooks.bookTitle, icon: Icons.title),
+      DetailCard(label: "Book Type",
+          value: CourseBooks.bookType,
+          icon: Icons.type_specimen),
+      DetailCard(label: "Book Description",
+          value: CourseBooks.description,
+          icon: Icons.description),
+      DetailCard(label: "Book Link", value: CourseBooks.link, icon: Icons.link),
+    ];
+  }
+
+  Widget _actionButtons() {
+    return Column(
+      children: [
+        PermissionBasedButton(
+          buttonText: "Delete",
+          backgroundColor: Colors.red,
+          foregroundColor: Colors.white,
+          buttonWidth: 120,
+          onPressed: () => _confirmDelete(context),
+          permissionFuture: hasDeleteBookPermissionFuture,
+        ),
+      ],
+    );
+  }
+
+
+  Future<void> _confirmDelete(BuildContext context) async {
+    bool confirmDelete = await showDialog(
+      context: context,
+      builder: (context) => DeleteConfirmationDialog(
+        title: "Confirm Deletion",
+        content: "Are you sure you want to delete this book?",
+      ),
+    );
+    if (confirmDelete) {
+      setState(() => isLoading = true);
+      bool deleted = await CourseBooks.deleteBook(bookId);
+      if (deleted) {
+        setState(() {
+          isLoading = false;
+          colorMessage = Colors.green;
+          errorMessage = 'Book deleted successfully';
+        });
+        await Future.delayed(const Duration(seconds: 2));
+        Navigator.of(context).pop(true);
+      } else {
+        setState(() {
+          isLoading = false;
+          colorMessage = Colors.red;
+          errorMessage = 'Failed to delete book';
+        });
+      }
+    }
   }
 }

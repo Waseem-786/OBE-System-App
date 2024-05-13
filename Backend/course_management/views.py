@@ -32,12 +32,12 @@ class Course_of_Specific_Campus(generics.ListAPIView):
 class CourseLearningOutcomesView(generics.CreateAPIView):
     queryset = CourseLearningOutcomes.objects.all()
     serializer_class = CourseLearningOutcomesSerializer
-    permission_classes = [IsUniversityAdmin]
+    permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
 
 class CLO_of_Specific_Course(generics.ListAPIView):
     serializer_class = CourseLearningOutcomesSerializer
-    permission_classes = [IsUniversityAdmin]
+    permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
 
     def get_queryset(self):
@@ -48,14 +48,14 @@ class CLO_of_Specific_Course(generics.ListAPIView):
 class SingleCLO(generics.RetrieveUpdateDestroyAPIView):
     queryset = CourseLearningOutcomes.objects.all()
     serializer_class = CourseLearningOutcomesSerializer
-    permission_classes = [IsUniversityAdmin]
+    permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
 
 
 class PLO_CLO_Mapping_View(generics.ListCreateAPIView):
     queryset = PLO_CLO_Mapping.objects.all()
     serializer_class = PLO_CLO_Mapping_Serializer
-    permission_classes = [IsUniversityAdmin]
+    permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
 
 
@@ -63,7 +63,7 @@ class PLO_CLO_Mapping_View(generics.ListCreateAPIView):
 class CourseObjectiveCreateView(generics.CreateAPIView):
     queryset = CourseObjective.objects.all()
     serializer_class = CourseObjectiveSerializer
-    permission_classes = [IsUniversityAdmin]
+    permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
 
     def create(self, request):
@@ -93,7 +93,7 @@ class CourseObjectiveCreateView(generics.CreateAPIView):
 
 class CourseObjective_SpecificCourse_View(generics.ListAPIView):
     serializer_class = CourseObjectiveListSerializer
-    permission_classes = [IsUniversityAdmin]
+    permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
 
     def get_queryset(self):
@@ -104,7 +104,7 @@ class CourseObjective_SpecificCourse_View(generics.ListAPIView):
 class SingleCourseObjectiveView(generics.RetrieveUpdateDestroyAPIView):
     queryset = CourseObjective.objects.all()
     serializer_class = CourseObjectiveListSerializer
-    permission_classes = [IsUniversityAdmin]
+    permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
 
 
@@ -113,12 +113,12 @@ class SingleCourseObjectiveView(generics.RetrieveUpdateDestroyAPIView):
 class CourseOutlineCreateView(generics.CreateAPIView):
     queryset = CourseOutline.objects.all()
     serializer_class = CourseOutlineSerializer
-    permission_classes = [IsUniversityAdmin]
+    permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
 
 class CourseOutline_SpecificCourse_View(generics.ListAPIView):
     serializer_class = CourseOutlineSerializer
-    permission_classes = [IsUniversityAdmin]
+    permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
 
     def get_queryset(self):
@@ -128,7 +128,7 @@ class CourseOutline_SpecificCourse_View(generics.ListAPIView):
     
 class CourseOutline_SpecificBatch_View(generics.ListAPIView):
     serializer_class = CourseOutlineSerializer
-    permission_classes = [IsUniversityAdmin]
+    permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
 
     def get_queryset(self):
@@ -138,7 +138,7 @@ class CourseOutline_SpecificBatch_View(generics.ListAPIView):
 
 class CourseOutline_SpecificTeacher_View(generics.ListAPIView):
     serializer_class = CourseOutlineSerializer
-    permission_classes = [IsUniversityAdmin]
+    permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
 
     def get_queryset(self):
@@ -149,7 +149,7 @@ class CourseOutline_SpecificTeacher_View(generics.ListAPIView):
 class SingleCourseOutlineView(generics.RetrieveUpdateDestroyAPIView):
     queryset = CourseOutline.objects.all()
     serializer_class = CourseOutlineSerializer
-    permission_classes = [IsUniversityAdmin]
+    permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
 
 
@@ -160,12 +160,12 @@ class SingleCourseOutlineView(generics.RetrieveUpdateDestroyAPIView):
 class CourseScheduleCreateView(generics.CreateAPIView):
     queryset = CourseSchedule.objects.all()
     serializer_class = CourseScheduleSerializer
-    permission_classes = [IsUniversityAdmin]
+    permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
 
 class CourseSchedule_SpecificOutline_View(generics.ListAPIView):
     serializer_class = CourseScheduleSerializer
-    permission_classes = [IsUniversityAdmin]
+    permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
 
     def get_queryset(self):
@@ -176,7 +176,7 @@ class CourseSchedule_SpecificOutline_View(generics.ListAPIView):
 class SingleCourseScheduleView(generics.RetrieveUpdateDestroyAPIView):
     queryset = CourseSchedule.objects.all()
     serializer_class = CourseScheduleSerializer
-    permission_classes = [IsUniversityAdmin]
+    permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
 
 
@@ -186,7 +186,7 @@ class SingleCourseScheduleView(generics.RetrieveUpdateDestroyAPIView):
 class CourseAssessmentCreateView(generics.CreateAPIView):
     queryset = CourseAssessment.objects.all()
     serializer_class = CourseAssessmentSerializer
-    permission_classes = [IsUniversityAdmin]
+    permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
     def create(self, request):
         # Check if 'clo' and 'description' are empty lists
@@ -202,7 +202,7 @@ class CourseAssessmentCreateView(generics.CreateAPIView):
 
 class CourseAssessment_SpecificOutline_View(generics.ListAPIView):
     serializer_class = CourseAssessmentSerializer
-    permission_classes = [IsUniversityAdmin]
+    permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
 
     def get_queryset(self):
@@ -213,7 +213,7 @@ class CourseAssessment_SpecificOutline_View(generics.ListAPIView):
 class SingleCourseAssessmentView(generics.RetrieveUpdateDestroyAPIView):
     queryset = CourseAssessment.objects.all()
     serializer_class = CourseAssessmentSerializer
-    permission_classes = [IsUniversityAdmin]
+    permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
 
 
@@ -224,12 +224,12 @@ class SingleCourseAssessmentView(generics.RetrieveUpdateDestroyAPIView):
 class CourseBookCreateView(generics.CreateAPIView):
     queryset = CourseBooks.objects.all()
     serializer_class = CourseBookSerializer
-    permission_classes = [IsUniversityAdmin]
+    permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
 
 class CourseBook_SpecificOutline_View(generics.ListAPIView):
     serializer_class = CourseBookSerializer
-    permission_classes = [IsUniversityAdmin]
+    permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
 
     def get_queryset(self):
@@ -240,12 +240,12 @@ class CourseBook_SpecificOutline_View(generics.ListAPIView):
 class SingleCourseBookView(generics.RetrieveUpdateDestroyAPIView):
     queryset = CourseBooks.objects.all()
     serializer_class = CourseBookSerializer
-    permission_classes = [IsUniversityAdmin]
+    permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
 
 class Text_CourseBook(generics.ListAPIView):
     serializer_class = CourseBookSerializer
-    permission_classes = [IsUniversityAdmin]
+    permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
     def get_queryset(self):
         pk = self.kwargs['pk']
@@ -254,7 +254,7 @@ class Text_CourseBook(generics.ListAPIView):
 
 class Reference_CourseBook(generics.ListAPIView):
     serializer_class = CourseBookSerializer
-    permission_classes = [IsUniversityAdmin]
+    permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
     def get_queryset(self):
         pk = self.kwargs['pk']
@@ -264,7 +264,7 @@ class Reference_CourseBook(generics.ListAPIView):
 class WeeklyTopicCreateView(generics.CreateAPIView):
     queryset = WeeklyTopic.objects.all()
     serializer_class = WeeklyTopicSerializer
-    permission_classes = [IsUniversityAdmin]
+    permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
 
     def create(self, request):
@@ -281,7 +281,7 @@ class WeeklyTopicCreateView(generics.CreateAPIView):
 
 class WeeklyTopic_SpecificOutline_View(generics.ListAPIView):
     serializer_class = WeeklyTopicSerializer
-    permission_classes = [IsUniversityAdmin]
+    permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
 
     def get_queryset(self):
@@ -292,12 +292,14 @@ class WeeklyTopic_SpecificOutline_View(generics.ListAPIView):
 class WeeklyTopicRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     queryset = WeeklyTopic.objects.all()
     serializer_class = WeeklyTopicSerializer
-    permission_classes = [IsUniversityAdmin]
+    permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
 
 
 
 class CompleteOutlineView(APIView):
+    permission_classes = [IsSuper_University_Campus_Department]
+    authentication_classes = [JWTStatelessUserAuthentication]
     def get(self, request, pk):
         outline = get_object_or_404(CourseOutline, id=pk)
         serialized_data =  CompleteOutlineSerializer(outline)

@@ -49,12 +49,18 @@ class _Campus_ProfileState extends State<Campus_Profile> {
               ..._buildCampusInfoCards(),
               SizedBox(height: 20),
               Center(child: _actionButtons()),
-              Visibility(
-                visible: isLoading,
-                child: const CircularProgressIndicator(),
+              SizedBox(height: 10),
+              Center(
+                child: Visibility(
+                  visible: isLoading,
+                  child: const CircularProgressIndicator(),
+                ),
               ),
               if (errorMessage != null)
-                Text(errorMessage!, style: CustomTextStyles.bodyStyle(color: colorMessage)),
+                Center(
+                  child: Text(errorMessage!,
+                      style: CustomTextStyles.bodyStyle(color: colorMessage)),
+                ),
             ],
           ),
         ),
@@ -100,7 +106,6 @@ class _Campus_ProfileState extends State<Campus_Profile> {
       builder: (context) => DeleteConfirmationDialog(
         title: "Confirm Deletion",
         content: "Are you sure you want to delete this campus?",
-        onConfirm: () => Campus.deleteCampus(campus_id), // Call University.deleteUniversity on confirmation
       ),
     );
 
