@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Style.dart';
 import 'package:login_screen/Department.dart';
@@ -52,67 +54,72 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
         // Handle superuser case
       }
 
+      bool hasUniversity = false;
+      bool hasCampus = false;
+      bool hasDepartment = false;
+      bool hasBatch = false;
+
       List<dynamic> userPermissions = await Permission.getUserPermissions(User.id);
       for (Map<String, dynamic> permission in userPermissions) {
-        switch (permission["codename"]) {
-          case "add_customuser":
-            headings.add('User Management');
-            icons.add(Icons.add);
-            screenNames.add('User_Management');
-            break;
-          case 'add_customgroup':
-            headings.add('Add Custom Group');
-            icons.add(Icons.add);
-            screenNames.add('AddCustomGroupPage');
-            break;
-          case 'add_group':
-            headings.add('Add Group');
-            icons.add(Icons.add);
-            screenNames.add('AddGroupPage');
-            break;
-          case "add_university":
-            headings.add("University");
-            icons.add(FontAwesomeIcons.landmark);
-            screenNames.add("University_Page");
-            break;
-          case "add_campus":
-            headings.add("Campus");
-            icons.add(FontAwesomeIcons.landmark);
-            screenNames.add("Campus_Page");
-            break;
-          case "add_department":
-            headings.add("Department");
-            icons.add(FontAwesomeIcons.landmark);
-            screenNames.add("Department_Page");
-            break;
-          case "add_batch":
-            headings.add("Batch");
-            icons.add(FontAwesomeIcons.landmark);
-            screenNames.add("Batch_Page");
-            break;
-          case "add_section":
-            headings.add("Section");
-            icons.add(FontAwesomeIcons.landmark);
-            screenNames.add("Section_Page");
-            break;
-          case "add_peo":
-            headings.add("PEO");
-            icons.add(FontAwesomeIcons.landmark);
-            screenNames.add("PEO_Page");
-            break;
-          case "add_plo":
-            headings.add("PLO");
-            icons.add(FontAwesomeIcons.landmark);
-            screenNames.add("PLO_Page");
-            break;
-          case "add_courseinformation":
-            headings.add("Courses");
-            icons.add(
-              FontAwesomeIcons.book,
-            );
-            screenNames.add("Course_Page");
-            break;
+        if (permission["codename"] == "view_customuser") {
+          headings.add('User Management');
+          icons.add(Icons.add);
+          screenNames.add('User_Management');
+        } else if (permission["codename"] == "view_customgroup") {
+          headings.add('Add Custom Group');
+          icons.add(Icons.add);
+          screenNames.add('AddCustomGroupPage');
+        } else if (permission["codename"] == "view_group") {
+          headings.add('Add Group');
+          icons.add(Icons.add);
+          screenNames.add('AddGroupPage');
+        } else if (permission["codename"] == "view_university") {
+          hasUniversity = true;
+        } else if (permission["codename"] == "view_campus") {
+          hasCampus = true;
+        } else if (permission["codename"] == "view_department") {
+          hasDepartment =  true;
+        } else if (permission["codename"] == "view_batch") {
+          hasBatch = true;
+        } else if (permission["codename"] == "view_section") {
+          headings.add("Section");
+          icons.add(FontAwesomeIcons.landmark);
+          screenNames.add("Section_Page");
+        } else if (permission["codename"] == "view_peo") {
+          headings.add("PEO");
+          icons.add(FontAwesomeIcons.landmark);
+          screenNames.add("PEO_Page");
+        } else if (permission["codename"] == "view_plo") {
+          headings.add("PLO");
+          icons.add(FontAwesomeIcons.landmark);
+          screenNames.add("PLO_Page");
+        } else if (permission["codename"] == "view_courseinformation") {
+          headings.add("Courses");
+          icons.add(FontAwesomeIcons.book);
+          screenNames.add("Course_Page");
         }
+      }
+
+
+      if (hasUniversity) {
+        headings.add("University");
+        icons.add(FontAwesomeIcons.landmark);
+        screenNames.add("University_Page");
+      }
+      else if (hasCampus) {
+        headings.add("Campus");
+        icons.add(FontAwesomeIcons.landmark);
+        screenNames.add("Campus_Page");
+      }
+      else if (hasDepartment) {
+        headings.add("Department");
+        icons.add(FontAwesomeIcons.landmark);
+        screenNames.add("Department_Page");
+      }
+      else if (hasBatch) {
+        headings.add("Batch Management");
+        icons.add(FontAwesomeIcons.calendarAlt);
+        screenNames.add("Batch_Management");
       }
 
       setState(() {
@@ -130,7 +137,7 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
   Future<void> _setUniversityData() async {
     try {
       var universityData =
-      await University.getUniversityById(User.universityid);
+          await University.getUniversityById(User.universityid);
       if (universityData != null && universityData.isNotEmpty) {
         University.id = universityData['id'];
         University.name = universityData['name'];
@@ -161,7 +168,7 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
   Future<void> _setDepartmentData() async {
     try {
       var departmentData =
-      await Department.getDepartmentById(User.departmentid);
+          await Department.getDepartmentById(User.departmentid);
       if (departmentData != null && departmentData.isNotEmpty) {
         Department.id = departmentData['id'];
         Department.name = departmentData['name'];
@@ -202,54 +209,48 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
       ),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
-          : Column(
-        children: [
-          const SizedBox(
-            height: 23,
-          ),
-          Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 14, right: 8),
-                child: CircleAvatar(
-                  radius: 35,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(35),
-                    child: Image.asset(
-                      "assets/images/MyProfile.jpeg",
+          : SingleChildScrollView(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 15, bottom: 15, left: 10, right: 10),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 35,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(35),
+                      child: Image.asset(
+                        "assets/images/MyProfile.jpeg",
+                      ),
                     ),
                   ),
-                ),
-              ),
-              const SizedBox(
-                width: 10,
-              ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(User.username,
-                        style: CustomTextStyles.bodyStyle(fontSize: 27)),
-                    Text(
-                      User.email,
-                      style: CustomTextStyles.bodyStyle(),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(User.username,
+                            style: CustomTextStyles.bodyStyle(fontSize: 27)),
+                        Text(
+                          User.email,
+                          style: CustomTextStyles.bodyStyle(),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(right: 8.0),
+                    child: Icon(Icons.notifications, size: 35),
+                  ),
+                ],
               ),
-              const Padding(
-                padding: EdgeInsets.only(right: 8.0),
-                child: Icon(Icons.notifications, size: 35),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 15,
-          ),
-          const Divider(thickness: 1, color: Colors.black),
-          SingleChildScrollView(
-            child: SizedBox(
-              height: 575,
+            ),
+            const Divider(thickness: 1, color: Colors.black),
+            SizedBox(
+              height: MediaQuery.of(context).size.height - 220, // Adjust height as needed
               child: GridView.builder(
                 shrinkWrap: true,
                 gridDelegate:
@@ -319,8 +320,8 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
                 itemCount: headings.length,
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

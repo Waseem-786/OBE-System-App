@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:login_screen/Create_University.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Button.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Style.dart';
+import 'package:login_screen/Custom_Widgets/PermissionBasedButton.dart';
 import 'package:login_screen/University.dart';
 import 'package:login_screen/University_Profile.dart';
+import 'package:login_screen/Permission.dart';
+
+import 'Custom_Widgets/PermissionBasedIcon.dart'; // Import Permission class
 
 class University_Page extends StatefulWidget {
   @override
@@ -12,24 +16,17 @@ class University_Page extends StatefulWidget {
 
 class _University_PageState extends State<University_Page> {
   late Future<List<dynamic>> universitiesFuture;
+  late Future<bool> hasEditUniversityPermissionFuture;
+  late Future<bool> hasAddUniversityPermissionFuture;
 
   @override
   void initState() {
     super.initState();
     universitiesFuture = University.fetchUniversities();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // Check if the current route is the route you're returning from
-    ModalRoute? currentRoute = ModalRoute.of(context);
-    if (currentRoute != null && currentRoute.isCurrent) {
-      // Call your refresh function here
-      setState(() {
-        universitiesFuture = University.fetchUniversities();
-      });
-    }
+    hasEditUniversityPermissionFuture =
+        Permission.searchPermissionByCodename("change_university");
+    hasAddUniversityPermissionFuture =
+        Permission.searchPermissionByCodename("add_university");
   }
 
   @override
@@ -68,46 +65,41 @@ class _University_PageState extends State<University_Page> {
                               style: CustomTextStyles.bodyStyle(fontSize: 17),
                             ),
                           ),
-                          trailing: InkWell(
-                              onTap: () async {
-                                // call of a function to get the data of that user whose id is passed and id is
-                                // passed by tapping the user
-                                var university = await University.getUniversityById(
-                                    universities[index]['id']);
+                          trailing: PermissionBasedIcon(
+                              iconData: Icons.edit_square,
+                              enabledColor: Color(
+                                  0xffc19a6b), // Your desired enabled color
+                              disabledColor: Colors.grey,
+                              permissionFuture:
+                                  hasEditUniversityPermissionFuture,
+                              onPressed: () async {
+                                var university =
+                                    await University.getUniversityById(
+                                        universities[index]['id']);
                                 if (university != null) {
                                   University.id = university['id'];
                                   University.name = university['name'];
                                   University.vision = university['vision'];
                                   University.mission = university['mission'];
                                   Navigator.push(
-                                      context,
-                                      MaterialPageRoute<bool>(
-                                        builder: (context) => Create_University(
-                                          isUpdate: true,
-                                          UniversityData: university,
-                                        ),
-                                      )).then((result) {
+                                    context,
+                                    MaterialPageRoute<bool>(
+                                      builder: (context) => Create_University(
+                                        isUpdate: true,
+                                        UniversityData: university,
+                                      ),
+                                    ),
+                                  ).then((result) {
                                     if (result != null && result) {
-                                      // Set the state of the page here
                                       setState(() {
-                                        universitiesFuture = University.fetchUniversities();
+                                        universitiesFuture =
+                                            University.fetchUniversities();
                                       });
                                     }
                                   });
                                 }
-                              },
-                              child: Container(
-                                  height: 40,
-                                  width: 40,
-                                  child: Icon(
-                                    size: 32,
-                                    Icons.edit_square,
-                                    color: Color(0xffc19a6b),
-                                  ))
-                          ),
+                              }),
                           onTap: () async {
-                            // call of a function to get the data of that user whose id is passed and id is
-                            // passed by tapping the user
                             var university = await University.getUniversityById(
                                 universities[index]['id']);
                             if (university != null) {
@@ -121,9 +113,9 @@ class _University_PageState extends State<University_Page> {
                                     builder: (context) => University_Profile(),
                                   )).then((result) {
                                 if (result != null && result) {
-                                  // Set the state of the page here
                                   setState(() {
-                                    universitiesFuture = University.fetchUniversities();
+                                    universitiesFuture =
+                                        University.fetchUniversities();
                                   });
                                 }
                               });
@@ -137,22 +129,18 @@ class _University_PageState extends State<University_Page> {
               }
             },
           ),
-          Center(
-            child: Container(
-              margin: const EdgeInsets.only(bottom: 20, top: 12),
-              child: Custom_Button(
-                onPressedFunction: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => Create_University()),
-                  );
-                },
-                ButtonText: 'Add University',
-                ButtonWidth: 200,
-              ),
-            ),
-          ),
+          PermissionBasedButton(
+              buttonText: 'Add University',
+              buttonWidth: 200,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Create_University(),
+                  ),
+                );
+              },
+              permissionFuture: hasAddUniversityPermissionFuture)
         ],
       ),
     );

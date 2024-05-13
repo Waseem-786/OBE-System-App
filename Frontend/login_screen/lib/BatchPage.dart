@@ -1,14 +1,14 @@
-
 import 'dart:async';
-import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:login_screen/Batch.dart';
+import 'package:login_screen/Custom_Widgets/PermissionBasedButton.dart';
 import 'package:login_screen/Department.dart';
+import 'package:login_screen/Permission.dart';
 import 'package:login_screen/SectionPage.dart';
 import 'CreateBatch.dart';
-import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
+import 'Custom_Widgets/PermissionBasedIcon.dart';
 
 class BatchPage extends StatefulWidget {
   const BatchPage({super.key});
@@ -19,12 +19,17 @@ class BatchPage extends StatefulWidget {
 
 class _BatchPageState extends State<BatchPage> {
 
+  final int department_id = Department.id;
   late Future<List<dynamic>> batchFuture;
+  late Future<bool> hasEditBatchPermissionFuture;
+  late Future<bool> hasAddBatchPermissionFuture;
 
   @override
   void initState() {
     super.initState();
-    batchFuture = Batch.fetchBatchBydeptId(Department.id);
+    batchFuture = Batch.getBatchBydeptId(Department.id);
+    hasAddBatchPermissionFuture = Permission.searchPermissionByCodename("add_batch");
+    hasEditBatchPermissionFuture = Permission.searchPermissionByCodename("change_batch");
   }
 
 
@@ -37,7 +42,7 @@ class _BatchPageState extends State<BatchPage> {
     if (currentRoute != null && currentRoute.isCurrent) {
       // Call your refresh function here
       setState(() {
-        batchFuture = Batch.fetchBatchBydeptId(Department.id);
+        batchFuture = Batch.getBatchBydeptId(Department.id);
       });
     }
   }
@@ -90,16 +95,48 @@ class _BatchPageState extends State<BatchPage> {
                                           fontSize: 17),
                                     ),
                                   ),
+                                  trailing: PermissionBasedIcon(
+                                    iconData: Icons.edit_square,
+                                    enabledColor:
+                                    Color(0xffc19a6b), // Your desired enabled color
+                                    disabledColor: Colors.grey,
+                                    permissionFuture: hasEditBatchPermissionFuture,
+                                    onPressed: () async {
+                                      var batchData = await Batch.getBatchbyBatchId(batches[index]['id']);
+
+                                      if (batchData != null) {
+                                        Batch.id = batchData['id'];
+                                        Batch.name = batchData['name'];
+                                        Batch.sections = batchData['sections'];
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute<bool>(
+                                              builder: (context) => CreateBatch(
+                                                isUpdate: true,
+                                                batchData: batchData,
+                                              ),
+                                            )).then((result) {
+                                          if (result != null && result) {
+                                            // Set the state of the page here
+                                            setState(() {
+                                              batchFuture = Batch.getBatchBydeptId(department_id);
+                                            });
+                                          }
+                                        });
+                                        // Perform actions with campusData
+                                      }
+                                    },
+                                  ),
                                   onTap: () async {
                                     // Ensure batches[index]['id'] is not null before proceeding
                                     if (batches[index]['id'] != null) {
                                       // Call getBatchbyBatchId only if id is not null
-                                      var batch = await Batch.getBatchbyBatchId(batches[index]['id']);
+                                      var batchData = await Batch.getBatchbyBatchId(batches[index]['id']);
 
-                                      if (batch != null) {
-                                        Batch.id = batch['id'];
-                                        Batch.name = batch['name'];
-                                        Batch.sections = batch['section_names'];
+                                      if (batchData != null) {
+                                        Batch.id = batchData['id'];
+                                        Batch.name = batchData['name'];
+                                        Batch.sections = batchData['sections'];
 
                                         Navigator.push(
                                           context,
@@ -110,7 +147,7 @@ class _BatchPageState extends State<BatchPage> {
                                           if (result != null && result) {
                                             // Set the state of the page here
                                             setState(() {
-                                              batchFuture = Batch.fetchBatchBydeptId(Department.id);
+                                              batchFuture = Batch.getBatchBydeptId(Department.id);
                                             });
                                           }
                                         });
@@ -123,21 +160,12 @@ class _BatchPageState extends State<BatchPage> {
                             }));
                   }
                 }),
-            Center(
-              child: Container(
-                margin: const EdgeInsets.only(bottom: 20, top: 12),
-                child: Custom_Button(
-                  onPressedFunction: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => CreateBatch()),
-                    );
-                  },
-                  ButtonText: 'Add Batch',
-                  ButtonWidth: 200,
-                ),
-              ),
-            ),
+            PermissionBasedButton(
+                buttonText: "Add Batch",
+                buttonWidth: 180,
+                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => CreateBatch()),),
+                permissionFuture: hasAddBatchPermissionFuture
+            )
           ],
         ),
       ),

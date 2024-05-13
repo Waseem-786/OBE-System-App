@@ -1,0 +1,148 @@
+update Function for role
+
+
+Super
+headings = [
+        'Program Management',
+        'PLO',
+        'PEO',
+        'Batch Management',
+        'Courses',
+        'Approval Process',
+        'Assessments',
+        'User Management',
+        'Role Management',
+        'University',
+      ];
+      icons = [
+        FontAwesomeIcons.cogs,
+        FontAwesomeIcons.calendarAlt,
+        FontAwesomeIcons.calendarAlt,
+        FontAwesomeIcons.calendarAlt,
+        FontAwesomeIcons.book,
+        FontAwesomeIcons.thumbsUp,
+        FontAwesomeIcons.poll,
+        FontAwesomeIcons.users,
+        FontAwesomeIcons.users,
+        FontAwesomeIcons.landmark,
+      ];
+
+      screenNames = [
+        'Program Management',
+        'PLO',
+        'PEO',
+        'Batch_Management',
+        'Course_Page',
+        'Approval_Process',
+        'Assessments',
+        'User_Management',
+        'Role Page',
+        'University_Page',
+      ];
+
+
+
+
+
+
+Dept:
+
+headings = [
+        'PLO',
+        'PEO',
+        'Batch Management',
+        'Role Management'
+      ];
+      icons = [
+        FontAwesomeIcons.calendarAlt,
+        FontAwesomeIcons.calendarAlt,
+        FontAwesomeIcons.calendarAlt,
+        FontAwesomeIcons.users,
+
+      ];
+
+      screenNames = [
+        'PLO',
+        'PEO',
+        'Batch_Management',
+        'Role Page'
+      ];
+
+
+
+
+
+Campus:
+headings = [
+        'Program Management',
+        'Batch Management',
+        'Courses',
+        'Approval Process',
+        'Assessments',
+        'User Management',
+        'Role Management',
+        'University'
+      ];
+      icons = [
+        FontAwesomeIcons.cogs,
+        FontAwesomeIcons.calendarAlt,
+        FontAwesomeIcons.book,
+        FontAwesomeIcons.thumbsUp,
+        FontAwesomeIcons.poll,
+        FontAwesomeIcons.users,
+        FontAwesomeIcons.users,
+        FontAwesomeIcons.landmark,
+      ];
+
+      screenNames = [
+        'Program_Management',
+        'Batch_Management',
+        'Course_Page',
+        'Approval_Process',
+        'Assessments',
+        'User_Management',
+        'Role Page',
+        'University_Page'
+      ];
+
+
+
+
+
+
+
+
+University:
+headings = [
+        'Program Management',
+        'Batch Management',
+        'Courses',
+        'Approval Process',
+        'Assessments',
+        'User Management',
+        'Role Management',
+        'University',
+
+      ];
+      icons = [
+        FontAwesomeIcons.cogs,
+        FontAwesomeIcons.calendarAlt,
+        FontAwesomeIcons.book,
+        FontAwesomeIcons.thumbsUp,
+        FontAwesomeIcons.poll,
+        FontAwesomeIcons.users,
+        FontAwesomeIcons.users,
+        FontAwesomeIcons.landmark,
+
+      ];
+
+      screenNames = [
+        'Program_Management',
+        'Batch_Management',
+        'Course_Page',
+        'Approval_Process',
+        'Assessments',
+        'User_Management',
+        'Role Page',
+        'University_Page',
+      ];

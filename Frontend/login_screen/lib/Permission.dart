@@ -7,6 +7,7 @@ class Permission {
   static int _id = 0;
   static String _name = "";
   static String _codename = "";
+  static List<dynamic> _Userpermissions = [];
 
   static const ipAddress = MyApp.ip;
   static const storage = FlutterSecureStorage(aOptions: AndroidOptions(encryptedSharedPreferences: true));
@@ -26,6 +27,10 @@ class Permission {
     _codename = value;
   }
 
+  static List<dynamic> get Userpermissions => _Userpermissions;
+  static set Userpermissions(List<dynamic> value) {
+    _Userpermissions = value;
+  }
 
   //Get all Permissions of Specific Group/Role
   static  Future<List> fetchPermissionsbyGroupId(int groupId) async {
@@ -100,12 +105,30 @@ class Permission {
 
     if (response.statusCode == 200) {
       // Return the permissions as a list
-      return jsonDecode(response.body);
+      _Userpermissions =  jsonDecode(response.body);
+      return _Userpermissions;
     } else {
       // If there's an error, return an empty list
       return [];
     }
   }
+
+  // Search for a permission by codename
+  static Future<bool> searchPermissionByCodename(String codename) async {
+    // Check if user permissions are available
+    if (_Userpermissions.isNotEmpty) {
+      // Search for the permission by codename in user permissions
+      for (var permission in _Userpermissions) {
+        if (permission['codename'] == codename) {
+          print(codename);
+          return true;
+        }
+      }
+    }
+    // If permission not found, return false
+    return false;
+  }
+
 
 
 }

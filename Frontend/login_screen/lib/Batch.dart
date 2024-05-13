@@ -68,7 +68,7 @@ class Batch{
     }
   }
 
-  static  Future<List<dynamic>> fetchBatchBydeptId(int dept_id) async {
+  static  Future<List<dynamic>> getBatchBydeptId(int dept_id) async {
     final accessToken = await storage.read(key: "access_token");
     final url = Uri.parse('$ipAddress:8000/api/department/$dept_id/batch');
     final response = await http.get(
@@ -101,5 +101,31 @@ class Batch{
     }
   }
 
+
+
+    static updateBatch(int batchId, String batchName, List<String> sectionNames) async {
+    try {
+      final accessToken = await storage.read(key: "access_token");
+      final url = Uri.parse('$ipAddress:8000/api/batch/$batchId');
+      final response = await http.patch(
+        url,
+        headers: {'Authorization': 'Bearer $accessToken', 'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'name': batchName,
+          'sections' : sectionNames
+        }),
+      );
+      if (response.statusCode == 200) {
+        print('Batch updated successfully');
+        return true;
+      } else {
+        print('Failed to update Batch. Status code: ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      print('Exception while updating Batch: $e');
+      return false;
+    }
+  }
 
 }

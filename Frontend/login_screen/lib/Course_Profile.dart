@@ -67,8 +67,7 @@ class _Course_ProfileState extends State<Course_Profile> {
                         bool confirmDelete = await showDialog(
                           context: context,
                           builder: (context) => AlertDialog(
-                            backgroundColor:
-                            Colors.red, // Set background color to red for danger
+                            backgroundColor: Colors.red, // Set background color to red for danger
                             title: const Row(
                               children: [
                                 Icon(Icons.warning,
