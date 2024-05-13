@@ -3,12 +3,14 @@ import 'package:login_screen/Approval_Process.dart';
 import 'package:login_screen/Assessments.dart';
 import 'package:login_screen/BatchPage.dart';
 import 'package:login_screen/CLO_Page.dart';
+import 'package:login_screen/Campus_Page.dart';
 import 'package:login_screen/CourseBookPage.dart';
 import 'package:login_screen/Course_Outline_Profile.dart';
 import 'package:login_screen/Course_Schedule_Profile.dart';
 import 'package:login_screen/Course_Page.dart';
 import 'package:login_screen/Create_Course_Schedule.dart';
 import 'package:login_screen/Create_Role.dart';
+import 'package:login_screen/Department_Page.dart';
 import 'package:login_screen/Program_Management.dart';
 import 'package:login_screen/PLO_Page.dart';
 import 'package:login_screen/Role_Page.dart';
@@ -52,6 +54,8 @@ class MyApp extends StatelessWidget {
         '/Assessments': (context) => Assessments(),
         '/User_Management': (context) => User_Management(),
         '/University_Page': (context) => University_Page(),
+        '/Campus_Page': (context) => Campus_Page(),
+        '/Department_Page': (context) => Department_Page(),
         '/Objective_Page': (context) => CourseObjectivePage(),
         '/CLO_Page': (context) => CLO_Page(),
         '/Course_Assessment_Page': (context) => Course_Assessment_Page(),
