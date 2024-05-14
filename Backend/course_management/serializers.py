@@ -65,23 +65,14 @@ class WeeklyTopicSerializer(serializers.ModelSerializer):
     
 
 class ObjectivesSerializer(serializers.ModelSerializer):
-    objectives = serializers.SerializerMethodField()
     class Meta:
-        model = CourseInformation
-        fields = ['objectives']
-    def get_objectives(self, obj):
-        objectives = obj.courseobjective_set.all()
-        return CourseObjectiveListSerializer(objectives, many=True).data
-
+        model = CourseObjective
+        fields = ['id', 'description']
 
 class CLOsSerializer(serializers.ModelSerializer):
-    clo = serializers.SerializerMethodField()
     class Meta:
-        model = CourseInformation
-        fields = ['clo']
-    def get_clo(self, obj):
-        clo = obj.courselearningoutcomes_set.all()
-        return CourseLearningOutcomesSerializer(clo, many=True).data
+        model = CourseLearningOutcomes
+        fields = ['id', 'description']
 
 class CompleteOutlineSerializer(serializers.ModelSerializer):
     batch_name = serializers.CharField(source='batch.name', read_only=True)
@@ -89,8 +80,8 @@ class CompleteOutlineSerializer(serializers.ModelSerializer):
     teacher_last_name = serializers.CharField(source='teacher.last_name', read_only=True)
 
     course_info = CourseInformationSerializer(source='course', read_only=True)
-    objectives = ObjectivesSerializer(source='course', read_only=True)
-    clos = CLOsSerializer(source='course', read_only=True)
+    objectives = ObjectivesSerializer(source='course.courseobjective_set', many=True, read_only=True)
+    clos = CLOsSerializer(source='course.courselearningoutcomes_set', many=True, read_only=True)
     schedule = CourseScheduleSerializer(source='courseschedule', read_only=True)
     assessments = CourseAssessmentSerializer(source='courseassessment_set', many=True, read_only=True)
     weekly_topics = WeeklyTopicSerializer(source='weeklytopic_set', many=True, read_only=True)
@@ -98,4 +89,4 @@ class CompleteOutlineSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CourseOutline
-        fields = ['id','batch','batch_name','teacher','teacher_first_name','teacher_last_name', 'course_info','objectives', 'clos' ,'schedule', 'assessments', 'weekly_topics', 'books']
+        fields = ['id', 'batch', 'batch_name', 'teacher', 'teacher_first_name', 'teacher_last_name', 'course_info', 'objectives', 'clos', 'schedule', 'assessments', 'weekly_topics', 'books']

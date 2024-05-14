@@ -32,12 +32,15 @@ class PermissionBasedButton extends StatelessWidget {
           bool hasPermission = snapshot.data ?? false;
           return Visibility(
             visible: hasPermission,
-            child: Custom_Button(
-              onPressedFunction: onPressed,
-              BackgroundColor: backgroundColor,
-              ForegroundColor: foregroundColor,
-              ButtonText: buttonText,
-              ButtonWidth: buttonWidth,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 15),
+              child: Custom_Button(
+                onPressedFunction: onPressed,
+                BackgroundColor: backgroundColor,
+                ForegroundColor: foregroundColor,
+                ButtonText: buttonText,
+                ButtonWidth: buttonWidth,
+              ),
             ),
           );
         }

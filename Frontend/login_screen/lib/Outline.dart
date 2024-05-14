@@ -104,7 +104,7 @@ class Outline {
       return {};
     }
   }
-  static  Future<Map<String, dynamic>?> fetchOutlineByTeacher(int teacher_id) async {
+  static Future<List<dynamic>> fetchOutlineByTeacher(int teacher_id) async {
     final accessToken = await storage.read(key: "access_token");
     final url = Uri.parse('$ipAddress:8000/api/user/$teacher_id/outline');
     final response = await http.get(
@@ -112,11 +112,10 @@ class Outline {
       headers: {'Authorization': 'Bearer $accessToken'},
     );
     if (response.statusCode == 200) {
-      print(response.body);
       return jsonDecode(response.body);
     } else {
       print('Failed to load Outline');
-      return {};
+      return [];
     }
   }
   static Future<bool> updateOutline(int id, String course, String batch, String teacher) async {

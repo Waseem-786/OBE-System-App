@@ -2,7 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:login_screen/Course.dart';
 import 'package:login_screen/CourseDashboard.dart';
+import 'package:login_screen/Custom_Widgets/PermissionBasedButton.dart';
 import 'package:login_screen/Outline.dart';
+import 'package:login_screen/Permission.dart';
+import 'package:login_screen/User.dart';
+import 'Create_University.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
 
 class Course_Outline_Page extends StatefulWidget
@@ -13,10 +17,17 @@ class Course_Outline_Page extends StatefulWidget
 
 class _Course_Outline_PageState extends State<Course_Outline_Page> {
   late Future<List<dynamic>> CourseOutlines;
+  late Future<bool> hasEditOutlinePermissionFuture;
+  late Future<bool> hasAddOutlinePermissionFuture;
 
   @override
   void initState() {
-    CourseOutlines = Outline.fetchOutlineByCourse(Course.id);
+    if(User.isdeptLevel()) {
+      CourseOutlines = Outline.fetchOutlineByTeacher(User.id);
+    } else {
+      CourseOutlines = Outline.fetchOutlineByCourse(Course.id);
+    }
+    hasAddOutlinePermissionFuture = Permission.searchPermissionByCodename("add_courseoutline");
   }
 
   @override
@@ -27,7 +38,11 @@ class _Course_Outline_PageState extends State<Course_Outline_Page> {
     if (currentRoute != null && currentRoute.isCurrent) {
       // Call your refresh function here
       setState(() {
-        CourseOutlines = Outline.fetchOutlineByCourse(Course.id);
+        if(User.isdeptLevel()) {
+          CourseOutlines = Outline.fetchOutlineByTeacher(User.id);
+        } else {
+          CourseOutlines = Outline.fetchOutlineByCourse(Course.id);
+        }
       });
     }
   }
@@ -52,69 +67,85 @@ class _Course_Outline_PageState extends State<Course_Outline_Page> {
               } else if (snapshot.hasError) {
                 return Center(child: Text('Error: ${snapshot.error}'));
               } else {
-                final CourseOutlineitems = snapshot.data!;
-                return Expanded(
-                  child: ListView.builder(
-                    itemCount: CourseOutlineitems.length,
-                    itemBuilder: (context, index) {
-                      final item = CourseOutlineitems[index];
-                      return Card(
-                        color: Colors.white,
-                        elevation: 5,
-                        margin: const EdgeInsets.all(10),
-                        child: ListTile(
-                          title: Padding(
-                            padding: const EdgeInsets.all(20.0),
-                            child: Text(
+                final CourseOutline = snapshot.data!;
+                if(CourseOutline.length == 0) {
+                  return Center(child: Text('No Course Outline to Show'));
+                } else {
+                  return Expanded(
+                    child: ListView.builder(
+                      itemCount: CourseOutline.length,
+                      itemBuilder: (context, index) {
+                        final item = CourseOutline[index];
+                        return Card(
+                          color: Colors.white,
+                          elevation: 5,
+                          margin: const EdgeInsets.all(10),
+                          child: ListTile(
+                            title: Padding(
+                              padding: const EdgeInsets.all(20.0),
+                              child: Text(
                                 item['batch_name'] ?? '',
-                              style: CustomTextStyles.bodyStyle(fontSize: 17),
+                                style: CustomTextStyles.bodyStyle(fontSize: 17),
+                              ),
                             ),
-                          ),
-                          subtitle: Padding(
-                            padding: const EdgeInsets.only(right: 20.0, left: 20.0, bottom: 20.0),
-                            child: Text(
-                              item['course_name'] ?? '',
-                              style: CustomTextStyles.bodyStyle(fontSize: 14),
+                            subtitle: Padding(
+                              padding: const EdgeInsets.only(right: 20.0, left: 20.0, bottom: 20.0),
+                              child: Text(
+                                item['course_name'] ?? '',
+                                style: CustomTextStyles.bodyStyle(fontSize: 14),
+                              ),
                             ),
-                          ),
-                          trailing: Padding(
-                            padding: const EdgeInsets.only(right: 20.0, left: 20.0),
-                            child: Text(
-                              "By: "+item['teacher_name'] ?? '',
-                              style: CustomTextStyles.bodyStyle(fontSize: 17),
+                            trailing: Padding(
+                              padding: const EdgeInsets.only(right: 20.0, left: 20.0),
+                              child: Text(
+                                "By: "+item['teacher_name'] ?? '',
+                                style: CustomTextStyles.bodyStyle(fontSize: 17),
+                              ),
                             ),
+                            onTap: () async {
+                              // call of a function to get the data of that user whose id is passed and id is
+                              // passed by tapping the user
+                              var Singleoutline = await Outline.fetchSingleOutline(
+                                  CourseOutline[index]['id']);
+                              if (Singleoutline != null) {
+                                Outline.id = Singleoutline['id'];
+                                Outline.course = Singleoutline['course'];
+                                Outline.batch = Singleoutline['batch'];
+                                Outline.teacher = Singleoutline['teacher'];
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute<bool>(
+                                      builder: (context) => CourseDashboard(),
+                                    )).then((result) {
+                                  if (result != null && result) {
+                                    // Set the state of the page here
+                                    setState(() {
+                                      if(User.isdeptLevel()) {
+                                        CourseOutlines = Outline.fetchOutlineByTeacher(User.id);
+                                      } else {
+                                        CourseOutlines = Outline.fetchOutlineByCourse(Course.id);
+                                      }
+                                    });
+                                  }
+                                });
+                              }
+                            },
                           ),
-                          onTap: () async {
-                            // call of a function to get the data of that user whose id is passed and id is
-                            // passed by tapping the user
-                            var Singleoutline = await Outline.fetchSingleOutline(
-                                CourseOutlineitems[index]['id']);
-                            if (Singleoutline != null) {
-                              Outline.id = Singleoutline['id'];
-                              Outline.course = Singleoutline['course'];
-                              Outline.batch = Singleoutline['batch'];
-                              Outline.teacher = Singleoutline['teacher'];
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute<bool>(
-                                    builder: (context) => CourseDashboard(),
-                                  )).then((result) {
-                                if (result != null && result) {
-                                  // Set the state of the page here
-                                  setState(() {
-                                    CourseOutlines = Outline.fetchOutlineByCourse(Course.id);
-                                  });
-                                }
-                              });
-                            }
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                );
+                        );
+                      },
+                    ),
+                  );
+                }
               }
             },
+          ),
+          PermissionBasedButton(
+              buttonText: "Add Course Outline",
+              buttonWidth: 300,
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => Create_University()));
+              },
+              permissionFuture: hasAddOutlinePermissionFuture,
           ),
         ],
       ),

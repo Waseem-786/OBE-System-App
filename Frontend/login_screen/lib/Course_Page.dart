@@ -3,7 +3,8 @@ import 'package:login_screen/Campus.dart';
 import 'package:login_screen/Course.dart';
 import 'package:login_screen/Course_Profile.dart';
 import 'package:login_screen/Create_Course.dart';
-import 'Custom_Widgets/Custom_Button.dart';
+import 'package:login_screen/Custom_Widgets/PermissionBasedButton.dart';
+import 'package:login_screen/Permission.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
 
 class Course_Page extends StatefulWidget {
@@ -15,11 +16,15 @@ class Course_Page extends StatefulWidget {
 
 class Course_PageState extends State<Course_Page> {
   late Future<List<dynamic>> coursesFuture;
+  late Future<bool> hasEditCoursePermissionFuture;
+  late Future<bool> hasAddCoursePermissionFuture;
 
   @override
   void initState() {
     super.initState();
     coursesFuture = Course.fetchCoursesbyCampusId(Campus.id);
+    hasEditCoursePermissionFuture = Permission.searchPermissionByCodename("change_courseinformation");
+    hasAddCoursePermissionFuture = Permission.searchPermissionByCodename("add_courseinformation");
   }
 
   @override
@@ -130,20 +135,13 @@ class Course_PageState extends State<Course_Page> {
                     }
                   }
                 }),
-            Center(
-              child: Container(
-                margin: const EdgeInsets.only(bottom: 20, top: 12),
-                child: Custom_Button(
-                  onPressedFunction: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Create_Course()),
-                    );
-                  },
-                  ButtonText: 'Add Course',
-                  ButtonWidth: 200,
-                ),
-              ),
+            PermissionBasedButton(
+                buttonText: "Add Course",
+                buttonWidth: 200,
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => Create_Course()));
+                },
+                permissionFuture: hasAddCoursePermissionFuture,
             ),
           ],
         ),

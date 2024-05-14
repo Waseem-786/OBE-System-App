@@ -2,11 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:login_screen/Campus.dart';
-import 'package:login_screen/Custom_Widgets/Custom_Button.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Style.dart';
+import 'package:login_screen/Custom_Widgets/OutlineRow.dart';
 import 'package:login_screen/Department.dart';
 import 'package:login_screen/Outline.dart';
 import 'package:login_screen/University.dart';
+
+import 'Custom_Widgets/SectionHeader.dart';
 
 class CourseOutlineProfile extends StatefulWidget {
   @override
@@ -18,11 +20,18 @@ class _CourseOutlineProfileState extends State<CourseOutlineProfile> {
   Color borderColor = Colors.blue.shade900;
 
   late Future<Map<String, dynamic>?> courseOutline;
+  Map<String, dynamic>? courseOutlineData; // This will hold the course data
 
   @override
   void initState() {
     super.initState();
-    courseOutline = Outline.fetchCompleteOutline(Outline.id);
+    courseOutline = Outline.fetchCompleteOutline(Outline.id).then((data) {
+      if (data != null) {
+        setState(() {
+          courseOutlineData = data; // Set the course data once fetched
+        });
+      }
+    });
   }
 
   @override
@@ -35,660 +44,244 @@ class _CourseOutlineProfileState extends State<CourseOutlineProfile> {
           style: CustomTextStyles.headingStyle(fontSize: 20),
         ),
       ),
-      body: FutureBuilder<Map<String, dynamic>?>(
-        future: courseOutline,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(
-                child: Text(
-              'Error: ${snapshot.error}',
-              style: CustomTextStyles.bodyStyle(),
-            ));
-          } else {
-            final data = snapshot.data;
-            if (data == null) {
-              return Center(
-                  child: Text('No data available',
-                      style: CustomTextStyles.bodyStyle()));
-            } else {
-              final courseInfo = data['course_info'];
-              final courseSchedule = data['schedule'];
-              return Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Center(
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.vertical,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          Department.name,
-                          textAlign: TextAlign.center,
-                          style: CustomTextStyles.headingStyle(fontSize: 10)
-                              .copyWith(decoration: TextDecoration.underline),
-                        ),
-                        Text(
-                          Campus.name,
-                          textAlign: TextAlign.center,
-                          style: CustomTextStyles.headingStyle(fontSize: 15)
-                              .copyWith(decoration: TextDecoration.underline),
-                        ),
-                        Text(
-                          University.name,
-                          textAlign: TextAlign.center,
-                          style: CustomTextStyles.headingStyle(fontSize: 20)
-                              .copyWith(decoration: TextDecoration.underline),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        Text(
-                          '${courseInfo['code']} ${courseInfo['title']}',
-                          textAlign: TextAlign.center,
-                          style: CustomTextStyles.headingStyle(
-                                  color: Colors.blue.shade900, fontSize: 25)
-                              .copyWith(
-                                  decoration: TextDecoration.underline,
-                                  decorationColor: borderColor),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        //Course Information Table
-                        Column(
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: borderColor,
-                                  width: 2
-                                ),
-                              ),
-                              child: Row(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      'Course Information',
-                                      style: CustomTextStyles.headingStyle(
-                                          fontSize: 25, color: Colors.blue.shade900),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: fillingColor,
-                                border: Border.all(
-                                  color: borderColor,
-                                  width: 2
-                                )
-                              ),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        border: Border(
-                                          right: BorderSide(
-                                            color: borderColor,
-                                            width: 2,
-                                          )
-                                        )
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'Course Number and Title:',
-                                          style: CustomTextStyles.bodyStyle(
-                                              fontSize: 20),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                        '${courseInfo['code']} ${courseInfo['title']}',
-                                        style: CustomTextStyles.bodyStyle(
-                                            fontSize: 20),
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  left: BorderSide(
-                                    color: borderColor,
-                                    width: 2,
-                                  ),
-                                  bottom: BorderSide(
-                                    color: borderColor,
-                                    width: 2,
-                                  ),
-                                  right: BorderSide(
-                                    color: borderColor,
-                                    width: 2,
-                                  )
-                                )
-                              ),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        border: Border(
-                                          right: BorderSide(
-                                            color: borderColor,
-                                            width: 2,
-                                          )
-                                        )
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'Credits:',
-                                          style: CustomTextStyles.bodyStyle(
-                                              fontSize: 20),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                        '${courseInfo['theory_credits'] + courseInfo['lab_credits']} (${courseInfo['theory_credits']} + ${courseInfo['lab_credits']})',
-                                        style: CustomTextStyles.bodyStyle(
-                                            fontSize: 20),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: fillingColor,
-                                border: Border(
-                                  right: BorderSide(
-                                    color: borderColor,
-                                    width: 2,
-                                  ),
-                                  left: BorderSide(
-                                    color: borderColor,
-                                    width: 2,
-                                  ),
-                                  bottom: BorderSide(
-                                    color: borderColor,
-                                    width: 2,
-                                  )
-                                )
-                              ),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        border: Border(
-                                          right: BorderSide(
-                                            color: borderColor,
-                                            width: 2,
-                                          )
-                                        )
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'Instructor-In-charge:',
-                                          style: CustomTextStyles.bodyStyle(
-                                              fontSize: 20),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                        '${data['teacher_first_name']} ${data['teacher_last_name']}',
-                                        style: CustomTextStyles.bodyStyle(
-                                            fontSize: 20),
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  right: BorderSide(
-                                    color: borderColor,
-                                    width: 2,
-                                  ),
-                                  left: BorderSide(
-                                    color: borderColor,
-                                    width: 2,
-                                  ),
-                                  bottom: BorderSide(
-                                    color: borderColor,
-                                    width: 2,
-                                  )
-                                )
-                              ),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        border: Border(
-                                          right: BorderSide(
-                                            color: borderColor,
-                                            width: 2,
-                                          )
-                                        )
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text('Course type:',
-                                          style: CustomTextStyles.bodyStyle(fontSize: 20),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text('${courseInfo['course_type']}',
-                                        style: CustomTextStyles.bodyStyle(fontSize: 20),
-                                      ),
-                                    )
-                                  )
-                                ],
-                              ),
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: fillingColor,
-                                border: Border(
-                                  right: BorderSide(
-                                    color: borderColor,
-                                    width: 2,
-                                  ),
-                                  left: BorderSide(
-                                    color: borderColor,
-                                    width: 2,
-                                  ),
-                                  bottom: BorderSide(
-                                    color: borderColor,
-                                    width: 2,
-                                  )
-                                )
-                              ),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        border: Border(
-                                          right: BorderSide(
-                                            color: borderColor,
-                                            width: 2,
-                                          )
-                                        )
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'Required or Elective:',
-                                          style: CustomTextStyles.bodyStyle(
-                                              fontSize: 20),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text('${courseInfo['required_elective']}',
-                                        style: CustomTextStyles.bodyStyle(
-                                            fontSize: 20),
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  right: BorderSide(
-                                    color: borderColor,
-                                    width: 2,
-                                  ),
-                                  left: BorderSide(
-                                    color: borderColor,
-                                    width: 2,
-                                  ),
-                                  bottom: BorderSide(
-                                    color: borderColor,
-                                    width: 2,
-                                  )
-                                )
-                              ),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        border: Border(
-                                          right: BorderSide(
-                                            color: borderColor,
-                                            width: 2,
-                                          )
-                                        )
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text('Course Prerequisite:',
-                                          style: CustomTextStyles.bodyStyle(fontSize: 20),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text('${courseInfo['prerequisite']}',
-                                          style: CustomTextStyles.bodyStyle(fontSize: 20),
-                                        ),
-                                      )
-                                  )
-                                ],
-                              ),
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: fillingColor,
-                                border: Border(
-                                  right: BorderSide(
-                                    color: borderColor,
-                                    width: 2,
-                                  ),
-                                  left: BorderSide(
-                                    color: borderColor,
-                                    width: 2,
-                                  ),
-                                  bottom: BorderSide(
-                                    color: borderColor,
-                                    width: 2,
-                                  )
-                                )
-                              ),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        border: Border(
-                                          right: BorderSide(
-                                            color: borderColor,
-                                            width: 2,
-                                          )
-                                        )
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'Batch:',
-                                          style: CustomTextStyles.bodyStyle(
-                                              fontSize: 20),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                        '${data['batch_name']}',
-                                        style: CustomTextStyles.bodyStyle(
-                                            fontSize: 20),
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 20,),
-                        //Course Schedule Table
-                        Column(
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: borderColor,
-                                  width: 2,
-                                )
-                              ),
-                              child: Row(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text('Course Schedule',
-                                      style: CustomTextStyles.headingStyle(fontSize: 25, color: Colors.blue.shade900),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: fillingColor,
-                                border: Border.all(
-                                  color: borderColor,
-                                  width: 2,
-                                )
-                              ),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          border: Border(
-                                              right: BorderSide(
-                                                color: borderColor,
-                                                width: 2,
-                                              )
-                                          )
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text('Lecture:',
-                                          style: CustomTextStyles.bodyStyle(fontSize: 20)
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text('${courseSchedule['lecture_hours_per_week']} hour(s)/week',
-                                        style: CustomTextStyles.bodyStyle(fontSize: 20),
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                  border: Border(
-                                    right: BorderSide(
-                                      color: borderColor,
-                                      width: 2,
-                                    ),
-                                    left: BorderSide(
-                                      color: borderColor,
-                                      width: 2,
-                                    ),
-                                    bottom: BorderSide(
-                                      color: borderColor,
-                                      width: 2,
-                                    ),
-                                  )
-                              ),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          border: Border(
-                                              right: BorderSide(
-                                                color: borderColor,
-                                                width: 2,
-                                              )
-                                          )
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text('Lab:',
-                                          style: CustomTextStyles.bodyStyle(fontSize: 20),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text('${courseSchedule['lab_hours_per_week']} hour(s)/week',
-                                        style: CustomTextStyles.bodyStyle(fontSize: 20),
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: fillingColor,
-                                border: Border(
-                                  right: BorderSide(
-                                    color: borderColor,
-                                    width: 2,
-                                  ),
-                                  left: BorderSide(
-                                    color: borderColor,
-                                    width: 2,
-                                  ),
-                                  bottom: BorderSide(
-                                    color: borderColor,
-                                    width: 2,
-                                  ),
-                                )
-                              ),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          border: Border(
-                                              right: BorderSide(
-                                                color: borderColor,
-                                                width: 2,
-                                              )
-                                          )
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text('Discussion:',
-                                          style: CustomTextStyles.bodyStyle(fontSize: 20),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text('${courseSchedule['discussion_hours_per_week']} hour(s)/week',
-                                        style: CustomTextStyles.bodyStyle(fontSize: 20),
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                  color: fillingColor,
-                                  border: Border(
-                                    right: BorderSide(
-                                      color: borderColor,
-                                      width: 2,
-                                    ),
-                                    left: BorderSide(
-                                      color: borderColor,
-                                      width: 2,
-                                    ),
-                                    bottom: BorderSide(
-                                      color: borderColor,
-                                      width: 2,
-                                    ),
-                                  )
-                              ),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          border: Border(
-                                              right: BorderSide(
-                                                color: borderColor,
-                                                width: 2,
-                                              )
-                                          )
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text('Office Hours:',
-                                          style: CustomTextStyles.bodyStyle(fontSize: 20),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text('${courseSchedule['office_hours_per_week']} hour(s)/week',
-                                        style: CustomTextStyles.bodyStyle(fontSize: 20),
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            }
-          }
-        },
+      body: courseOutlineData == null
+          ? CircularProgressIndicator() // Show loading indicator while data is null
+          : buildCourseContent(),
+    );
+  }
+
+  Widget buildCourseContent() {
+    final courseInfo = courseOutlineData!['course_info'];
+    final courseSchedule = courseOutlineData!['schedule'];
+    final assessments = courseOutlineData!['assessments'];
+    final books = courseOutlineData!['books'];
+    final objectives = courseOutlineData!['objectives'];
+
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Text(
+              Department.name,
+              textAlign: TextAlign.center,
+              style: CustomTextStyles.headingStyle(fontSize: 20)
+                  .copyWith(decoration: TextDecoration.underline),
+            ),
+            Text(
+              Campus.name,
+              textAlign: TextAlign.center,
+              style: CustomTextStyles.headingStyle(fontSize: 20)
+                  .copyWith(decoration: TextDecoration.underline),
+            ),
+            Text(
+              University.name,
+              textAlign: TextAlign.center,
+              style: CustomTextStyles.headingStyle(fontSize: 20)
+                  .copyWith(decoration: TextDecoration.underline),
+            ),
+            SizedBox(height: 20),
+            _buildCourseInformation(courseInfo),
+            SizedBox(height: 20),
+            _buildCourseSchedule(courseSchedule),
+            SizedBox(height: 20),
+            _buildCourseAssessments(assessments),
+            SizedBox(height: 20),
+            _buildCourseBooks(books),
+            SizedBox(height: 20),
+            _buildCourseDescription(courseInfo),
+            SizedBox(height: 20),
+            _buildCourseObjectives(objectives),
+          ],
+        ),
       ),
     );
   }
+
+  Widget _buildCourseInformation(Map<String, dynamic> courseInfo) {
+    Color fillingColor = Colors.blue.shade100;
+
+    List<Widget> infoWidgets = [
+      SectionHeader(title: "Course Information"), // Add the header
+    ];
+
+    // Add rows for course information dynamically
+    infoWidgets.addAll([
+      OutlineRow(
+        texts: [
+          'Course Number and Title:',
+          '${courseInfo['code']} ${courseInfo['title']}'
+        ],
+        isHeader: true,
+        backgroundColor: fillingColor,
+      ),
+      OutlineRow(
+        texts: [
+          'Credits:',
+          '${courseInfo['theory_credits']} + ${courseInfo['lab_credits']} (${courseInfo['theory_credits'] + courseInfo['lab_credits']})'
+        ],
+        backgroundColor: Colors.transparent,
+      ),
+      OutlineRow(
+        texts: [
+          'Instructor-In-Charge:',
+          '${courseOutlineData?['teacher_first_name']} ${courseOutlineData?['teacher_last_name']}'
+        ],
+        backgroundColor: fillingColor,
+      ),
+      OutlineRow(
+        texts: ['Course Type:', courseInfo['course_type']],
+        backgroundColor: Colors.transparent,
+      ),
+      OutlineRow(
+        texts: ['Required or Elective:', courseInfo['required_elective']],
+        backgroundColor: fillingColor,
+      ),
+      OutlineRow(
+        texts: ['Course Prerequisite:', courseInfo['prerequisite'] ?? 'None'],
+        backgroundColor: Colors.transparent,
+      ),
+      OutlineRow(
+        texts: ['Batch:', courseOutlineData?['batch_name']],
+        backgroundColor: fillingColor,
+      ),
+    ]);
+
+    return Column(children: infoWidgets);
+  }
+
+  Widget _buildCourseSchedule(Map<String, dynamic> schedule) {
+    List<Widget> scheduleWidgets = [
+      SectionHeader(title: "Course Schedule"), // Add the header
+    ];
+
+    // Extracting each item from the schedule map
+    scheduleWidgets.add(OutlineRow(
+      texts: [
+        'Lecture Hours:',
+        '${schedule['lecture_hours_per_week']} hour(s)/week'
+      ],
+      isHeader: true,
+      backgroundColor: Colors.blue.shade100,
+    ));
+    scheduleWidgets.add(OutlineRow(
+      texts: ['Lab Hours:', '${schedule['lab_hours_per_week']} hour(s)/week'],
+      backgroundColor: Colors.transparent,
+    ));
+    scheduleWidgets.add(OutlineRow(
+      texts: [
+        'Discussion Hours:',
+        '${schedule['discussion_hours_per_week']} hour(s)/week'
+      ],
+      backgroundColor: Colors.blue.shade100,
+    ));
+    scheduleWidgets.add(OutlineRow(
+      texts: [
+        'Office Hours:',
+        '${schedule['office_hours_per_week']} hour(s)/week'
+      ],
+      backgroundColor: Colors.transparent,
+    ));
+
+    return Column(children: scheduleWidgets);
+  }
+
+  Widget _buildCourseAssessments(List<dynamic> assessments) {
+    List<Widget> assessmentWidgets = [
+      SectionHeader(title: "Course Assessments"), // Add the header
+    ];
+
+    for (int i = 0; i < assessments.length; i++) {
+      var assessment = assessments[i];
+      bool isOdd = i % 2 == 1;
+      Color bgColor = isOdd ? Colors.blue.shade100 : Colors.transparent;
+      List<String> rowData = [
+        assessment['name'],
+        assessment['count'].toString(),
+        assessment['weight'] +
+            "%" // Assuming weight is a string ending with '%'
+      ];
+
+      assessmentWidgets.add(OutlineRow(
+        texts: rowData,
+        isHeader: i == 0, // First item as header
+        backgroundColor: bgColor,
+      ));
+    }
+
+    return Column(children: assessmentWidgets);
+  }
+
+  Widget _buildCourseBooks(List<dynamic> books) {
+    List<Widget> bookWidgets = [
+      SectionHeader(title: "Course Books"), // Add the header
+    ];
+
+    // First, group books by type
+    Map<String, List<String>> groupedBooks = {};
+    for (var book in books) {
+      String type = book['book_type'];
+      if (!groupedBooks.containsKey(type)) {
+        groupedBooks[type] = [];
+      }
+      groupedBooks[type]?.add(book['title']);
+    }
+
+    // Sort or organize the types if necessary
+    var sortedTypes = groupedBooks.keys.toList()..sort();
+
+    // Then, create widgets for each type with their books
+    for (var type in sortedTypes) {
+      List<String> titles = groupedBooks[type]!;
+      bool isHeader = true; // First row in each section acts as a header
+
+      for (var title in titles) {
+        bookWidgets.add(OutlineRow(
+          texts: [type + ":", title],
+          isHeader: isHeader,
+          backgroundColor: isHeader ? Colors.blue.shade100 : Colors.transparent,
+        ));
+        // Only the first row after the section header should be marked as header
+        if (isHeader)
+          type = ""; // Clear the type after using it once to avoid repeating
+        isHeader = false;
+      }
+    }
+
+    return Column(children: bookWidgets);
+  }
+
+  Widget _buildCourseDescription(Map<String, dynamic> courseInfo) {
+    List<Widget> descriptionWidgets = [
+      SectionHeader(title: "Course Description"), // Add the header
+    ];
+
+    // Extracting each item from the schedule map
+    descriptionWidgets.add(OutlineRow(
+      texts: ['${courseInfo['description']}'],
+      isHeader: true,
+      backgroundColor: Colors.blue.shade100,
+    ));
+
+    return Column(children: descriptionWidgets);
+  }
+
+  Widget _buildCourseObjectives(List<dynamic> objectives) {
+    List<Widget> objectiveWidgets = [
+      SectionHeader(title: "Course Objectives"),  // Add the header
+    ];
+
+    for (int i = 0; i < objectives.length; i++) {
+      var objective = objectives[i];
+      bool isOdd = i % 2 == 1;
+      Color bgColor = isOdd ? Colors.blue.shade100 : Colors.transparent;
+
+      objectiveWidgets.add(
+        OutlineRow(texts: ["${objective['description']}"], backgroundColor: bgColor,),
+      );
+    }
+
+    return Column(children: objectiveWidgets);
+  }
+
 }
