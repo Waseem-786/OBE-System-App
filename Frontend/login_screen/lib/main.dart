@@ -4,7 +4,9 @@ import 'package:login_screen/Assessments.dart';
 import 'package:login_screen/BatchPage.dart';
 import 'package:login_screen/CLO_Page.dart';
 import 'package:login_screen/Campus_Page.dart';
+import 'package:login_screen/Campus_Select.dart';
 import 'package:login_screen/CourseBookPage.dart';
+import 'package:login_screen/Course_Outline_Page.dart';
 import 'package:login_screen/Course_Outline_Profile.dart';
 import 'package:login_screen/Course_Schedule_Profile.dart';
 import 'package:login_screen/Course_Page.dart';
@@ -15,6 +17,7 @@ import 'package:login_screen/Program_Management.dart';
 import 'package:login_screen/PLO_Page.dart';
 import 'package:login_screen/Role_Page.dart';
 import 'package:login_screen/University_Page.dart';
+import 'package:login_screen/University_Select.dart';
 import 'package:login_screen/User_Management.dart';
 import 'package:login_screen/Splash_Screen.dart';
 import 'package:login_screen/Weekly_Topics_Page.dart';
@@ -28,7 +31,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  static const String ip = 'http://192.168.39.11';
+  static const String ip = 'http://192.168.0.108';
 
   const MyApp({super.key});
 
@@ -66,6 +69,9 @@ class MyApp extends StatelessWidget {
         '/Weekly_Topics_Page' : (context) => WeeklyTopicsPage(),
         '/Role Page' : (context) => Role_Page(),
         '/Course_Outline_Profile' : (context) => CourseOutlineProfile(),
+        '/University_Select' : (context) => University_Select(),
+        '/Campus_Select' : (context) => Campus_Select(),
+        '/Course_Outline_Page' : (context) => Course_Outline_Page(),
       },
     );
   }

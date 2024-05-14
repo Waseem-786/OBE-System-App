@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:login_screen/Campus.dart';
 import 'package:login_screen/Course.dart';
 import 'package:login_screen/Course_Profile.dart';
 import 'package:login_screen/Create_Course.dart';
@@ -18,7 +19,7 @@ class Course_PageState extends State<Course_Page> {
   @override
   void initState() {
     super.initState();
-    coursesFuture = Course.fetchCourses();
+    coursesFuture = Course.fetchCoursesbyCampusId(Campus.id);
   }
 
   @override
@@ -29,7 +30,7 @@ class Course_PageState extends State<Course_Page> {
     if (currentRoute != null && currentRoute.isCurrent) {
       // Call your refresh function here
       setState(() {
-        coursesFuture = Course.fetchCourses();
+        coursesFuture = Course.fetchCoursesbyCampusId(Campus.id);
       });
     }
   }
@@ -60,59 +61,73 @@ class Course_PageState extends State<Course_Page> {
                     );
                   } else {
                     final courses = snapshot.data!;
-                    return Expanded(
-                        child: ListView.builder(
-                            itemCount: courses.length,
-                            itemBuilder: (context, index) {
-                              final course = courses[index];
-                              return Card(
-                                color: Colors.white,
-                                elevation: 5,
-                                margin: const EdgeInsets.all(10),
-                                child: ListTile(
-                                  title: Padding(
-                                    padding: const EdgeInsets.all(20.0),
-                                    child: Text(
-                                      course['title'],
-                                      style: CustomTextStyles.bodyStyle(
-                                          fontSize: 17),
+                    if (courses.length == 0) {
+                      return Center(
+                        child: Text('No Courses to Show'),
+                      );
+                    } else {
+                      return Expanded(
+                          child: ListView.builder(
+                              itemCount: courses.length,
+                              itemBuilder: (context, index) {
+                                final course = courses[index];
+                                return Card(
+                                  color: Colors.white,
+                                  elevation: 5,
+                                  margin: const EdgeInsets.all(10),
+                                  child: ListTile(
+                                    title: Padding(
+                                      padding: const EdgeInsets.all(20.0),
+                                      child: Text(
+                                        course['title'],
+                                        style: CustomTextStyles.bodyStyle(
+                                            fontSize: 17),
+                                      ),
                                     ),
-                                  ),
-                                  onTap: () async {
-                                    // call of a function to get the data of that course whose id is passed and id is
-                                    // passed by tapping the user
-                                    var user = await Course.getCoursebyId(courses[index]['id']);
-                                    if (user != null) {
-                                      Course.id = user['id'];
-                                      Course.code = user['code'];
-                                      Course.title = user['title'];
-                                      Course.theory_credits =
-                                          user['theory_credits'];
-                                      Course.lab_credits = user['lab_credits'];
-                                      Course.course_type = user['course_type'];
-                                      Course.required_elective =
-                                          user['required_elective'];
-                                      Course.prerequisite =
-                                          user['prerequisite'];
-                                      Course.description = user['description'];
+                                    onTap: () async {
+                                      // call of a function to get the data of that course whose id is passed and id is
+                                      // passed by tapping the user
+                                      var course = await Course.getCoursebyId(
+                                          courses[index]['id']);
+                                      if (course != null) {
+                                        Course.id = course['id'];
+                                        Course.code = course['code'];
+                                        Course.title = course['title'];
+                                        Course.theory_credits =
+                                            course['theory_credits'];
+                                        Course.lab_credits =
+                                            course['lab_credits'];
+                                        Course.course_type =
+                                            course['course_type'];
+                                        Course.required_elective =
+                                            course['required_elective'];
+                                        Course.prerequisite =
+                                            course['prerequisite'];
+                                        Course.description =
+                                            course['description'];
+                                        Course.campus = course['campus'];
 
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute<bool>(
-                                            builder: (context) => Course_Profile(),
-                                          )).then((result) {
-                                        if (result != null && result) {
-                                          // Set the state of the page here
-                                          setState(() {
-                                            coursesFuture = Course.fetchCourses();
-                                          });
-                                        }
-                                      });
-                                    }
-                                  },
-                                ),
-                              );
-                            }));
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute<bool>(
+                                              builder: (context) =>
+                                                  Course_Profile(),
+                                            )).then((result) {
+                                          if (result != null && result) {
+                                            // Set the state of the page here
+                                            setState(() {
+                                              coursesFuture =
+                                                  Course.fetchCoursesbyCampusId(
+                                                      Campus.id);
+                                            });
+                                          }
+                                        });
+                                      }
+                                    },
+                                  ),
+                                );
+                              }));
+                    }
                   }
                 }),
             Center(

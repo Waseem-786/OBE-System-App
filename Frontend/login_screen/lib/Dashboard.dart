@@ -96,7 +96,15 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
         } else if (permission["codename"] == "view_courseinformation") {
           headings.add("Courses");
           icons.add(FontAwesomeIcons.book);
-          screenNames.add("Course_Page");
+          if (User.isUniLevel()) {
+            screenNames.add("Campus_Select");
+          } else if (User.iscampusLevel()) {
+            screenNames.add("Course_Page");
+          } else if (User.isdeptLevel()) {
+            screenNames.add("Course_Outline_Page");
+          } else if (User.isSuperUser) {
+            screenNames.add("University_Select");
+          }
         }
       }
 
