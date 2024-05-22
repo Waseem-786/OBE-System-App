@@ -11,7 +11,6 @@ import 'package:login_screen/Course_Outline_Profile.dart';
 import 'package:login_screen/Course_Schedule_Profile.dart';
 import 'package:login_screen/Course_Page.dart';
 import 'package:login_screen/Create_Course_Schedule.dart';
-import 'package:login_screen/Create_Role.dart';
 import 'package:login_screen/Department_Page.dart';
 import 'package:login_screen/Program_Management.dart';
 import 'package:login_screen/PLO_Page.dart';
@@ -21,6 +20,7 @@ import 'package:login_screen/University_Select.dart';
 import 'package:login_screen/User_Management.dart';
 import 'package:login_screen/Splash_Screen.dart';
 import 'package:login_screen/Weekly_Topics_Page.dart';
+import 'Assessment_Page.dart';
 import 'CourseObjectivePage.dart';
 import 'Course_Assessment_Page.dart';
 import 'PEO_Page.dart';
@@ -31,7 +31,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  static const String ip = 'http://192.168.0.108';
+  static const String ip = 'http://192.168.43.11';
 
   const MyApp({super.key});
 
@@ -72,6 +72,7 @@ class MyApp extends StatelessWidget {
         '/University_Select' : (context) => University_Select(),
         '/Campus_Select' : (context) => Campus_Select(),
         '/Course_Outline_Page' : (context) => Course_Outline_Page(),
+        '/Assessment_Page' : (context) => Assessment_Page(),
       },
     );
   }

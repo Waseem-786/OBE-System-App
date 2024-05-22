@@ -106,6 +106,12 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
             screenNames.add("University_Select");
           }
         }
+        else if(permission['codename']=="view_assessment")
+          {
+            headings.add("Assessment");
+            icons.add(FontAwesomeIcons.paperclip);
+            screenNames.add("Assessment_Page");
+          }
       }
 
 
