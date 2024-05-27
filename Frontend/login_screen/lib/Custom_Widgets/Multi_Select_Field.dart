@@ -1,4 +1,4 @@
-
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:multi_select_flutter/bottom_sheet/multi_select_bottom_sheet_field.dart';
 import 'package:multi_select_flutter/chip_display/multi_select_chip_display.dart';
@@ -9,12 +9,16 @@ class MultiSelectField extends StatefulWidget {
   final List<String> options;
   final List<String> selectedOptions;
   final ValueChanged<List<String>> onSelectionChanged;
+  final Text buttonText;
+  final Widget title;
 
   const MultiSelectField({
     Key? key,
     required this.options,
     required this.selectedOptions,
     required this.onSelectionChanged,
+    this.buttonText = const Text('Add Users'),
+    this.title = const Text('Select Users'),
   }) : super(key: key);
 
   @override
@@ -38,8 +42,8 @@ class _MultiSelectFieldState extends State<MultiSelectField> {
           initialChildSize: 0.4,
           listType: MultiSelectListType.CHIP,
           searchable: true,
-          buttonText: Text("Add Users"),
-          title: Text("Select Users"),
+          buttonText: widget.buttonText,
+          title: widget.title,
           items: widget.options
               .map((option) => MultiSelectItem<String>(option, option))
               .toList(),
@@ -56,6 +60,10 @@ class _MultiSelectFieldState extends State<MultiSelectField> {
               });
               widget.onSelectionChanged(_selectedOptions);
             },
+            chipColor: Colors.green, // Background color of chips
+            textStyle: TextStyle(color: Colors.white), // Text color of chips
+             // Icon to show before the chip label
+            //iconColor: Colors.white, // Color of the icon
           ),
         ),
         _selectedOptions.isEmpty
@@ -67,25 +75,7 @@ class _MultiSelectFieldState extends State<MultiSelectField> {
             style: TextStyle(color: Colors.black54),
           ),
         )
-            : Container(
-          padding: EdgeInsets.all(10),
-          alignment: Alignment.centerLeft,
-          child: Wrap(
-            spacing: 5,
-            runSpacing: 5,
-            children: _selectedOptions
-                .map((option) => Chip(
-              label: Text(option),
-              onDeleted: () {
-                setState(() {
-                  _selectedOptions.remove(option);
-                });
-                widget.onSelectionChanged(_selectedOptions);
-              },
-            ))
-                .toList(),
-          ),
-        ),
+            : Container()
       ],
     );
   }

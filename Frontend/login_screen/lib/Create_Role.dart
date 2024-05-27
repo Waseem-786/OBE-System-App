@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ import 'package:login_screen/Campus.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Button.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Style.dart';
 import 'package:login_screen/Department.dart';
+import 'package:login_screen/Permission.dart';
 import 'package:login_screen/University.dart';
 import 'package:login_screen/User.dart';
 import 'Custom_Widgets/Custom_Text_Field.dart';
@@ -21,8 +23,6 @@ class Create_Role extends StatefulWidget {
 
 class _Create_Role_Page extends State<Create_Role> {
 
-  //int departmentid = User.departmentid;
-
   String?errorMessage;
   //variable to show the error when the wrong credentials are entered or the fields are empty
   Color colorMessage = Colors.red;
@@ -34,15 +34,49 @@ class _Create_Role_Page extends State<Create_Role> {
 
   final TextEditingController Role_Controller = TextEditingController();
 
-  List<String> _selectedOptions = [];
+  List<String> _selectedUsers = [];
+  List<String> _userOptions = [];
 
-  List<String> _options = [
-    'User 1',
-    'User 2',
-    'User 3',
-    'User 4',
-    'User 5',
-  ];
+  List<String> _selectedPermissions = [];
+  List<String> _permissionOptions = [];
+
+  void initState() {
+    super.initState();
+    fetchUserNames().then((userNames) {
+      setState(() {
+        _userOptions = userNames;
+      });
+    }).catchError((error) {
+      setState(() {
+        errorMessage = 'Failed to load user names: $error';
+      });
+    });
+
+    fetchPermissions().then((permissions) {
+      setState(() {
+        _permissionOptions = permissions;
+      });
+    }).catchError((error) {
+      setState(() {
+        errorMessage = 'Failed to load permissions: $error';
+      });
+    });
+  }
+
+
+
+  Future<List<String>> fetchUserNames() async {
+    List<dynamic> users = await User.getUsersByUniversityId(University.id);
+    return users.map((user) => user['username'].toString()).toList();
+  }
+
+  Future<List<String>> fetchPermissions() async {
+    List<dynamic> permissions = await Permission.getAllPermissions();
+    return permissions.map((permission) => permission['name'].toString())
+        .toList();
+  }
+
+
 
   Widget build(BuildContext context) {
 
@@ -58,88 +92,112 @@ class _Create_Role_Page extends State<Create_Role> {
           ),
         ),
       ),
-      body: Container(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const SizedBox(height: 20,),
-            CustomTextFormField(controller: Role_Controller,
-              hintText: 'Enter Role here e.g. Dean',
-              label: 'Enter Role',
-            ),
-            const SizedBox(height: 20,),
+      body: SingleChildScrollView(
 
-            MultiSelectField(
-              options: _options,
-              selectedOptions: _selectedOptions,
-              onSelectionChanged: (values) {
-                setState(() {
-                  _selectedOptions = values;
-                });
-              },
-            ),
+        child: Container(
+          margin: EdgeInsets.only(top: 100),
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(height: 20,),
+              CustomTextFormField(controller: Role_Controller,
+                hintText: 'Enter Role here e.g. Dean',
+                label: 'Enter Role',
+              ),
+              const SizedBox(height: 20,),
 
-
-            Custom_Button(
-              onPressedFunction: () async {
-                String RoleName = Role_Controller.text;
-                if (RoleName.isEmpty) {
-                  setState(() {
-                    colorMessage = Colors.red;
-                    errorColor = Colors.red;
-                    errorMessage = 'Please enter all fields';
-                  });
-                } else {
-                  setState(() {
-                    isLoading = true;
-                  });
-
-                  bool created=false;
-
-                  if(User.isSuperUser){
-                    created = await Role.createTopLevelRole(RoleName);
-                  }
-                  else if(User.isUniLevel()){
-                    created= await Role.createUniversityLevelRole(RoleName,
-                        University.id);
-                  }
-                  else if(User.iscampusLevel()){
-                    created=await Role.createCampusLevelRole(RoleName, Campus.id);
-                  }
-                  else if(User.isdeptLevel()){
-                    created= await Role.createDepartmentLevelRole(RoleName, Department.id);
-                  }
-
-
-                  if (created) {
-                    Role_Controller.clear();
-
+              Padding(
+                padding: const EdgeInsets.only(left: 10,right: 10),
+                child: MultiSelectField(
+                  options: _userOptions,
+                  selectedOptions: _selectedUsers,
+                  onSelectionChanged: (values) {
                     setState(() {
-                      isLoading = false;
-                      colorMessage = Colors.green;
-                      errorColor =
-                          Colors.black12; // Reset errorColor to default value
-                      errorMessage = 'Role Created successfully';
+                      _selectedUsers = values;
                     });
+                  },
+                ),
+              ),
+              const SizedBox(height: 20),
+              Padding(
+                padding: EdgeInsets.only(left: 10,right: 10),
+                child: MultiSelectField(
+                  
+                  options: _permissionOptions,
+                  selectedOptions: _selectedPermissions,
+                  onSelectionChanged: (values) {
+                    setState(() {
+                      _selectedPermissions = values;
+                    });
+                  },
+                  buttonText: Text('Add Permissions'),
+                ),
+              ),
+
+              SizedBox(height: 20,),
+
+
+              Custom_Button(
+                onPressedFunction: () async {
+                  String RoleName = Role_Controller.text;
+                  if (RoleName.isEmpty) {
+                    setState(() {
+                      colorMessage = Colors.red;
+                      errorColor = Colors.red;
+                      errorMessage = 'Please enter all fields';
+                    });
+                  } else {
+                    setState(() {
+                      isLoading = true;
+                    });
+
+                    bool created=false;
+
+                    if(User.isSuperUser){
+                      created = await Role.createTopLevelRole(RoleName);
+                    }
+                    else if(User.isUniLevel()){
+                      created= await Role.createUniversityLevelRole(RoleName,
+                          University.id);
+                    }
+                    else if(User.iscampusLevel()){
+                      created=await Role.createCampusLevelRole(RoleName, Campus.id);
+                    }
+                    else if(User.isdeptLevel()){
+                      created= await Role.createDepartmentLevelRole(RoleName, Department.id);
+                    }
+
+
+                    if (created) {
+                      Role_Controller.clear();
+
+                      setState(() {
+                        isLoading = false;
+                        colorMessage = Colors.green;
+                        errorColor =
+                            Colors.black12; // Reset errorColor to default value
+                        errorMessage = 'Role Created successfully';
+                      });
+                    }
                   }
-                }
-              },
-              ButtonWidth: 160,
-              ButtonText: 'Create Role',),
-            const SizedBox(height: 20),
-            Visibility(
-              visible: isLoading,
-              child: const CircularProgressIndicator(),
-            ),
-            errorMessage != null
-                ? Text(
-              errorMessage!,
-              style: CustomTextStyles.bodyStyle(color: colorMessage),
-            )
-                : const SizedBox(),
-          ],
+                },
+                ButtonWidth: 160,
+                ButtonText: 'Create Role',),
+              const SizedBox(height: 20),
+              Visibility(
+                visible: isLoading,
+                child: const CircularProgressIndicator(),
+              ),
+              errorMessage != null
+                  ? Text(
+                errorMessage!,
+                style: CustomTextStyles.bodyStyle(color: colorMessage),
+              )
+                  : const SizedBox(),
+            ],
+          ),
         ),
       ),
 

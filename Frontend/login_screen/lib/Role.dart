@@ -141,7 +141,6 @@ class Role {
         },
         body: jsonEncode({
           'name': name,
-          'university_id': university_id
         }),
       );
 

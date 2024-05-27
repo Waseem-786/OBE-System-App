@@ -295,7 +295,7 @@ class User {
   }
 
   //Get All users of Specific University
-  Future<List> getUsersByUniversityId(int universityId) async {
+ static Future<List> getUsersByUniversityId(int universityId) async {
     final accessToken = await storage.read(key: "access_token");
     final url = Uri.parse('$ipAddress:8000/api/university/$universityId/users');
 
