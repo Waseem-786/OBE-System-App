@@ -31,8 +31,9 @@ class _SplashScreenState extends State<SplashScreen> {
     If the access token is not valid, it attempts to read the refresh token.
     If the refresh token exists, it verifies its validity.
     If the refresh token is valid, it attempts to refresh the access token.
-    If the access token is successfully refreshed, it verifies its validity again.
-    If the access token is now valid, it navigates to the Dashboard.
+      If the access token is successfully refreshed, it verifies its validity again.
+      If the access token is now valid, it navigates to the Dashboard.
+    if refresh token is not valid then, it navigates to the Dashboard.
   */
   Future<void> handleTokenVerification() async {
     //Read AccessToken & Check validity and route to Dashboard
@@ -70,6 +71,12 @@ class _SplashScreenState extends State<SplashScreen> {
                 }
               }
             }
+          }
+          else {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => LoginPage()),
+            );
           }
         }
       }

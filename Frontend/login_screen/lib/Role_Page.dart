@@ -32,6 +32,7 @@ class _Role_PageState extends State<Role_Page> {
         roleFuture = Role.fetchTopLevelRoles();
     } else if (User.isUniLevel()) {
         roleFuture = Role.fetchUniLevelRoles(University.id);
+        print(roleFuture);
     } else if (User.iscampusLevel()) {
         roleFuture = Role.fetchCampusLevelRoles(Campus.id);
     } else if (User.isdeptLevel()) {
@@ -42,7 +43,6 @@ class _Role_PageState extends State<Role_Page> {
   @override
   void initState() {
     super.initState();
-    print(Campus.id);
     fetchRolesBasedOnUserRole();
   }
 
@@ -102,7 +102,7 @@ class _Role_PageState extends State<Role_Page> {
                                   title: Padding(
                                     padding: const EdgeInsets.all(20.0),
                                     child: Text(
-                                      role['group_name'],
+                                      role['group'],
                                       style: CustomTextStyles.bodyStyle(
                                           fontSize: 17),
                                     ),

@@ -166,7 +166,6 @@ class Role {
       url,
       headers: {'Authorization': 'Bearer $accessToken'},
     );
-
     if (response.statusCode == 200) {
       return jsonDecode(response.body) as List<dynamic>;
     } else {

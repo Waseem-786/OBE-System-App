@@ -66,13 +66,9 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
           icons.add(Icons.add);
           screenNames.add('User_Management');
         } else if (permission["codename"] == "view_customgroup") {
-          headings.add('Add Custom Group');
+          headings.add('Add  Group');
           icons.add(Icons.add);
-          screenNames.add('AddCustomGroupPage');
-        } else if (permission["codename"] == "view_group") {
-          headings.add('Add Group');
-          icons.add(Icons.add);
-          screenNames.add('AddGroupPage');
+          screenNames.add('Role Page');
         } else if (permission["codename"] == "view_university") {
           hasUniversity = true;
         } else if (permission["codename"] == "view_campus") {
