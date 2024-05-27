@@ -32,7 +32,6 @@ class _Role_PageState extends State<Role_Page> {
         roleFuture = Role.fetchTopLevelRoles();
     } else if (User.isUniLevel()) {
         roleFuture = Role.fetchUniLevelRoles(University.id);
-        print(roleFuture);
     } else if (User.iscampusLevel()) {
         roleFuture = Role.fetchCampusLevelRoles(Campus.id);
     } else if (User.isdeptLevel()) {
@@ -115,14 +114,25 @@ class _Role_PageState extends State<Role_Page> {
                                       if (role != null) {
 
                                         Role.id=role['id'];
-                                        Role.university_id=role['university'];
-                                        Role.university_name=role['university_name'];
-                                        Role.campus_id=role['campus'];
-                                        Role.campus_name=role['campus_name'];
-                                        Role.department_id=role['department'];
-                                        Role.department_name=role['department_name'];
-                                        Role.group=role['group'];
-                                        Role.name=role['group_name'];
+                                        if(User.isUniLevel()){
+                                          Role.university_id=role['university'];
+                                          Role.university_name=role['university_name'];
+                                        }
+                                        if(User.iscampusLevel()){
+                                          Role.university_id=role['university'];
+                                          Role.university_name=role['university_name'];
+                                          Role.campus_id=role['campus'];
+                                          Role.campus_name=role['campus_name'];
+                                        }
+                                        if(User.isdeptLevel()){
+                                          Role.university_id=role['university'];
+                                          Role.university_name=role['university_name'];
+                                          Role.campus_id=role['campus'];
+                                          Role.campus_name=role['campus_name'];
+                                          Role.department_id=role['department'];
+                                          Role.department_name=role['department_name'];
+                                        }
+                                        Role.name=role['group'];
                                         Role.user=role['user'];
                                         Role.group_permissions=role['group_permissions'];
 
