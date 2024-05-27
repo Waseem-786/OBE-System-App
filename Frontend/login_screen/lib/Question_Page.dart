@@ -14,7 +14,7 @@ class Question_Page extends StatefulWidget {
 class _Question_PageState extends State<Question_Page> {
   String? errorMessage;
   Color colorMessage = Colors.red;
-  var isLoading = false;
+  bool isLoading = false;
   Color errorColor = Colors.black12;
 
   TextEditingController QuestionDescController = TextEditingController();
@@ -98,6 +98,7 @@ class _Question_PageState extends State<Question_Page> {
                                 label: 'Marks',
                                 hintText: 'Enter Marks',
                                 borderColor: errorColor,
+                                Keyboard_Type: TextInputType.number,
                               ),
                             ),
                           ],
@@ -120,42 +121,73 @@ class _Question_PageState extends State<Question_Page> {
                   const SizedBox(height: 20),
                   Custom_Button(
                     onPressedFunction: () {
-                      List<Map<String, dynamic>> questions = [];
-                      for (int i = 0; i < partDescriptionControllers.length; i++) {
-                        String description = partDescriptionControllers[i].text;
-                        int marks = int.tryParse(partMarksControllers[i].text) ?? 0;
+                      setState(() {
+                        isLoading = true;
+                        errorMessage = null;
+                      });
+                      if (QuestionDescController.text.isEmpty ||
+                          QuestionCLOController.text.isEmpty ||
+                          partDescriptionControllers.any((controller) => controller.text.isEmpty) ||
+                          partMarksControllers.any((controller) => controller.text.isEmpty)) {
+                        setState(() {
+                          errorMessage = 'Please fill in all fields';
+                          colorMessage = Colors.red;
+                          isLoading = false;
+                        });
+                      } else {
+                        List<Map<String, dynamic>> questions = [];
+                        for (int i = 0; i < partDescriptionControllers.length; i++) {
+                          String description = partDescriptionControllers[i].text;
+                          int marks = int.tryParse(partMarksControllers[i].text) ?? 0;
 
-                        if (description.isNotEmpty && marks > 0) {
-                          Map<String, dynamic> part = {
-                            "description": description,
-                            "marks": marks,
-                          };
-                          Map<String, dynamic> question = {
-                            "description": QuestionDescController.text,
-                            "clo": QuestionCLOController.text.split(',').map((e) => int.tryParse(e.trim()) ?? 0).toList(),
-                            "parts": [part],
-                          };
-                          questions.add(question);
+                          if (description.isNotEmpty && marks > 0) {
+                            Map<String, dynamic> part = {
+                              "description": description,
+                              "marks": marks,
+                            };
+                            Map<String, dynamic> question = {
+                              "description": QuestionDescController.text,
+                              "clo": QuestionCLOController.text.split(',').map((e) => int.tryParse(e.trim()) ?? 0).toList(),
+                              "parts": [part],
+                            };
+                            questions.add(question);
+                          }
                         }
+                        Assessment.createCompleteAssessment(
+                          Assessment.name!,
+                          Assessment.teacher,
+                          Assessment.batch,
+                          Assessment.course,
+                          Assessment.total_marks,
+                          Assessment.duration!,
+                          Assessment.instructions!,
+                          questions,
+                        ).then((success) {
+                          setState(() {
+                            isLoading = false;
+                            if (success) {
+                              errorMessage = 'Assessment created successfully';
+                              colorMessage = Colors.green;
+                            } else {
+                              errorMessage = 'Failed to create assessment';
+                              colorMessage = Colors.red;
+                            }
+                          });
+                        });
                       }
-                      Assessment.createCompleteAssessment(
-                        Assessment.name!,
-                        Assessment.teacher,
-                        Assessment.batch,
-                        Assessment.course,
-                        Assessment.total_marks,
-                        Assessment.duration!,
-                        Assessment.instructions!,
-                        questions,
-                      );
-
-
                     },
                     BackgroundColor: Color(0xffc19a6b),
                     ForegroundColor: Colors.white,
                     ButtonText: "Create",
                     ButtonWidth: 110,
                   ),
+                  const SizedBox(height: 20),
+                  if (isLoading) const CircularProgressIndicator(),
+                  if (errorMessage != null)
+                    Text(
+                      errorMessage!,
+                      style: CustomTextStyles.bodyStyle(color: colorMessage),
+                    ),
                 ],
               ),
             ),
