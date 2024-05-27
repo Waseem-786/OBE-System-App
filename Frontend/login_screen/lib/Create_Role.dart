@@ -9,6 +9,7 @@ import 'package:login_screen/Department.dart';
 import 'package:login_screen/University.dart';
 import 'package:login_screen/User.dart';
 import 'Custom_Widgets/Custom_Text_Field.dart';
+import 'Custom_Widgets/Multi_Select_Field.dart';
 import 'Role.dart';
 
 class Create_Role extends StatefulWidget {
@@ -33,6 +34,15 @@ class _Create_Role_Page extends State<Create_Role> {
 
   final TextEditingController Role_Controller = TextEditingController();
 
+  List<String> _selectedOptions = [];
+
+  List<String> _options = [
+    'User 1',
+    'User 2',
+    'User 3',
+    'User 4',
+    'User 5',
+  ];
 
   Widget build(BuildContext context) {
 
@@ -60,6 +70,18 @@ class _Create_Role_Page extends State<Create_Role> {
               label: 'Enter Role',
             ),
             const SizedBox(height: 20,),
+
+            MultiSelectField(
+              options: _options,
+              selectedOptions: _selectedOptions,
+              onSelectionChanged: (values) {
+                setState(() {
+                  _selectedOptions = values;
+                });
+              },
+            ),
+
+
             Custom_Button(
               onPressedFunction: () async {
                 String RoleName = Role_Controller.text;
