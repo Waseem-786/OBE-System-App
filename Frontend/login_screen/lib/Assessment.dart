@@ -5,15 +5,66 @@ import 'main.dart';
 
 class Assessment
 {
+
+
+  static const ipAddress = MyApp.ip;
+  static const storage = FlutterSecureStorage(
+      aOptions: AndroidOptions(encryptedSharedPreferences: true));
+
   static int _id = 0;
   static String? _name;
   static int _teacher = 0;
   static int _batch = 0;
   static int _course = 0;
   static int _total_marks = 0;
-  static const ipAddress = MyApp.ip;
-  static const storage = FlutterSecureStorage(
-      aOptions: AndroidOptions(encryptedSharedPreferences: true));
+  static String? _instructions;
+  static String? _duration;
+  static String? _Question_desc;
+  static List<int>? _CLOs;
+
+  static Map<String, dynamic>? _questions;
+
+  static Map<String, dynamic>? get questions => _questions;
+
+  static set questions(Map<String, dynamic>? value) {
+    _questions = value;
+  }
+
+  static String? _Part_desc;
+  static int _Part_marks = 0;
+
+
+  static String? get Question_desc => _Question_desc;
+
+  static set Question_desc(String? value) {
+    _Question_desc = value;
+  }
+
+
+
+
+  static List<int>? get CLOs => _CLOs;
+
+  static set CLOs(List<int>? value) {
+    _CLOs = value;
+  }
+
+  static String? get Part_desc => _Part_desc;
+
+  static set Part_desc(String? value) {
+    _Part_desc = value;
+  }
+
+  static int get Part_marks => _Part_marks;
+
+  static set Part_marks(int value) {
+    _Part_marks = value;
+  }
+  static String? get duration => _duration;
+
+  static set duration(String? value) {
+    _duration = value;
+  }
 
   static int get id => _id;
 
@@ -51,6 +102,11 @@ class Assessment
   static set total_marks(int value) {
     _total_marks = value;
   }
+  static String? get instructions => _instructions;
+
+  static set instructions(String? value) {
+    _instructions = value;
+  }
   static Future<List<dynamic>> fetchAssessment() async {
     final accessToken = await storage.read(key: "access_token");
     final url = Uri.parse('$ipAddress:8000/api/assessment-creation');
@@ -84,7 +140,7 @@ class Assessment
       return {};
     }
   }
-  static Future<bool> updateAssessment(int id,String name,int teacher, int batch, int course, int total_marks) async {
+  static Future<bool> updateAssessment(int id,String name,int teacher, int batch, int course, int total_marks, Duration duration, String instructions) async {
     try {
       final accessToken = await storage.read(key: "access_token");
       final url = Uri.parse('$ipAddress:8000/api/assessment-creation/$id');
@@ -97,6 +153,8 @@ class Assessment
           'batch': batch,
           'course': course,
           'total_marks': total_marks,
+          'duration' : duration,
+          'instructions' : instructions
         }),
       );
       if (response.statusCode == 200) {
@@ -111,7 +169,7 @@ class Assessment
       return false;
     }
   }
-  static Future<bool> createAssessment(String name,int teacher, int batch, int course, int total_marks) async {
+  static Future<bool> createAssessment(String name,int teacher, int batch, int course, int total_marks, Duration duration, String instructions) async {
     try {
 
       final accessToken = await storage.read(key: "access_token");
@@ -128,6 +186,8 @@ class Assessment
           'batch': batch,
           'course': course,
           'total_marks': total_marks,
+          'duration' : duration,
+          'instructions' : instructions
         }),
       );
       print(response.body);
@@ -167,4 +227,50 @@ class Assessment
       return false;
     }
   }
+
+
+  static Future<bool> createCompleteAssessment(
+      String name,
+      int teacher,
+      int batch,
+      int course,
+      int totalMarks,
+      String duration,
+      String instruction,
+      List<Map<String, dynamic>> questions,
+      ) async {
+    try {
+      final accessToken = await storage.read(key: "access_token");
+      final url = Uri.parse('$ipAddress:8000/api/complete-assessment');
+      final response = await http.post(
+        url,
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          "name": name,
+          "teacher": teacher,
+          "batch": batch,
+          "course": course,
+          "total_marks": totalMarks,
+          "duration": duration,
+          "instruction": instruction,
+          "questions": questions,
+        }),
+      );
+      print(response.body);
+      if (response.statusCode == 201) {
+        print('Assessment Created successfully');
+        return true;
+      } else {
+        print('Failed to create Assessment. Status code: ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      print('Exception while creating Assessment: $e');
+      return false;
+    }
+  }
+
 }
