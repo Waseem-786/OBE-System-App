@@ -3,10 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'main.dart';
 
-class Assessment
-{
-
-
+class Assessment {
   static const ipAddress = MyApp.ip;
   static const storage = FlutterSecureStorage(
       aOptions: AndroidOptions(encryptedSharedPreferences: true));
@@ -24,16 +21,11 @@ class Assessment
   static int _Part_marks = 0;
   static List<Map<String, dynamic>>? _questions;
 
-
   static List<Map<String, dynamic>>? get questions => _questions;
 
   static set questions(List<Map<String, dynamic>>? value) {
     _questions = value;
   }
-
-
-
-
 
   static List<int>? get CLOs => _CLOs;
 
@@ -52,6 +44,7 @@ class Assessment
   static set Part_marks(int value) {
     _Part_marks = value;
   }
+
   static String? get duration => _duration;
 
   static set duration(String? value) {
@@ -63,7 +56,6 @@ class Assessment
   static set id(int value) {
     _id = value;
   }
-
 
   static String? get name => _name;
 
@@ -94,11 +86,13 @@ class Assessment
   static set total_marks(int value) {
     _total_marks = value;
   }
+
   static String? get instructions => _instructions;
 
   static set instructions(String? value) {
     _instructions = value;
   }
+
   static Future<List<dynamic>> fetchAssessment() async {
     final accessToken = await storage.read(key: "access_token");
     final url = Uri.parse('$ipAddress:8000/api/assessment-creation');
@@ -114,6 +108,7 @@ class Assessment
       return [];
     }
   }
+
   static Future<Map<String, dynamic>?> getAssessmentbyId(int id) async {
     final accessToken = await storage.read(key: "access_token");
     final url = Uri.parse('$ipAddress:8000/api/assessment-creation/$id');
@@ -132,28 +127,41 @@ class Assessment
       return {};
     }
   }
-  static Future<bool> updateAssessment(int id,String name,int teacher, int batch, int course, int total_marks, Duration duration, String instructions) async {
+
+  static Future<bool> updateAssessment(
+      int id,
+      String name,
+      int teacher,
+      int batch,
+      int course,
+      int total_marks,
+      Duration duration,
+      String instructions) async {
     try {
       final accessToken = await storage.read(key: "access_token");
       final url = Uri.parse('$ipAddress:8000/api/assessment-creation/$id');
       final response = await http.patch(
         url,
-        headers: {'Authorization': 'Bearer $accessToken', 'Content-Type': 'application/json'},
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json'
+        },
         body: jsonEncode({
           'name': name,
           'teacher': teacher,
           'batch': batch,
           'course': course,
           'total_marks': total_marks,
-          'duration' : duration,
-          'instructions' : instructions
+          'duration': duration,
+          'instructions': instructions
         }),
       );
       if (response.statusCode == 200) {
         print('Assessment updated successfully');
         return true;
       } else {
-        print('Failed to update Assessment. Status code: ${response.statusCode}');
+        print(
+            'Failed to update Assessment. Status code: ${response.statusCode}');
         return false;
       }
     } catch (e) {
@@ -161,9 +169,16 @@ class Assessment
       return false;
     }
   }
-  static Future<bool> createAssessment(String name,int teacher, int batch, int course, int total_marks, Duration duration, String instructions) async {
-    try {
 
+  static Future<bool> createAssessment(
+      String name,
+      int teacher,
+      int batch,
+      int course,
+      int total_marks,
+      Duration duration,
+      String instructions) async {
+    try {
       final accessToken = await storage.read(key: "access_token");
       final url = Uri.parse('$ipAddress:8000/api/assessment-creation');
       final response = await http.post(
@@ -178,8 +193,8 @@ class Assessment
           'batch': batch,
           'course': course,
           'total_marks': total_marks,
-          'duration' : duration,
-          'instructions' : instructions
+          'duration': duration,
+          'instructions': instructions
         }),
       );
       print(response.body);
@@ -187,7 +202,8 @@ class Assessment
         print('Assessment Created successfully');
         return true;
       } else {
-        print('Failed to create Assessment. Status code: ${response.statusCode}');
+        print(
+            'Failed to create Assessment. Status code: ${response.statusCode}');
         return false;
       }
     } catch (e) {
@@ -200,7 +216,8 @@ class Assessment
     try {
       final accessToken = await storage.read(key: "access_token");
 
-      final url = Uri.parse('$ipAddress:8000/api/assessment-creation/$assessmentId');
+      final url =
+          Uri.parse('$ipAddress:8000/api/assessment-creation/$assessmentId');
       final response = await http.delete(
         url,
         headers: {
@@ -211,7 +228,8 @@ class Assessment
         print('Assessment deleted successfully');
         return true;
       } else {
-        print('Failed to delete Assessment. Status code: ${response.statusCode}');
+        print(
+            'Failed to delete Assessment. Status code: ${response.statusCode}');
         return false;
       }
     } catch (e) {
@@ -220,17 +238,16 @@ class Assessment
     }
   }
 
-
   static Future<bool> createCompleteAssessment(
-      String name,
-      int teacher,
-      int batch,
-      int course,
-      int totalMarks,
-      String duration,
-      String instruction,
-      List<Map<String, dynamic>> questions,
-      ) async {
+    String name,
+    int teacher,
+    int batch,
+    int course,
+    int totalMarks,
+    String duration,
+    String instruction,
+    List<Map<String, dynamic>> questions,
+  ) async {
     try {
       final accessToken = await storage.read(key: "access_token");
       final url = Uri.parse('$ipAddress:8000/api/complete-assessment');
@@ -256,7 +273,8 @@ class Assessment
         print('Assessment Created successfully');
         return true;
       } else {
-        print('Failed to create Assessment. Status code: ${response.statusCode}');
+        print(
+            'Failed to create Assessment. Status code: ${response.statusCode}');
         return false;
       }
     } catch (e) {
@@ -264,6 +282,7 @@ class Assessment
       return false;
     }
   }
+
   static Future<List<dynamic>> fetchAllAssessmentData(int id) async {
     final accessToken = await storage.read(key: "access_token");
     final url = Uri.parse('$ipAddress:8000/api/complete-assessment/$id');
@@ -279,5 +298,4 @@ class Assessment
       return [];
     }
   }
-
 }

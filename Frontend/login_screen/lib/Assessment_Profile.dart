@@ -85,7 +85,7 @@ class _Assessment_ProfileState extends State<Assessment_Profile> {
     List<Widget> cards = [
       DetailCard(label: "Assessment Name", value: widget.Data[0]['name'], icon: Icons.school),
       DetailCard(label: "Assessment Total Marks", value: widget.Data[0]['total_marks'].toString(), icon: Icons.numbers),
-      DetailCard(label: "Assessment Duration", value: widget.Data[0]['duration'], icon: Icons.timer),
+      DetailCard(label: "Assessment Duration", value: "${widget.Data[0]['duration']} minutes", icon: Icons.timer),
     ];
 
     // Add cards for questions
