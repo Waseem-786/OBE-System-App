@@ -1,6 +1,4 @@
 from django.db import models
-from django.core.exceptions import ValidationError
-from django.utils.translation import gettext_lazy as _
 from user_management.models import CustomUser
 from university_management.models import Batch
 from course_management.models import CourseInformation, CourseLearningOutcomes
@@ -14,21 +12,16 @@ class Assessment(models.Model):
     batch = models.ForeignKey(Batch, on_delete=models.CASCADE, related_name='assessments')
     course = models.ForeignKey(CourseInformation, on_delete=models.CASCADE, related_name='assessments')
     total_marks = models.PositiveIntegerField()
-
-    class Meta:
-        unique_together = ['batch', 'teacher', 'course']
-
+    duration = models.DurationField()
+    instruction = models.TextField()
 
 class Question(models.Model):
     """
     Represents a question within an assessment.
     """
+    description = models.TextField()
     assessment = models.ForeignKey(Assessment, on_delete=models.CASCADE, related_name='questions')
     clo = models.ManyToManyField(CourseLearningOutcomes, related_name='questions')
-
-    class Meta:
-        unique_together = ['assessment']
-
 
 class QuestionPart(models.Model):
     """
@@ -37,6 +30,3 @@ class QuestionPart(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='parts')
     description = models.TextField()
     marks = models.PositiveIntegerField()
-
-    class Meta:
-        unique_together = ['question']

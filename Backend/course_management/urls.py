@@ -9,8 +9,6 @@ urlpatterns = [
     path('course/<int:pk>/clo',views.CLO_of_Specific_Course.as_view()),
     path('clo/<int:pk>',views.SingleCLO.as_view()),
     
-    path('plo/clo/mapping',views.PLO_CLO_Mapping_View.as_view()),
-    
     path('objective',views.CourseObjectiveCreateView.as_view()),
     path('course/<int:pk>/objective',views.CourseObjective_SpecificCourse_View.as_view()),
     path('objective/<int:pk>',views.SingleCourseObjectiveView.as_view()),
@@ -39,4 +37,6 @@ urlpatterns = [
     path('weekly-topics', views.WeeklyTopicCreateView.as_view(), name='weekly-topic-list'),
     path('outline/<int:pk>/weekly-topics', views.WeeklyTopic_SpecificOutline_View.as_view()),
     path('weekly-topics/<int:pk>', views.WeeklyTopicRetrieveUpdateDestroy.as_view(), name='weekly-topic-detail'),
+
+    path('mapping/<int:course_id>', views.get_clo_plo_peo_mappings),
 ]

@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import CourseInformation, CourseSchedule, CourseObjective, CourseAssessment, CourseBooks, CourseLearningOutcomes, CourseOutline, WeeklyTopic, PLO_CLO_Mapping
+from .models import CourseInformation, CourseSchedule, CourseObjective, CourseAssessment, CourseBooks, CourseLearningOutcomes, CourseOutline, WeeklyTopic
+from program_management.models import PLO
 
 class CourseInformationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -36,9 +37,16 @@ class CourseBookSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class CourseLearningOutcomesSerializer(serializers.ModelSerializer):
+    plo = serializers.PrimaryKeyRelatedField(queryset=PLO.objects.all(), many=True)
+
     class Meta:
         model = CourseLearningOutcomes
         fields = '__all__'
+
+    def validate_plo(self, value):
+        if not value:
+            raise serializers.ValidationError("At least one PLO must be provided.")
+        return value
 
 
 class CourseOutlineSerializer(serializers.ModelSerializer):
@@ -49,20 +57,11 @@ class CourseOutlineSerializer(serializers.ModelSerializer):
         model = CourseOutline
         fields = ['id','course', 'course_name', 'batch', 'batch_name','teacher','teacher_name']
 
-class PLO_CLO_Mapping_Serializer(serializers.ModelSerializer):
-    plo_name = serializers.CharField(source='plo.name',read_only=True)
-    clo_description = serializers.CharField(source='clo.description',read_only=True)
-    class Meta:
-        model = PLO_CLO_Mapping
-        fields = ['id','plo','plo_name','clo','clo_description']
-
 
 class WeeklyTopicSerializer(serializers.ModelSerializer):
     class Meta:
         model = WeeklyTopic
         fields = '__all__'
-
-    
 
 class ObjectivesSerializer(serializers.ModelSerializer):
     class Meta:
@@ -72,10 +71,13 @@ class ObjectivesSerializer(serializers.ModelSerializer):
 class CLOsSerializer(serializers.ModelSerializer):
     class Meta:
         model = CourseLearningOutcomes
-        fields = ['id', 'description']
+        fields = '__all__'
 
 class CompleteOutlineSerializer(serializers.ModelSerializer):
     batch_name = serializers.CharField(source='batch.name', read_only=True)
+    university_name = serializers.CharField(source='batch.department.campus.university.name', read_only=True)
+    department_name = serializers.CharField(source='batch.department.name', read_only=True)
+    campus_name = serializers.CharField(source='batch.department.campus.name', read_only=True)
     teacher_first_name = serializers.CharField(source='teacher.first_name', read_only=True)
     teacher_last_name = serializers.CharField(source='teacher.last_name', read_only=True)
 
@@ -89,4 +91,4 @@ class CompleteOutlineSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CourseOutline
-        fields = ['id', 'batch', 'batch_name', 'teacher', 'teacher_first_name', 'teacher_last_name', 'course_info', 'objectives', 'clos', 'schedule', 'assessments', 'weekly_topics', 'books']
+        fields = ['id', 'batch', 'batch_name', 'university_name', 'campus_name', 'department_name', 'teacher', 'teacher_first_name', 'teacher_last_name', 'course_info', 'objectives', 'clos', 'schedule', 'assessments', 'weekly_topics', 'books']

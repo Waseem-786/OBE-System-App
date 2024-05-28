@@ -5,12 +5,14 @@ class OutlineRow extends StatelessWidget {
   final List<String> texts;
   final bool isHeader;
   final Color backgroundColor;
+  final List<double>? columnWidths;
 
   const OutlineRow({
     Key? key,
     required this.texts,
     this.isHeader = false,
     this.backgroundColor = Colors.transparent,
+    this.columnWidths,
   }) : super(key: key);
 
   @override
@@ -33,6 +35,7 @@ class OutlineRow extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch, // Stretch the rows vertically
           children: texts.asMap().map((index, text) {
             return MapEntry(index, Expanded(
+              flex: columnWidths != null ? columnWidths![index].toInt() : 1,
               child: Container(
                 decoration: BoxDecoration(
                   border: index < texts.length - 1
