@@ -270,27 +270,32 @@ class User {
   }
 
   //Add Users to Specific Group
-  static Future<String> addUserToGroup(int groupId, List<String> usernames) async {
+  static Future<bool> addUserToGroup(int groupId, List<int> userIds) async {
     final accessToken = await storage.read(key: "access_token");
-    final url = Uri.parse('$ipAddress:8000/api/groups/$groupId');
+    final url = Uri.parse('$ipAddress:8000/api/groups/$groupId/users');
 
     final Map<String, dynamic> data = {
-      'usernames': usernames,
+      'user_ids': userIds,
     };
 
     final response = await http.post(
       url,
-      headers: {'Authorization': 'Bearer $accessToken'},
-      body: jsonEncode(data),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken'
+      },
+      body: jsonEncode(data), // Corrected to jsonEncode
     );
 
-    if (response.statusCode == 201 || response.statusCode == 200 || response.statusCode == 400) {
-      // Return the message from the response
-      final responseData = jsonDecode(response.body);
-      return responseData['message'];
+
+    if (response.statusCode == 201) {
+      return true;
+    }
+    else if (response.statusCode == 400) {
+      return false;
     } else {
       // Return error message
-      return 'Error: ${response.statusCode}';
+      return false;
     }
   }
 
@@ -314,7 +319,7 @@ class User {
   }
 
   //Get All users of Specific Campus
-  Future<List> getUsersByCampusId(int campusId) async {
+  static Future<List> getUsersByCampusId(int campusId) async {
     final accessToken = await storage.read(key: "access_token");
     final url = Uri.parse('$ipAddress:8000/api/campus/$campusId/users');
 
@@ -333,7 +338,7 @@ class User {
   }
 
   //Get All users of Specific Department
-  Future<List> getUsersByDepartmentId(int departmentId) async {
+  static Future<List> getUsersByDepartmentId(int departmentId) async {
     final accessToken = await storage.read(key: "access_token");
     final url = Uri.parse('$ipAddress:8000/api/department/$departmentId/users');
 

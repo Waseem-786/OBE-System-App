@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'main.dart';
@@ -49,7 +50,8 @@ class Permission {
   }
 
   //Add Permissions in Specific Group
-  static Future<String> addPermissionsToGroup(int groupId, List<int> permissions) async {
+  static Future<bool> addPermissionsToGroup(int groupId, List<int> permissions)
+  async {
     final accessToken = await storage.read(key: "access_token");
     final url = Uri.parse('$ipAddress:8000/api/groups/$groupId/permissions');
 
@@ -59,20 +61,22 @@ class Permission {
 
     final response = await http.post(
       url,
-      headers: {'Authorization': 'Bearer $accessToken'},
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken'},
       body: jsonEncode(data),
     );
 
-    if (response.statusCode == 201 || response.statusCode == 400) {
-      // Return the message from the response
-      final responseData = jsonDecode(response.body);
-      return responseData['message'];
+    if (response.statusCode == 201) {
+      return true;
+    }
+    else if (response.statusCode == 400) {
+      return false;
     } else {
       // Return error message
-      return 'Error: ${response.statusCode}';
+      return false;
     }
   }
-
   //Get All Permissions
   static Future<List> getAllPermissions() async {
     final accessToken = await storage.read(key: "access_token");

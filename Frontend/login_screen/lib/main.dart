@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:login_screen/Add_Group_Permission.dart';
 import 'package:login_screen/Approval_Process.dart';
 import 'package:login_screen/Assessments.dart';
 import 'package:login_screen/BatchPage.dart';
@@ -79,7 +80,7 @@ class MyApp extends StatelessWidget {
         '/Group Users Page' : (context) => Group_Users(),
         '/Group Permissions Page' : (context) => Group_Permissions(),
         '/Add Group Users' : (context) => Add_Group_User(),
-        '/Add Group Permissions' : (context) => Add_Group_User(),
+        '/Add Group Permissions' : (context) => Add_Group_Permissions(),
 
       },
     );

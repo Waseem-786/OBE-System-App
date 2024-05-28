@@ -60,8 +60,25 @@ class _Create_Role_Page extends State<Create_Role> {
     });
   }
 
+
   Future<List<Map<String, dynamic>>> fetchUserNames() async {
-    List<dynamic> users = await User.getUsersByUniversityId(University.id);
+
+    List<dynamic> users = [];
+
+    if(User.isSuperUser){
+      users = await User.getAllUsers();
+      print(users);
+    }
+    else if(User.isUniLevel()){
+      users = await User.getUsersByUniversityId(University.id);
+    }
+    else if(User.iscampusLevel()){
+     users = await User.getUsersByCampusId(Campus.id);
+    }
+    else if(User.isdeptLevel()){
+      users = await User.getUsersByDepartmentId(Department.id);
+    }
+
     return users.map((user) => {
       'id': user['id'],
       'username': user['username']
@@ -69,7 +86,7 @@ class _Create_Role_Page extends State<Create_Role> {
   }
 
   Future<List<Map<String, dynamic>>> fetchPermissions() async {
-    List<dynamic> permissions = await Permission.getAllPermissions();
+    List<dynamic> permissions = await Permission.getUserPermissions(User.id);
     return permissions.map((permission) => {
       'id': permission['id'],
       'name': permission['name']
@@ -164,24 +181,31 @@ class _Create_Role_Page extends State<Create_Role> {
                     List<int> selectedPermissionIds = getSelectedPermissionIds();
 
                     if (User.isSuperUser) {
-                      created = await Role.createTopLevelRole(roleName);
+                      created = await Role.createTopLevelRole(roleName,
+                        selectedUserIds,selectedPermissionIds);
                     } else if (User.isUniLevel()) {
                       created = await Role.createUniversityLevelRole(roleName, University.id, selectedUserIds, selectedPermissionIds);
                     } else if (User.iscampusLevel()) {
-                      created = await Role.createCampusLevelRole(roleName, Campus.id);
+                      created = await Role.createCampusLevelRole(roleName,
+                        Campus.id,selectedUserIds,selectedPermissionIds);
                     } else if (User.isdeptLevel()) {
-                      created = await Role.createDepartmentLevelRole(roleName, Department.id);
+                      created = await Role.createDepartmentLevelRole
+                        (roleName, Department.id,selectedUserIds,selectedPermissionIds);
                     }
 
                     if (created) {
                       Role_Controller.clear();
 
                       setState(() {
+                        _selectedUserNames = [];
+                        _selectedPermissionNames = [];
                         isLoading = false;
                         colorMessage = Colors.green;
                         errorColor = Colors.black12; // Reset errorColor to default value
                         errorMessage = 'Role Created successfully';
+
                       });
+
                     }
                   }
                 },

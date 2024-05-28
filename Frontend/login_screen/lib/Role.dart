@@ -73,7 +73,8 @@ class Role {
 
   //Create Top level Roles
   static Future<bool> createTopLevelRole(
-      String name) async {
+      String name,List<dynamic> users, List<dynamic>
+      permissions) async {
     try {
       final accessToken = await storage.read(key: "access_token");
       final url = Uri.parse
@@ -86,6 +87,8 @@ class Role {
         },
         body: jsonEncode({
           'name': name,
+          'users':users,
+          'permissions':permissions
         }),
       );
 
@@ -175,7 +178,8 @@ class Role {
 
   //Create Campus level Roles
   static Future<bool> createCampusLevelRole(
-      String name, int campus_id) async {
+      String name, int campus_id,List<dynamic> users, List<dynamic>
+      permissions) async {
     try {
       final accessToken = await storage.read(key: "access_token");
       final url = Uri.parse
@@ -188,7 +192,8 @@ class Role {
         },
         body: jsonEncode({
           'name': name,
-          'campus_id': campus_id
+          'users':users,
+          'permissions' : permissions
         }),
       );
 
@@ -223,7 +228,8 @@ class Role {
 
   //Create Department level Roles
   static Future<bool> createDepartmentLevelRole(
-      String name, int department_id) async {
+      String name, int department_id,List<dynamic> users, List<dynamic>
+      permissions) async {
     try {
       final accessToken = await storage.read(key: "access_token");
       final url = Uri.parse
@@ -236,7 +242,9 @@ class Role {
         },
         body: jsonEncode({
           'name': name,
-          'department_id': department_id
+          'users' : users,
+          'permissions': permissions
+
         }),
       );
 
@@ -345,3 +353,4 @@ class Role {
 
 
 }
+
