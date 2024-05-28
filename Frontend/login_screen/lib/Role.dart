@@ -6,7 +6,6 @@ import 'main.dart';
 class Role {
   static int _id = 0;
   static String _name = "";
-  static int _group=0;
   static List<dynamic> _group_permissions = [];
   static List<dynamic> _user = [];
   static int _university_id = 0;
@@ -29,11 +28,6 @@ class Role {
   static String get name => _name;
   static set name(String value) {
     _name = value;
-  }
-
-  static int get group => _group;
-  static set group(int value) {
-    _group = value;
   }
 
   static List<dynamic> get group_permissions => _group_permissions;
@@ -128,7 +122,9 @@ class Role {
 
   //Create University level Roles
   static Future<bool> createUniversityLevelRole(
-      String name, int university_id) async {
+      String name, int university_id,List<dynamic> users, List<dynamic>
+      permissions)
+  async {
     try {
       final accessToken = await storage.read(key: "access_token");
       final url = Uri.parse
@@ -141,6 +137,8 @@ class Role {
         },
         body: jsonEncode({
           'name': name,
+          'users':users,
+          'permissions':permissions
         }),
       );
 
@@ -148,6 +146,7 @@ class Role {
         return true;
       } else {
         print('Failed to create Role. Status code: ${response.statusCode}');
+        print(response.body);
         return false;
       }
     } catch (e) {

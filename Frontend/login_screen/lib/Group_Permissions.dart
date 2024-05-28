@@ -18,7 +18,7 @@ class _Group_PermissionsState extends State<Group_Permissions> {
 
   void initState() {
     super.initState();
-    permissionFuture = Permission.fetchPermissionsbyGroupId(Role.group);
+    permissionFuture = Permission.fetchPermissionsbyGroupId(Role.id);
   }
 
   @override
@@ -29,7 +29,7 @@ class _Group_PermissionsState extends State<Group_Permissions> {
     if (currentRoute != null && currentRoute.isCurrent) {
       // Call your refresh function here
       setState(() {
-        permissionFuture = Permission.fetchPermissionsbyGroupId(Role.group);
+        permissionFuture = Permission.fetchPermissionsbyGroupId(Role.id);
       });
     }
   }

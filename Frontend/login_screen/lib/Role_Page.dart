@@ -101,7 +101,7 @@ class _Role_PageState extends State<Role_Page> {
                                   title: Padding(
                                     padding: const EdgeInsets.all(20.0),
                                     child: Text(
-                                      role['group'],
+                                      role['group_name'],
                                       style: CustomTextStyles.bodyStyle(
                                           fontSize: 17),
                                     ),
@@ -132,7 +132,7 @@ class _Role_PageState extends State<Role_Page> {
                                           Role.department_id=role['department'];
                                           Role.department_name=role['department_name'];
                                         }
-                                        Role.name=role['group'];
+                                        Role.name=role['group_name'];
                                         Role.user=role['user'];
                                         Role.group_permissions=role['group_permissions'];
 

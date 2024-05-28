@@ -19,7 +19,7 @@ class _Group_UsersState extends State<Group_Users> {
 
   void initState() {
     super.initState();
-    userFuture = User.fetchUserbyGroupId(Role.group);
+    userFuture = User.fetchUserbyGroupId(Role.id);
   }
 
   @override
@@ -30,7 +30,7 @@ class _Group_UsersState extends State<Group_Users> {
     if (currentRoute != null && currentRoute.isCurrent) {
       // Call your refresh function here
       setState(() {
-        userFuture = User.fetchUserbyGroupId(Role.group);
+        userFuture = User.fetchUserbyGroupId(Role.id);
       });
     }
   }
@@ -64,6 +64,7 @@ class _Group_UsersState extends State<Group_Users> {
                     );
                   } else {
                     final users = snapshot.data!;
+
                     return Expanded(
                         child: ListView.builder(
                             itemCount: users.length,

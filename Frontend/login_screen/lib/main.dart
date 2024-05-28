@@ -12,6 +12,8 @@ import 'package:login_screen/Course_Schedule_Profile.dart';
 import 'package:login_screen/Course_Page.dart';
 import 'package:login_screen/Create_Course_Schedule.dart';
 import 'package:login_screen/Department_Page.dart';
+import 'package:login_screen/Group_Permissions.dart';
+import 'package:login_screen/Group_Users.dart';
 import 'package:login_screen/Program_Management.dart';
 import 'package:login_screen/PLO_Page.dart';
 import 'package:login_screen/Role_Page.dart';
@@ -20,6 +22,7 @@ import 'package:login_screen/University_Select.dart';
 import 'package:login_screen/User_Management.dart';
 import 'package:login_screen/Splash_Screen.dart';
 import 'package:login_screen/Weekly_Topics_Page.dart';
+import 'Add_Group_User.dart';
 import 'Assessment_Page.dart';
 import 'CourseObjectivePage.dart';
 import 'Course_Assessment_Page.dart';
@@ -73,6 +76,11 @@ class MyApp extends StatelessWidget {
         '/Campus_Select' : (context) => Campus_Select(),
         '/Course_Outline_Page' : (context) => Course_Outline_Page(),
         '/Assessment_Page' : (context) => Assessment_Page(),
+        '/Group Users Page' : (context) => Group_Users(),
+        '/Group Permissions Page' : (context) => Group_Permissions(),
+        '/Add Group Users' : (context) => Add_Group_User(),
+        '/Add Group Permissions' : (context) => Add_Group_User(),
+
       },
     );
   }

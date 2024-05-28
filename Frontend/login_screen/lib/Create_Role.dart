@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
@@ -22,24 +23,20 @@ class Create_Role extends StatefulWidget {
 }
 
 class _Create_Role_Page extends State<Create_Role> {
-
-  String?errorMessage;
-  //variable to show the error when the wrong credentials are entered or the fields are empty
+  String? errorMessage;
   Color colorMessage = Colors.red;
-  // color of the message when the error occurs
   var isLoading = false;
-  // variable for use the functionality of loading while request is processed to server
   Color errorColor = Colors.black12;
-  // color of border of text fields when the error is not occurred
 
   final TextEditingController Role_Controller = TextEditingController();
 
-  List<String> _selectedUsers = [];
-  List<String> _userOptions = [];
+  List<String> _selectedUserNames = [];
+  List<Map<String, dynamic>> _userOptions = [];
 
-  List<String> _selectedPermissions = [];
-  List<String> _permissionOptions = [];
+  List<String> _selectedPermissionNames = [];
+  List<Map<String, dynamic>> _permissionOptions = [];
 
+  @override
   void initState() {
     super.initState();
     fetchUserNames().then((userNames) {
@@ -63,25 +60,37 @@ class _Create_Role_Page extends State<Create_Role> {
     });
   }
 
-
-
-  Future<List<String>> fetchUserNames() async {
+  Future<List<Map<String, dynamic>>> fetchUserNames() async {
     List<dynamic> users = await User.getUsersByUniversityId(University.id);
-    return users.map((user) => user['username'].toString()).toList();
+    return users.map((user) => {
+      'id': user['id'],
+      'username': user['username']
+    }).toList();
   }
 
-  Future<List<String>> fetchPermissions() async {
+  Future<List<Map<String, dynamic>>> fetchPermissions() async {
     List<dynamic> permissions = await Permission.getAllPermissions();
-    return permissions.map((permission) => permission['name'].toString())
-        .toList();
+    return permissions.map((permission) => {
+      'id': permission['id'],
+      'name': permission['name']
+    }).toList();
   }
 
+  List<int> getSelectedUserIds() {
+    return _selectedUserNames.map((username) {
+      return _userOptions.firstWhere((option) => option['username'] == username)['id'] as int;
+    }).toList();
+  }
 
+  List<int> getSelectedPermissionIds() {
+    return _selectedPermissionNames.map((name) {
+      return _permissionOptions.firstWhere((option) => option['name'] == name)['id'] as int;
+    }).toList();
+  }
 
+  @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-
       appBar: AppBar(
         backgroundColor: const Color(0xffc19a6b),
         title: Container(
@@ -93,7 +102,6 @@ class _Create_Role_Page extends State<Create_Role> {
         ),
       ),
       body: SingleChildScrollView(
-
         child: Container(
           margin: EdgeInsets.only(top: 100),
           padding: const EdgeInsets.all(20),
@@ -109,27 +117,26 @@ class _Create_Role_Page extends State<Create_Role> {
               const SizedBox(height: 20,),
 
               Padding(
-                padding: const EdgeInsets.only(left: 10,right: 10),
+                padding: const EdgeInsets.only(left: 10, right: 10),
                 child: MultiSelectField(
-                  options: _userOptions,
-                  selectedOptions: _selectedUsers,
+                  options: _userOptions.map((option) => option['username'].toString()).toList(),
+                  selectedOptions: _selectedUserNames,
                   onSelectionChanged: (values) {
                     setState(() {
-                      _selectedUsers = values;
+                      _selectedUserNames = values;
                     });
                   },
                 ),
               ),
               const SizedBox(height: 20),
               Padding(
-                padding: EdgeInsets.only(left: 10,right: 10),
+                padding: EdgeInsets.only(left: 10, right: 10),
                 child: MultiSelectField(
-                  
-                  options: _permissionOptions,
-                  selectedOptions: _selectedPermissions,
+                  options: _permissionOptions.map((option) => option['name'].toString()).toList(),
+                  selectedOptions: _selectedPermissionNames,
                   onSelectionChanged: (values) {
                     setState(() {
-                      _selectedPermissions = values;
+                      _selectedPermissionNames = values;
                     });
                   },
                   buttonText: Text('Add Permissions'),
@@ -138,11 +145,10 @@ class _Create_Role_Page extends State<Create_Role> {
 
               SizedBox(height: 20,),
 
-
               Custom_Button(
                 onPressedFunction: () async {
-                  String RoleName = Role_Controller.text;
-                  if (RoleName.isEmpty) {
+                  String roleName = Role_Controller.text;
+                  if (roleName.isEmpty) {
                     setState(() {
                       colorMessage = Colors.red;
                       errorColor = Colors.red;
@@ -153,22 +159,19 @@ class _Create_Role_Page extends State<Create_Role> {
                       isLoading = true;
                     });
 
-                    bool created=false;
+                    bool created = false;
+                    List<int> selectedUserIds = getSelectedUserIds();
+                    List<int> selectedPermissionIds = getSelectedPermissionIds();
 
-                    if(User.isSuperUser){
-                      created = await Role.createTopLevelRole(RoleName);
+                    if (User.isSuperUser) {
+                      created = await Role.createTopLevelRole(roleName);
+                    } else if (User.isUniLevel()) {
+                      created = await Role.createUniversityLevelRole(roleName, University.id, selectedUserIds, selectedPermissionIds);
+                    } else if (User.iscampusLevel()) {
+                      created = await Role.createCampusLevelRole(roleName, Campus.id);
+                    } else if (User.isdeptLevel()) {
+                      created = await Role.createDepartmentLevelRole(roleName, Department.id);
                     }
-                    else if(User.isUniLevel()){
-                      created= await Role.createUniversityLevelRole(RoleName,
-                          University.id);
-                    }
-                    else if(User.iscampusLevel()){
-                      created=await Role.createCampusLevelRole(RoleName, Campus.id);
-                    }
-                    else if(User.isdeptLevel()){
-                      created= await Role.createDepartmentLevelRole(RoleName, Department.id);
-                    }
-
 
                     if (created) {
                       Role_Controller.clear();
@@ -176,15 +179,15 @@ class _Create_Role_Page extends State<Create_Role> {
                       setState(() {
                         isLoading = false;
                         colorMessage = Colors.green;
-                        errorColor =
-                            Colors.black12; // Reset errorColor to default value
+                        errorColor = Colors.black12; // Reset errorColor to default value
                         errorMessage = 'Role Created successfully';
                       });
                     }
                   }
                 },
                 ButtonWidth: 160,
-                ButtonText: 'Create Role',),
+                ButtonText: 'Create Role',
+              ),
               const SizedBox(height: 20),
               Visibility(
                 visible: isLoading,
@@ -200,10 +203,6 @@ class _Create_Role_Page extends State<Create_Role> {
           ),
         ),
       ),
-
-
     );
-
-
   }
 }
