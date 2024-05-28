@@ -54,6 +54,8 @@ class _Question_PageState extends State<Question_Page> {
                     label: 'Question CLOs',
                     hintText: '1,2,...',
                     borderColor: errorColor,
+                    Keyboard_Type: TextInputType.number,
+
                   ),
                   const SizedBox(
                     height: 20,
@@ -137,22 +139,34 @@ class _Question_PageState extends State<Question_Page> {
                       } else {
                         List<Map<String, dynamic>> questions = [];
                         for (int i = 0; i < partDescriptionControllers.length; i++) {
-                          String description = partDescriptionControllers[i].text;
-                          int marks = int.tryParse(partMarksControllers[i].text) ?? 0;
+                          String partdescription = partDescriptionControllers[i].text;
+                          int partmarks = int.tryParse(partMarksControllers[i].text) ?? 0;
+                          String QuestionDesc = QuestionDescController.text;
+                          List<int> QuestionCLO = QuestionCLOController.text.split(',').map((e) => int.tryParse(e.trim()) ?? 0).toList();
 
-                          if (description.isNotEmpty && marks > 0) {
+                          if (partdescription.isNotEmpty && partmarks > 0) {
+                            // for part of the question
                             Map<String, dynamic> part = {
-                              "description": description,
-                              "marks": marks,
+                              "description": partdescription,
+                              "marks": partmarks,
                             };
+
+                            // for whole of the question including parts
                             Map<String, dynamic> question = {
-                              "description": QuestionDescController.text,
-                              "clo": QuestionCLOController.text.split(',').map((e) => int.tryParse(e.trim()) ?? 0).toList(),
+                              "description": QuestionDesc,
+                              "clo": QuestionCLO,
                               "parts": [part],
                             };
                             questions.add(question);
+                            print("SAaaaffhghD");
+                            print(questions);
                           }
                         }
+
+                        // Assessment.questions = questions;
+                        // print("object");
+                        // print(Assessment.questions);
+
                         Assessment.createCompleteAssessment(
                           Assessment.name!,
                           Assessment.teacher,
@@ -161,7 +175,7 @@ class _Question_PageState extends State<Question_Page> {
                           Assessment.total_marks,
                           Assessment.duration!,
                           Assessment.instructions!,
-                          questions,
+                          questions ,
                         ).then((success) {
                           setState(() {
                             isLoading = false;
