@@ -11,12 +11,17 @@ import 'Custom_Widgets/DeleteAlert.dart';
 import 'Custom_Widgets/PermissionBasedButton.dart';
 
 class Assessment_Profile extends StatefulWidget {
+  final List<dynamic> Data;
+
+  Assessment_Profile({ required this.Data});
   @override
   State<Assessment_Profile> createState() => _Assessment_ProfileState();
 }
 
 class _Assessment_ProfileState extends State<Assessment_Profile> {
-  final assessment_id = Assessment.id;  // Assuming University is a class with static members
+
+
+  final assessment_id = Assessment.id; // Assuming University is a class with static members
   late Future<bool> hasDeleteAssessmentPermissionFuture;
   late Future<bool> hasViewAssessmentPermissionFuture;
 
@@ -27,9 +32,14 @@ class _Assessment_ProfileState extends State<Assessment_Profile> {
   @override
   void initState() {
     super.initState();
+    print("ME");
+
+    print(widget.Data);
+    print("ME");
     hasDeleteAssessmentPermissionFuture = Permission.searchPermissionByCodename("delete_assessment");
     hasViewAssessmentPermissionFuture = Permission.searchPermissionByCodename("view_assessment");
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -72,10 +82,28 @@ class _Assessment_ProfileState extends State<Assessment_Profile> {
   }
 
   List<Widget> _buildUniversityInfoCards() {
-    return [
-      DetailCard(label: "Assessment Name", value: Assessment.name, icon: Icons.school),
-      DetailCard(label: "Assessment Total Marks", value: Assessment.total_marks.toString(), icon: Icons.numbers),
+    List<Widget> cards = [
+      DetailCard(label: "Assessment Name", value: widget.Data[0]['name'], icon: Icons.school),
+      DetailCard(label: "Assessment Total Marks", value: widget.Data[0]['total_marks'].toString(), icon: Icons.numbers),
+      DetailCard(label: "Assessment Duration", value: widget.Data[0]['duration'], icon: Icons.timer),
     ];
+
+    // Add cards for questions
+    List<dynamic> questions = widget.Data[0]['questions'];
+    for (int i = 0; i < questions.length; i++) {
+      List<dynamic> parts = questions[i]['parts'];
+      String partsString = '';
+      for (int j = 0; j < parts.length; j++) {
+        partsString += "Part ${j + 1}: ${parts[j]['description']} - ${parts[j]['marks']} marks\n";
+      }
+      partsString += "\nCLOs: ";
+      List<dynamic> clos = questions[i]['clo'];
+      partsString += clos.join(', '); // Join CLOs with commas
+      cards.add(DetailCard(label: "Question ${i + 1} Description", value: questions[i]['description'], icon: Icons.question_answer));
+      cards.add(DetailCard(label: "Question ${i + 1} Parts", value: partsString, icon: Icons.question_answer));
+    }
+
+    return cards;
   }
 
 
@@ -102,7 +130,6 @@ class _Assessment_ProfileState extends State<Assessment_Profile> {
       ],
     );
   }
-
 
   Future<void> _confirmDelete(BuildContext context) async {
     bool confirmDelete = await showDialog(

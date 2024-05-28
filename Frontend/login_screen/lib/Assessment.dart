@@ -19,26 +19,18 @@ class Assessment
   static int _total_marks = 0;
   static String? _instructions;
   static String? _duration;
-  static String? _Question_desc;
   static List<int>? _CLOs;
+  static String? _Part_desc;
+  static int _Part_marks = 0;
+  static List<Map<String, dynamic>>? _questions;
 
-  static Map<String, dynamic>? _questions;
 
-  static Map<String, dynamic>? get questions => _questions;
+  static List<Map<String, dynamic>>? get questions => _questions;
 
-  static set questions(Map<String, dynamic>? value) {
+  static set questions(List<Map<String, dynamic>>? value) {
     _questions = value;
   }
 
-  static String? _Part_desc;
-  static int _Part_marks = 0;
-
-
-  static String? get Question_desc => _Question_desc;
-
-  static set Question_desc(String? value) {
-    _Question_desc = value;
-  }
 
 
 
@@ -270,6 +262,21 @@ class Assessment
     } catch (e) {
       print('Exception while creating Assessment: $e');
       return false;
+    }
+  }
+  static Future<List<dynamic>> fetchAllAssessmentData(int id) async {
+    final accessToken = await storage.read(key: "access_token");
+    final url = Uri.parse('$ipAddress:8000/api/complete-assessment/$id');
+    final response = await http.get(
+      url,
+      headers: {'Authorization': 'Bearer $accessToken'},
+    );
+
+    if (response.statusCode == 200) {
+      print(response.body);
+      return [jsonDecode(response.body)]; // Wrap the result in a List
+    } else {
+      return [];
     }
   }
 

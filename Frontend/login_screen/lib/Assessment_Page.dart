@@ -20,6 +20,8 @@ class _Assessment_PageState extends State<Assessment_Page> {
   @override
   void initState() {
     super.initState();
+    // print("KJ");
+    // Assessment.fetchAllAssessmentData(11);
     AssessmentsFuture = Assessment.fetchAssessment();
     hasEditAssessmentPermissionFuture =
         Permission.searchPermissionByCodename("change_assessment");
@@ -100,25 +102,17 @@ class _Assessment_PageState extends State<Assessment_Page> {
                                 }
                               }),
                           onTap: () async {
-                            var assessment =
-                            await Assessment.getAssessmentbyId(
-                                assessments[index]['id']);
+                            var assessment = await Assessment.fetchAllAssessmentData(assessments[index]['id']);
                             if (assessment != null) {
-                              Assessment.id = assessment['id'];
-                              Assessment.name = assessment['name'];
-                              Assessment.teacher = assessment['teacher'];
-                              Assessment.batch = assessment['batch'];
-                              Assessment.course = assessment['course'];
-                              Assessment.total_marks = assessment['total_marks'];
                               Navigator.push(
-                                  context,
-                                  MaterialPageRoute<bool>(
-                                    builder: (context) => Assessment_Profile(),
-                                  )).then((result) {
+                                context,
+                                MaterialPageRoute<bool>(
+                                  builder: (context) => Assessment_Profile(Data: assessment),
+                                ),
+                              ).then((result) {
                                 if (result != null && result) {
                                   setState(() {
-                                    AssessmentsFuture =
-                                        Assessment.fetchAssessment();
+                                    AssessmentsFuture = Assessment.fetchAssessment();
                                   });
                                 }
                               });
