@@ -23,3 +23,6 @@ class CustomGroup(models.Model):
 
     class Meta:
         unique_together = ('university', 'campus', 'department', 'group')
+
+    def __str__(self) -> str:
+        return self.group.name

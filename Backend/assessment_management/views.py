@@ -77,8 +77,8 @@ class CompleteAssessmentCreateView(generics.ListCreateAPIView):
 class CompleteAssessmentView(generics.ListAPIView):
     queryset = Assessment.objects.all()
     serializer_class = CompleteAssessmentSerializer
-    # permission_classes = [IsSuper_University_Campus_Department]
-    # authentication_classes = [JWTStatelessUserAuthentication]
+    permission_classes = [IsSuper_University_Campus_Department]
+    authentication_classes = [JWTStatelessUserAuthentication]
     lookup_field = 'id'
     lookup_url_kwarg = 'assessment_id'
 
