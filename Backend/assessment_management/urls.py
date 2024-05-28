@@ -11,5 +11,7 @@ urlpatterns = [
     path('assessment/question/part',views.QuestionPartView.as_view()),
     path('assessment/question/part/<int:pk>',views.QuestionPartView.as_view()),
 
-    path('complete-assessment', views.AssessmentQuestionPartCreateView.as_view()),
+    path('complete-question', views.CompleteQuestionView.as_view()),
+    path('complete-assessment', views.CompleteAssessmentCreateView.as_view()),
+    path('complete-assessment/<int:assessment_id>', views.CompleteAssessmentView.as_view()),
 ]

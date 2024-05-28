@@ -14,6 +14,7 @@ django-cors-headers = "*"
 pytz = "*"
 nltk = "*"
 spacy = "*"
+python-dotenv = "*"
 
 [dev-packages]
 

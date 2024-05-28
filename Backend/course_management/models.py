@@ -35,6 +35,7 @@ class CourseLearningOutcomes(models.Model):
     ]
     bloom_taxonomy = models.CharField(max_length=20, choices=BLOOM_TAXONOMY_CHOICES)
     level = models.IntegerField()
+    plo = models.ManyToManyField(PLO, related_name='clos')
 
     def __str__(self) -> str:
         return self.description
@@ -108,15 +109,3 @@ class WeeklyTopic(models.Model):
 class CourseDepartment(models.Model):
     department = models.ForeignKey(Department, on_delete=models.CASCADE)
     course = models.ForeignKey(CourseInformation, on_delete=models.CASCADE)
-
-
-class PLO_CLO_Mapping(models.Model):
-    plo = models.ForeignKey(PLO, on_delete=models.CASCADE)
-    clo = models.ForeignKey(CourseLearningOutcomes, on_delete=models.CASCADE)
-
-    class Meta:
-        unique_together = ('plo', 'clo')
-    
-    def __str__(self) -> str:
-        return f"PLO: {self.plo.name}*********CLO: {self.clo}"
-    

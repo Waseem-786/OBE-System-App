@@ -8,6 +8,7 @@ from .serializers import UniversitySerializer, CampusSerializer, DepartmentSeria
 from rest_framework_simplejwt.authentication import JWTStatelessUserAuthentication
 from user_management.permissions import IsSuperUser, IsUniversityAdmin, IsCampusAdmin, IsDepartmentAdmin, IsSuper_University, IsSuper_University_Campus, IsSuper_University_Campus_Department
 from university_management.permissions import IsUserUniversity, IsUserCampus, IsUserDepartment
+
 # Create your views here.
 
 class UniversityView(generics.ListCreateAPIView):
@@ -21,26 +22,20 @@ class SingleUniversityView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = UniversitySerializer
     permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
-    # def get_permissions(self):
-    #     if self.request.method == 'DELETE':
-    #         return [IsSuperUser]
-    #     return super().get_permissions()
+
         
 class CampusView(generics.ListCreateAPIView):
     queryset = Campus.objects.all()
     serializer_class = CampusSerializer
-    permission_classes = [IsSuper_University_Campus_Department]
-    authentication_classes = [JWTStatelessUserAuthentication]
+    # permission_classes = [IsSuper_University_Campus_Department]
+    # authentication_classes = [JWTStatelessUserAuthentication]
+
 
 class SingleCampusView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Campus.objects.all()
     serializer_class = CampusSerializer
     permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
-    # def get_permissions(self):
-    #     if self.request.method == 'DELETE':
-    #         return [IsUniversityAdmin]
-    #     return super().get_permissions()
 
 class AllCampuses_For_SpecificUniversity_View(generics.ListAPIView):    
     serializer_class = CampusSerializer
@@ -56,15 +51,12 @@ class DepartmentView(generics.ListCreateAPIView):
     permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
 
+
 class SingleDepartmentView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Department.objects.all()
     serializer_class = DepartmentSerializer
     permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
-    # def get_permissions(self):
-    #     if self.request.method == 'DELETE':
-    #         return [IsCampusAdmin]
-    #     return super().get_permissions()
     
 class AllDepartment_For_SpecificCampus_View(generics.ListAPIView):    
     serializer_class = DepartmentSerializer

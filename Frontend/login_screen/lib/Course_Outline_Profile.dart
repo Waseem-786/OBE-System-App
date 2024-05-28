@@ -1,13 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/services.dart';
 import 'package:login_screen/Campus.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Style.dart';
 import 'package:login_screen/Custom_Widgets/OutlineRow.dart';
 import 'package:login_screen/Department.dart';
 import 'package:login_screen/Outline.dart';
 import 'package:login_screen/University.dart';
-
 import 'Custom_Widgets/SectionHeader.dart';
 
 class CourseOutlineProfile extends StatefulWidget {
@@ -45,7 +44,7 @@ class _CourseOutlineProfileState extends State<CourseOutlineProfile> {
         ),
       ),
       body: courseOutlineData == null
-          ? CircularProgressIndicator() // Show loading indicator while data is null
+          ? Center(child: CircularProgressIndicator()) // Show loading indicator while data is null
           : buildCourseContent(),
     );
   }
@@ -56,6 +55,8 @@ class _CourseOutlineProfileState extends State<CourseOutlineProfile> {
     final assessments = courseOutlineData!['assessments'];
     final books = courseOutlineData!['books'];
     final objectives = courseOutlineData!['objectives'];
+    final clos = courseOutlineData!['clos'];
+    final weeklyTopics = courseOutlineData!['weekly_topics'];
 
     return SingleChildScrollView(
       child: Padding(
@@ -92,6 +93,11 @@ class _CourseOutlineProfileState extends State<CourseOutlineProfile> {
             _buildCourseDescription(courseInfo),
             SizedBox(height: 20),
             _buildCourseObjectives(objectives),
+            SizedBox(height: 20),
+            _buildCourseCLOsMapping(clos), // New section for CLOs mapping
+            SizedBox(height: 20),
+            _buildWeeklyTopics(weeklyTopics), // New section for Weekly Topics
+            SizedBox(height: 20),
           ],
         ),
       ),
@@ -99,8 +105,6 @@ class _CourseOutlineProfileState extends State<CourseOutlineProfile> {
   }
 
   Widget _buildCourseInformation(Map<String, dynamic> courseInfo) {
-    Color fillingColor = Colors.blue.shade100;
-
     List<Widget> infoWidgets = [
       SectionHeader(title: "Course Information"), // Add the header
     ];
@@ -282,6 +286,96 @@ class _CourseOutlineProfileState extends State<CourseOutlineProfile> {
     }
 
     return Column(children: objectiveWidgets);
+  }
+
+  Widget _buildCourseCLOsMapping(List<dynamic> clos) {
+    List<Widget> cloWidgets = [
+      SectionHeader(title: "Course CLOs and their Mapping to PLOs"), // Add the header
+    ];
+
+    cloWidgets.add(
+      OutlineRow(
+        texts: ["CLO No.", "Course Learning Outcome (CLOs)", "PLOs", "Learning Level"],
+        isHeader: true,
+        backgroundColor: Colors.blue.shade100,
+        columnWidths: [1, 4, 1, 1],
+      ),
+    );
+
+    for (int i = 0; i < clos.length; i++) {
+      var clo = clos[i];
+      bool isOdd = i % 2 == 1;
+      Color bgColor = isOdd ? Colors.blue.shade100 : Colors.transparent;
+      String learningLevel = _getLearningLevel(clo['bloom_taxonomy'], clo['level']);
+      String ploList = clo['plo'].map((plo) => plo).join(", ");
+
+      cloWidgets.add(
+        OutlineRow(
+          texts: ["CLO ${i + 1}", clo['description'], ploList, learningLevel],
+          backgroundColor: bgColor,
+          columnWidths: [1, 4, 1, 1],
+        ),
+      );
+    }
+
+    return Column(children: cloWidgets);
+  }
+
+  Widget _buildWeeklyTopics(List<dynamic> weeklyTopics) {
+    List<Widget> weeklyTopicWidgets = [
+      SectionHeader(title: "Weekly Topics"), // Add the header
+    ];
+
+    weeklyTopicWidgets.add(
+      OutlineRow(
+        texts: ["Week", "Topic", "Description/ Lecture Breakdown", "CLO", "Assessment"],
+        isHeader: true,
+        backgroundColor: Colors.blue.shade100,
+        columnWidths: [1, 2, 4, 1, 2],
+      ),
+    );
+
+    for (int i = 0; i < weeklyTopics.length; i++) {
+      var topic = weeklyTopics[i];
+      bool isOdd = i % 2 == 1;
+      Color bgColor = isOdd ? Colors.blue.shade100 : Colors.transparent;
+      String cloList = topic['clo'].map((clo) => clo).join(", ");
+
+      weeklyTopicWidgets.add(
+        OutlineRow(
+          texts: [
+            topic['week_number'].toString(),
+            topic['topic'],
+            topic['description'].replaceAll('\n', ', '),
+            cloList,
+            topic['assessments']
+          ],
+          backgroundColor: bgColor,
+          columnWidths: [1, 2, 4, 1, 2],
+        ),
+      );
+    }
+
+    return Column(children: weeklyTopicWidgets);
+  }
+
+  String _getLearningLevel(String bloomTaxonomy, int level) {
+    String taxonomyLetter;
+    switch (bloomTaxonomy) {
+      case 'Cognitive':
+        taxonomyLetter = 'C';
+        break;
+      case 'Psychomotor':
+        taxonomyLetter = 'P';
+        break;
+      case 'Affective':
+        taxonomyLetter = 'A';
+        break;
+      default:
+        taxonomyLetter = '';
+        break;
+    }
+    return '$taxonomyLetter-$level';
   }
 
 }

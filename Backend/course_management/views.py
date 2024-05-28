@@ -2,10 +2,10 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework.views import APIView, Response, status
 from rest_framework_simplejwt.authentication import JWTStatelessUserAuthentication
-from user_management.permissions import IsSuperUser, IsUniversityAdmin, IsCampusAdmin, IsDepartmentAdmin, IsSuper_University, IsSuper_University_Campus, IsSuper_University_Campus_Department
+from user_management.permissions import IsSuper_University_Campus_Department
+from .models import CourseInformation, CourseSchedule, CourseObjective, CourseAssessment, CourseBooks, CourseLearningOutcomes, CourseOutline, WeeklyTopic
+from .serializers import CourseInformationSerializer, CourseScheduleSerializer, CourseObjectiveSerializer, CourseObjectiveListSerializer, CourseAssessmentSerializer, CourseBookSerializer, CourseLearningOutcomesSerializer, CourseOutlineSerializer, WeeklyTopicSerializer, CompleteOutlineSerializer
 
-from .models import CourseInformation, CourseSchedule, CourseObjective, CourseAssessment, CourseBooks, CourseLearningOutcomes, CourseOutline, WeeklyTopic, PLO_CLO_Mapping
-from .serializers import CourseInformationSerializer, CourseScheduleSerializer, CourseObjectiveSerializer, CourseObjectiveListSerializer, CourseAssessmentSerializer, CourseBookSerializer, CourseLearningOutcomesSerializer, CourseOutlineSerializer, PLO_CLO_Mapping_Serializer, WeeklyTopicSerializer, CompleteOutlineSerializer
 # Create your views here.
 class CourseInformationView(generics.ListCreateAPIView):
     queryset = CourseInformation.objects.all()
@@ -34,6 +34,13 @@ class CourseLearningOutcomesView(generics.CreateAPIView):
     serializer_class = CourseLearningOutcomesSerializer
     permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 class CLO_of_Specific_Course(generics.ListAPIView):
     serializer_class = CourseLearningOutcomesSerializer
@@ -44,17 +51,10 @@ class CLO_of_Specific_Course(generics.ListAPIView):
         pk = self.kwargs['pk']
         queryset = CourseLearningOutcomes.objects.filter(course__id=pk)
         return queryset
-    
+
 class SingleCLO(generics.RetrieveUpdateDestroyAPIView):
     queryset = CourseLearningOutcomes.objects.all()
     serializer_class = CourseLearningOutcomesSerializer
-    permission_classes = [IsSuper_University_Campus_Department]
-    authentication_classes = [JWTStatelessUserAuthentication]
-
-
-class PLO_CLO_Mapping_View(generics.ListCreateAPIView):
-    queryset = PLO_CLO_Mapping.objects.all()
-    serializer_class = PLO_CLO_Mapping_Serializer
     permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
 
@@ -304,3 +304,30 @@ class CompleteOutlineView(APIView):
         outline = get_object_or_404(CourseOutline, id=pk)
         serialized_data =  CompleteOutlineSerializer(outline)
         return Response(serialized_data.data, status=status.HTTP_200_OK)
+    
+
+# views.py
+from django.http import JsonResponse
+from program_management.models import PEO, PLO, PEO_PLO_Mapping
+
+def get_clo_plo_peo_mappings(request, course_id):
+    data = []
+
+    try:
+        course = CourseInformation.objects.get(id=course_id)
+    except CourseInformation.DoesNotExist:
+        return JsonResponse({'error': 'Course not found'}, status=404)
+
+    clos = CourseLearningOutcomes.objects.filter(course=course)
+    for clo in clos:
+        clo_plos = clo.plo.all()
+        for plo in clo_plos:
+            plo_peos = PEO_PLO_Mapping.objects.filter(plo=plo)
+            for mapping in plo_peos:
+                data.append({
+                    'clo': clo.description,
+                    'plo': plo.name,
+                    'peo': mapping.peo.description,
+                })
+    
+    return JsonResponse(data, safe=False)
