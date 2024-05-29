@@ -58,10 +58,21 @@ class _SplashScreenState extends State<SplashScreen> {
                 }
               }
             }
+          } else {
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => LoginPage())
+            );
           }
         }
       }
+    } else{
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage())
+      );
     }
+
     throw Exception("Token verification failed");
   }
 

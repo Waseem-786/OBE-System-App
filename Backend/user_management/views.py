@@ -181,6 +181,18 @@ class AllUsers(generics.ListAPIView):
     authentication_classes = [JWTStatelessUserAuthentication]
     permission_classes = [IsSuperUser]
 
+# Get All Top Level Users
+class AllTopLevelUsers(generics.ListAPIView):
+    serializer_class = CustomUserSerializer
+    authentication_classes = [JWTStatelessUserAuthentication]
+    permission_classes = [IsSuper_University]
+    def get_queryset(self):
+        queryset = CustomUser.objects.filter(
+            Q(university__isnull=True) | Q(university=0),
+            Q(campus__isnull=True) | Q(campus=0),
+            Q(department__isnull=True) | Q(department=0)
+        ).order_by('id')
+        return queryset
 
 # Get All Users for Specific University
 class AllUsers_for_SpecificUniversity(generics.ListAPIView):
@@ -189,7 +201,11 @@ class AllUsers_for_SpecificUniversity(generics.ListAPIView):
     permission_classes = [IsSuper_University]
     def get_queryset(self):
         university_id = self.kwargs['university_id']
-        queryset = CustomUser.objects.filter(university=university_id)
+        queryset = CustomUser.objects.filter(
+            Q(university=university_id),
+            Q(campus__isnull=True) | Q(campus=0),
+            Q(department__isnull=True) | Q(department=0)
+        ).order_by('id')
         return queryset
 
 # Get All Users for Specific Campus
@@ -199,7 +215,10 @@ class AllUsers_for_SpecificCampus(generics.ListAPIView):
     permission_classes = [IsSuper_University_Campus_Department]
     def get_queryset(self):
         campus_id = self.kwargs['campus_id']
-        queryset = CustomUser.objects.filter(campus=campus_id)
+        queryset = CustomUser.objects.filter(
+            Q(campus=campus_id),
+            Q(department__isnull=True) | Q(department=0)
+        ).order_by('id')
         return queryset
     
 # Get All Users for Specific Department
@@ -209,7 +228,83 @@ class AllUsers_for_SpecificDepartment(generics.ListAPIView):
     permission_classes = [IsSuper_University_Campus_Department]
     def get_queryset(self):
         department_id = self.kwargs['department_id']
-        queryset = CustomUser.objects.filter(department=department_id)
+        queryset = CustomUser.objects.filter(department=department_id).order_by('id')
+        return queryset
+
+
+# Get All Users for Specific University which are not added in Group
+class AllUniversityLevelUsers_NotInGroup(generics.ListAPIView):
+    serializer_class = CustomUserSerializer
+    authentication_classes = [JWTStatelessUserAuthentication]
+
+    permission_classes = [IsSuper_University]
+    def get_queryset(self):
+        group_id = self.kwargs['group_id']
+        # Get all users in the specified university
+        users_in_university = CustomUser.objects.filter(
+            Q(university__isnull=False) & ~Q(university=0),
+            Q(campus__isnull=True) | Q(campus=0),
+            Q(department__isnull=True) | Q(department=0)
+        )
+        
+        # Get the group and its associated users
+        custom_group = CustomGroup.objects.get(group_id=group_id)
+        users = custom_group.user.all()
+        queryset = []
+        for user in users_in_university:
+            if user not in users:
+                queryset.append(user)
+
+        return queryset
+
+# Get All Users for Specific Campus which are not added in Group
+class AllCampusLevelUsers_NotInGroup(generics.ListAPIView):
+    serializer_class = CustomUserSerializer
+    authentication_classes = [JWTStatelessUserAuthentication]
+    permission_classes = [IsSuper_University_Campus_Department]
+    
+    def get_queryset(self):
+        group_id = self.kwargs['group_id']
+        # Get all users in the specified university
+        users_in_university = CustomUser.objects.filter(
+            Q(university__isnull=False) & ~Q(university=0),
+            Q(campus__isnull=False) & ~Q(campus=0),
+            Q(department__isnull=True) | Q(department=0)
+        )
+        
+        # Get the group and its associated users
+        custom_group = CustomGroup.objects.get(group_id=group_id)
+        users = custom_group.user.all()
+        queryset = []
+        for user in users_in_university:
+            if user not in users:
+                queryset.append(user)
+
+        return queryset
+    
+# Get All Users for Specific Department which are not added in Group
+class AllDepartmentLevelUsers_NotInGroup(generics.ListAPIView):
+    serializer_class = CustomUserSerializer
+    authentication_classes = [JWTStatelessUserAuthentication]
+    permission_classes = [IsSuper_University_Campus_Department]
+    
+    def get_queryset(self):
+        group_id = self.kwargs['group_id']
+        # Get all users in the specified university
+        users_in_university = CustomUser.objects.filter(
+            Q(university__isnull=False) & ~Q(university=0),
+            Q(campus__isnull=False) & ~Q(campus=0),
+            Q(department__isnull=False) & ~Q(department=0)
+        )
+        
+        # Get the group and its associated users
+        custom_group = CustomGroup.objects.get(group_id=group_id)
+        users = custom_group.user.all()
+        queryset = []
+        for user in users_in_university:
+            if user not in users:
+                queryset.append(user)
+
         return queryset
 
 # Get User by Id
