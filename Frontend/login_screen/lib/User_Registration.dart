@@ -206,13 +206,7 @@ class _User_RegistrationState extends State<User_Registration> {
                       },
                     ),
                   const SizedBox(height: 20),
-                  CustomTextFormField(
-                    controller: roleController,
-                    label: 'User Role',
-                    hintText: 'Enter Role',
-                    borderColor: borderColor,
-                  ),
-                  const SizedBox(height: 20),
+
                   Custom_Button(
                     onPressedFunction: () async {
                       setState(() {

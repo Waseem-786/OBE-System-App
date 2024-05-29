@@ -232,7 +232,7 @@ class User {
   static Future<bool> deleteUser(int userId) async {
     try {
       final accessToken = await storage.read(key: "access_token");
-      final url = Uri.parse('$ipAddress:8000/auth/user/$userId');
+      final url = Uri.parse('$ipAddress:8000/api/user/$userId');
       final response = await http.delete(
         url,
         headers: {

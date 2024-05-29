@@ -54,7 +54,7 @@ class _User_ProfileState extends State<User_Profile> {
               Center(child: Text("User Details", style: CustomTextStyles
                   .headingStyle())),
               const SizedBox(height: 20),
-              ..._buildDepartmentInfoCards(),
+              ..._buildUserInfoCards(),
               SizedBox(height: 20),
               Center(child: _actionButtons()),
               SizedBox(height: 10),
@@ -76,21 +76,71 @@ class _User_ProfileState extends State<User_Profile> {
     );
   }
 
-  List<Widget> _buildDepartmentInfoCards() {
-    return [
-      DetailCard(label: "First Name", value: SelectedUser.firstName, icon:
-      Icons.account_circle),
-      DetailCard(label: "Last Name", value: SelectedUser.lastName, icon:
-      Icons.account_circle,),
-      DetailCard(label: "University", value: SelectedUser.universityName,
-        icon: Icons.school),
-      DetailCard(label: "Campus", value: SelectedUser.campusName,icon: Icons.school),
-      DetailCard(label: "Department", value: SelectedUser.departmentName,icon: Icons
-          .school),
-      DetailCard(label: "Username", value: SelectedUser.username, icon: Icons
-          .verified_user),
-      DetailCard(label: "Email", value: SelectedUser.email, icon: Icons.email),
-    ];
+  List<Widget> _buildUserInfoCards() {
+
+    if(SelectedUser.isSuperUser){
+      return [
+        DetailCard(label: "First Name", value: SelectedUser.firstName, icon:
+        Icons.account_circle),
+        DetailCard(label: "Last Name", value: SelectedUser.lastName, icon:
+        Icons.account_circle,),
+        DetailCard(label: "Username", value: SelectedUser.username, icon: Icons
+            .verified_user),
+        DetailCard(label: "Email", value: SelectedUser.email, icon: Icons.email),
+      ];
+
+    }
+    else if(SelectedUser.isUniLevel()){
+
+      return [
+        DetailCard(label: "First Name", value: SelectedUser.firstName, icon:
+        Icons.account_circle),
+        DetailCard(label: "Last Name", value: SelectedUser.lastName, icon:
+        Icons.account_circle,),
+        DetailCard(label: "Username", value: SelectedUser.username, icon: Icons
+            .verified_user),
+        DetailCard(label: "Email", value: SelectedUser.email, icon: Icons.email),
+
+        DetailCard(label: "University", value: SelectedUser.universityName,
+            icon: Icons.school),
+      ];
+    }
+    else if(SelectedUser.iscampusLevel()){
+
+      return [
+
+        DetailCard(label: "First Name", value: SelectedUser.firstName, icon:
+        Icons.account_circle),
+        DetailCard(label: "Last Name", value: SelectedUser.lastName, icon:
+        Icons.account_circle,),
+        DetailCard(label: "Username", value: SelectedUser.username, icon: Icons
+            .verified_user),
+        DetailCard(label: "Email", value: SelectedUser.email, icon: Icons.email),
+        DetailCard(label: "University", value: SelectedUser.universityName,
+            icon: Icons.school),
+        DetailCard(label: "Campus", value: SelectedUser.campusName,icon: Icons.school),
+
+      ];
+
+    }
+    else{
+
+      return [
+        DetailCard(label: "First Name", value: SelectedUser.firstName, icon:
+        Icons.account_circle),
+        DetailCard(label: "Last Name", value: SelectedUser.lastName, icon:
+        Icons.account_circle,),
+        DetailCard(label: "Username", value: SelectedUser.username, icon: Icons
+            .verified_user),
+        DetailCard(label: "Email", value: SelectedUser.email, icon: Icons.email),
+        DetailCard(label: "University", value: SelectedUser.universityName,
+            icon: Icons.school),
+        DetailCard(label: "Campus", value: SelectedUser.campusName,icon: Icons.school),
+        DetailCard(label: "Department", value: SelectedUser.departmentName,icon: Icons
+            .school),
+
+      ];
+    }
   }
 
   Widget _actionButtons() {

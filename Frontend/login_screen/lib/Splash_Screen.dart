@@ -1,9 +1,8 @@
 import 'dart:async';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // Import this for SystemNavigator.pop
 import 'package:login_screen/Login_Page.dart';
-
 import 'Dashboard.dart';
 import 'Token.dart';
 
@@ -22,94 +21,98 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _handleTokenVerification() async {
-    await handleTokenVerification(); // Call your asynchronous logic here
+    try {
+      await handleTokenVerification(); // Call your asynchronous logic here
+    } catch (error) {
+      _showErrorDialog('Network Error', 'Failed to connect to the server. Please try again.');
+    }
   }
-  /*
-    It attempts to read the access token.
-    If the access token exists, it verifies its validity.
-    If the access token is valid, it navigates to the Dashboard.
-    If the access token is not valid, it attempts to read the refresh token.
-    If the refresh token exists, it verifies its validity.
-    If the refresh token is valid, it attempts to refresh the access token.
-      If the access token is successfully refreshed, it verifies its validity again.
-      If the access token is now valid, it navigates to the Dashboard.
-    if refresh token is not valid then, it navigates to the Dashboard.
-  */
+
   Future<void> handleTokenVerification() async {
-    //Read AccessToken & Check validity and route to Dashboard
+    // Read AccessToken & Check validity and route to Dashboard
     String? accessToken = await Token.readAccessToken();
     if (accessToken != null) {
-      bool verified = await Token.verifyToken(accessToken!);
+      bool verified = await Token.verifyToken(accessToken);
       if (verified) {
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => Dashboard_Page())
         );
-      }
-      //If not verified then updated access token by reading refresh token and verifying refresh token
-      else {
+        return;
+      } else {
         String? refreshToken = await Token.readRefreshToken();
         if (refreshToken != null) {
-          bool verified = await Token.verifyToken(refreshToken!);
+          bool verified = await Token.verifyToken(refreshToken);
           if (verified) {
             bool refresh = await Token.refreshAccessToken();
             if (refresh) {
-              String? accessToken = await Token.readAccessToken();
-              if (accessToken != null) {
-                bool verified = await Token.verifyToken(accessToken!);
+              String? newAccessToken = await Token.readAccessToken();
+              if (newAccessToken != null) {
+                bool verified = await Token.verifyToken(newAccessToken);
                 if (verified) {
                   Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(builder: (context) => Dashboard_Page())
                   );
-                }
-                else {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => LoginPage()),
-                  );
+                  return;
                 }
               }
             }
           }
-          else {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => LoginPage()),
-            );
-          }
         }
       }
     }
-    else {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => LoginPage()),
-      );
-    }
+    throw Exception("Token verification failed");
   }
 
+  void _showErrorDialog(String title, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Retry'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _handleTokenVerification();
+              },
+            ),
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                SystemNavigator.pop(); // Close the app
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xFF8B5A2B), // Dark brown
-                  Color(0xFFC19A6B), // Light brown
-                  Color(0xFF8B5A2B), // Dark brown
-                ],
-              ),
-            ),
-            child: Image.asset(
-              "assets/images/bg10.png",
-              fit: BoxFit.cover,
-              // width: double.infinity,
-              height: double.infinity,
-            )));
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFF8B5A2B), // Dark brown
+              Color(0xFFC19A6B), // Light brown
+              Color(0xFF8B5A2B), // Dark brown
+            ],
+          ),
+        ),
+        child: Image.asset(
+          "assets/images/bg10.png",
+          fit: BoxFit.cover,
+          height: double.infinity,
+        ),
+      ),
+    );
   }
 }
