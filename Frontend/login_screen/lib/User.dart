@@ -252,6 +252,27 @@ class User {
     }
   }
 
+
+  static Future<Map<String, dynamic>?> getUserbyUserId(int User_id) async {
+    final accessToken = await storage.read(key: "access_token");
+    final url = Uri.parse('$ipAddress:8000/api/user/$User_id');
+    final response = await http.get(
+      url,
+      headers: {'Authorization': 'Bearer $accessToken'},
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body) as Map<String, dynamic>;
+    } else if (response.statusCode == 404) {
+      // Return null if the CLO with the given ID does not exist
+      return null;
+    } else {
+      // Throw an exception for any other error status code
+      return {};
+    }
+  }
+
+
   //Get all Users of Specific Group/Role
   static  Future<List> fetchUserbyGroupId(int groupId) async {
     final accessToken = await storage.read(key: "access_token");

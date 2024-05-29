@@ -43,7 +43,7 @@ class CustomTextFormField extends StatelessWidget {
         prefixIcon: prefixIcon != null ? Icon(prefixIcon) : null,
         suffixIcon: suffixIcon != null
             ? IconButton(
-          icon: Icon(suffixIcon),
+          icon: Icon(suffixIcon, color: Colors.black),
           onPressed: onSuffixIconPressed,
         )
             : null,

@@ -86,7 +86,7 @@ class _Group_UsersState extends State<Group_Users> {
                                     ),
                                   ),
                                   onTap: () async {
-                                    Navigator.push(context, MaterialPageRoute(builder: (context)=>User_Profile(user_data: user)));
+                                    Navigator.push(context, MaterialPageRoute(builder: (context)=>User_Profile()));
                                   },
                                 ),
                               );

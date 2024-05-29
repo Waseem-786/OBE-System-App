@@ -1,10 +1,14 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:login_screen/SelectedUser.dart';
+import 'package:login_screen/University.dart';
 import 'package:login_screen/User_Profile.dart';
 import 'package:login_screen/User_Registration.dart';
+import 'Campus.dart';
 import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
+import 'Department.dart';
 import 'User.dart';
 
 class User_Management extends StatefulWidget {
@@ -13,31 +17,27 @@ class User_Management extends StatefulWidget {
 }
 
 class User_Management_State extends State<User_Management> {
-  // variable to store the data after making a get request
-  var responseData;
+  // Variable to store the future data
+  late Future<List<dynamic>> userFuture;
 
   @override
   void initState() {
     super.initState();
+    userFuture = _getUsers();  // Fetch data on initialization
   }
 
-  Future<void> _getAllUsers() async {
-    responseData = await User.getAllUsers();
-  }
-
-
-  // function to get user's data by passing email
-  Map<String, dynamic>? getUserByEmail(String email) {
-    if (responseData != null) {
-      for (var user in responseData) {
-        // assume user = responseData[user] and "user" is the index so user = responseData[0] and so on until all users.
-        // It will check all the users in the responseData and return the user whose email matches
-        if (user['email'] == email) {
-          return user;
-        }
-      }
+  Future<List<dynamic>> _getUsers() async {
+    if (User.isSuperUser) {
+      return await User.getAllUsers();
+    } else if (User.isUniLevel()) {
+      return await User.getUsersByUniversityId(University.id);
+    } else if (User.iscampusLevel()) {
+      return await User.getUsersByCampusId(Campus.id);
+    } else if (User.isdeptLevel()) {
+      return await User.getUsersByDepartmentId(Department.id);
+    } else {
+      return [];
     }
-    return null;
   }
 
   @override
@@ -48,7 +48,7 @@ class User_Management_State extends State<User_Management> {
     if (currentRoute != null && currentRoute.isCurrent) {
       // Call your refresh function here
       setState(() {
-        _getAllUsers();
+        userFuture = _getUsers();
       });
     }
   }
@@ -64,22 +64,20 @@ class User_Management_State extends State<User_Management> {
             style: CustomTextStyles.headingStyle(fontSize: 20),
           ),
         ),
-
       ),
-
-      // The users will be shown in the List view builder by getting them from the server so it will work asynchronously
-      // and  there could be a timing issue where the UI is built before responseData is populated with the actual data.
-      // so the Future builder is used
-      body: FutureBuilder(
-        future: _getAllUsers(),
+      body: FutureBuilder<List>(
+        future: userFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('No users found.'));
           } else {
+            final users = snapshot.data!;
 
-            // the UI will start from here when the users are loaded from the server
+            // The UI will start from here when the users are loaded from the server
             return SingleChildScrollView(
               child: Column(
                 children: [
@@ -87,7 +85,7 @@ class User_Management_State extends State<User_Management> {
                     color: Colors.grey.shade200,
                     height: 670,
                     child: ListView.builder(
-                      itemCount: responseData != null ? responseData.length : 0,
+                      itemCount: users.length,
                       itemBuilder: (context, index) {
                         return Padding(
                           padding: const EdgeInsets.symmetric(
@@ -112,29 +110,41 @@ class User_Management_State extends State<User_Management> {
                                   child: Icon(Icons.edit_square),
                                 ),
                                 title: Text(
-                                  responseData[index]['username'],
+                                  users[index]['username'],
                                   style:
-                                      CustomTextStyles.headingStyle(fontSize: 20),
+                                  CustomTextStyles.headingStyle(fontSize: 20),
                                 ),
                                 subtitle: Text(
-                                  'User ID: ${responseData[index]['id']}',
+                                  'User ID: ${users[index]['id']}',
                                   style: CustomTextStyles.bodyStyle(),
                                 ),
                                 onTap: () {
-                                  // call of a function to get the data of that user whose email is passed and email is
-                                  // passed by tapping the user
-                                  var user = getUserByEmail(
-                                      responseData[index]['email']);
+                                  // Get the data of that user whose email is passed and email is passed by tapping the user
+                                  var user = users[index];
                                   if (user != null) {
+                                    SelectedUser.id = user['id'];
+                                    SelectedUser.firstName = user['first_name'];
+                                    SelectedUser.lastName = user['last_name'];
+                                    SelectedUser.username = user['username'];
+                                    SelectedUser.email = user['email'];
+                                    SelectedUser.isSuperUser = user['is_superuser'];
+                                    SelectedUser.universityid = user['university'] ?? '';
+                                    SelectedUser.campusid = user['campus'] ?? '';
+                                    SelectedUser.departmentid = user['department'] ?? '';
+                                    SelectedUser.universityName = user['university_name'] ?? '';
+                                    SelectedUser.campusName = user['campus_name'] ?? '';
+                                    SelectedUser.departmentName = user['department_name'] ?? '';
+
                                     Navigator.push(
-                                        context,
-                                        MaterialPageRoute<bool>(
-                                          builder: (context) => User_Profile(user_data: user),
-                                        )).then((result) {
+                                      context,
+                                      MaterialPageRoute<bool>(
+                                        builder: (context) => User_Profile(),
+                                      ),
+                                    ).then((result) {
                                       if (result != null && result) {
-                                        // Set the state of the page here
+                                        // Refresh the user list if a change occurred
                                         setState(() {
-                                          _getAllUsers();
+                                          userFuture = _getUsers();
                                         });
                                       }
                                     });

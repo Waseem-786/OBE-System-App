@@ -11,20 +11,21 @@ import 'package:login_screen/Outline.dart';
 import 'package:login_screen/Token.dart';
 import 'Custom_Widgets/Custom_Button.dart';
 
-import 'main.dart';
-
 class LoginPage extends StatefulWidget {
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-  var isLoading =
-      false; // variable for use the functionality of loading while request is processed to server
-  Color errorColor = Colors
-      .black12; // color of border of text fields when the error is not occurred
-  String?
-      errorMessage; //variable to show the error when the wrong credentials are entered or the fields are empty
+  var isLoading = false; // variable for use the functionality of loading while request is processed to server
+  Color errorColor = Colors.black12; // color of border of text fields when the error is not occurred
+  String? errorMessage; //variable to show the error when the wrong
+
+  final TextEditingController EmailController = TextEditingController();
+  final TextEditingController PasswordController = TextEditingController();
+
+  bool passfield = true;
+  IconData suffixIcon = Icons.visibility_off;
 
   void initState() {
     var a = Outline.createOutline(2, 3, 4);
@@ -34,8 +35,6 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController EmailController = TextEditingController();
-    final TextEditingController PasswordController = TextEditingController();
 
     return Scaffold(
       body: Stack(
@@ -94,9 +93,21 @@ class _LoginPageState extends State<LoginPage> {
                       controller: PasswordController,
                       label: 'Password',
                       prefixIcon: Icons.lock,
+                      suffixIcon: suffixIcon,
                       hintText: 'Enter Password',
                       borderColor: errorColor,
-                      passField: true, // for obscure text of password
+                      passField: passfield, // for obscure text of password
+                      onSuffixIconPressed: () {
+                        setState(() {
+                          if(passfield){
+                            passfield = false;
+                            suffixIcon = Icons.visibility;
+                          } else {
+                            passfield = true;
+                            suffixIcon = Icons.visibility_off;
+                          }
+                        });
+                      },
                     ),
 
                     SizedBox(height: 40.0),
