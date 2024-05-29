@@ -6,9 +6,11 @@ from django.contrib.auth.models import Permission, Group
 from .models import CustomUser, CustomGroup
 from university_management.models import University, Campus, Department
 from .serializers import RoleSerializer, CustomUserSerializer, PermissionsSerializer, UserSerializer, GroupSerializer
-from .permissions import IsSuperUser, IsUniversityAdmin, IsCampusAdmin, IsDepartmentAdmin, IsSuper_University_Campus, IsSuper_University, IsSuper_University_Campus_Department
+from .permissions import IsSuperUser, IsSuper_University, IsSuper_University_Campus_Department
 from rest_framework_simplejwt.authentication import JWTStatelessUserAuthentication
 from django.db import transaction  # Import transaction
+from django.db.models import Q
+
 
 class TopLevelRoles(APIView):
     permission_classes = [IsSuperUser]
@@ -16,10 +18,11 @@ class TopLevelRoles(APIView):
 
     def get(self, request):
         roles = CustomGroup.objects.filter(
-            university__isnull=True,
-            campus__isnull=True,
-            department__isnull=True,
-        )
+            Q(university__isnull=True) | Q(university=0),
+            Q(campus__isnull=True) | Q(campus=0),
+            Q(department__isnull=True) | Q(department=0)
+        ).order_by('id')
+
         serialized_data = RoleSerializer(roles, many=True)
         return Response(serialized_data.data, status=status.HTTP_200_OK)
 
@@ -35,16 +38,16 @@ class TopLevelRoles(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UniversityLevelRoles(APIView):
-    authentication_classes = [JWTStatelessUserAuthentication]
-    permission_classes = [IsUniversityAdmin]
+    # authentication_classes = [JWTStatelessUserAuthentication]
+    # permission_classes = [IsUniversityAdmin]
 
     def get(self, request, university_id):
         university = get_object_or_404(University, id=university_id)
         roles = CustomGroup.objects.filter(
-            university=university,
-            campus__isnull=True,
-            department__isnull=True,
-        )
+            Q(university=university),
+            Q(campus__isnull=True) | Q(campus=0),
+            Q(department__isnull=True) | Q(department=0)
+        ).order_by('id')
 
         serialized_data = RoleSerializer(roles, many=True)
         return Response(serialized_data.data, status=status.HTTP_200_OK)
@@ -63,14 +66,14 @@ class UniversityLevelRoles(APIView):
 
 class CampusLevelRoles(APIView):
     authentication_classes = [JWTStatelessUserAuthentication]
-    permission_classes = [IsCampusAdmin]
+    permission_classes = [IsSuper_University_Campus_Department]
 
     def get(self, request, campus_id):
         campus = get_object_or_404(Campus, id=campus_id)
         roles = CustomGroup.objects.filter(
-            campus=campus,
-            department__isnull=True,
-        )
+            Q(campus=campus),
+            Q(department__isnull=True) | Q(department=0)
+        ).order_by('id')
 
         serialized_data = RoleSerializer(roles, many=True)
         return Response(serialized_data.data, status=status.HTTP_200_OK)
@@ -89,11 +92,11 @@ class CampusLevelRoles(APIView):
 
 class DepartmentLevelRoles(APIView):
     authentication_classes = [JWTStatelessUserAuthentication]
-    permission_classes = [IsDepartmentAdmin]
+    permission_classes = [IsSuper_University_Campus_Department]
 
     def get(self, request, department_id):
         department = get_object_or_404(Department, id=department_id)
-        roles = CustomGroup.objects.filter(department=department)
+        roles = CustomGroup.objects.filter(department=department).order_by('id')
 
         serialized_data = RoleSerializer(roles, many=True)
         return Response(serialized_data.data, status=status.HTTP_200_OK)
@@ -133,33 +136,25 @@ class GroupUsersView(APIView):
         return Response(serialized_data.data,status=status.HTTP_200_OK)
     
     def post(self, request, group_id):
-        # Check if 'usernames' is present in the request data
-        if 'usernames' in request.data:
-            usernames = request.data['usernames']
-            users_added = []
+        # Check if 'user_ids' is present in the request data
+        user_ids = request.data.get('user_ids')
+        if not user_ids:
+            return Response({"user_ids": "This field is required as a list of user IDs"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Retrieve the custom group
+        custom_group = get_object_or_404(CustomGroup, id=group_id)
+        
+        users_added = []
+        for user_id in user_ids:
+            user = get_object_or_404(CustomUser, id=user_id)
+            if not custom_group.user.filter(id=user_id).exists():
+                custom_group.user.add(user)
+                users_added.append(user.username)
 
-            # Iterate through the list of usernames
-            for username in usernames:
-                user = get_object_or_404(CustomUser, username=username)
-                
-                # Check if the group exists in CustomGroup for the specified group_id
-                custom_group = get_object_or_404(CustomGroup, id=group_id)
-
-                if user in custom_group.user.all():
-                    # If the user is already in the group, skip and continue to the next user
-                    continue
-                else:
-                    # Add the user to the group
-                    custom_group.user.add(user)
-                    users_added.append(username)
-
-            if users_added:
-                return Response({"message": f"Users {', '.join(users_added)} added to the {custom_group.group.name}"}, status=status.HTTP_201_CREATED)
-            else:
-                return Response({"message": "No new users added to the group"}, status=status.HTTP_200_OK)
+        if users_added:
+            return Response({"message": f"Users {', '.join(users_added)} added to the {custom_group.group.name}"}, status=status.HTTP_201_CREATED)
         else:
-            # If 'usernames' is not present in the request data, return appropriate response
-            return Response({"usernames": "This field is required as a list of usernames"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "No new users added to the group"}, status=status.HTTP_200_OK)
 
 
 # All Groups of Specific User
@@ -201,7 +196,7 @@ class AllUsers_for_SpecificUniversity(generics.ListAPIView):
 class AllUsers_for_SpecificCampus(generics.ListAPIView):
     serializer_class = CustomUserSerializer
     authentication_classes = [JWTStatelessUserAuthentication]
-    permission_classes = [IsSuper_University]
+    permission_classes = [IsSuper_University_Campus_Department]
     def get_queryset(self):
         campus_id = self.kwargs['campus_id']
         queryset = CustomUser.objects.filter(campus=campus_id)
@@ -211,7 +206,7 @@ class AllUsers_for_SpecificCampus(generics.ListAPIView):
 class AllUsers_for_SpecificDepartment(generics.ListAPIView):
     serializer_class = CustomUserSerializer
     authentication_classes = [JWTStatelessUserAuthentication]
-    permission_classes = [IsSuper_University]
+    permission_classes = [IsSuper_University_Campus_Department]
     def get_queryset(self):
         department_id = self.kwargs['department_id']
         queryset = CustomUser.objects.filter(department=department_id)

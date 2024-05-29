@@ -60,25 +60,32 @@ class RoleSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({'group': 'Role already exists'})
 
         for perm_id in permissions:
-            permission = Permission.objects.get(id=perm_id)
-            group.permissions.add(permission)
+            try:
+                permission = Permission.objects.get(id=perm_id)
+                group.permissions.add(permission)
+            except Permission.DoesNotExist:
+                raise serializers.ValidationError({'permissions': f'Permission with id {perm_id} does not exist.'})
 
         for user_id in users:
-            user = CustomUser.objects.get(id=user_id)
-            custom_group.user.add(user)
+            try:
+                user = CustomUser.objects.get(id=user_id)
+                custom_group.user.add(user)
+            except CustomUser.DoesNotExist:
+                raise serializers.ValidationError({'users': f'User with id {user_id} does not exist.'})
 
         return custom_group
+
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         # Remove fields based on conditions
-        if instance.university is None:
+        if instance.university_id is None or instance.university_id == 0:
             representation.pop('university', None)
             representation.pop('university_name', None)
-        if instance.campus is None:
+        if instance.campus_id is None or instance.campus_id == 0:
             representation.pop('campus', None)
             representation.pop('campus_name', None)
-        if instance.department is None:
+        if instance.department_id is None or instance.department_id == 0:
             representation.pop('department', None)
             representation.pop('department_name', None)
         return representation
@@ -91,7 +98,6 @@ class RoleSerializer(serializers.ModelSerializer):
         if 'department' in data and data['department'] == 0:
             data['department'] = None
         return super().to_internal_value(data)
-
 
 
 class UserSerializer(serializers.ModelSerializer):

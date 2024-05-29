@@ -1,39 +1,57 @@
-# from django.shortcuts import get_object_or_404
-# from rest_framework import generics, status
-# from rest_framework.response import Response
-# from user_management.permissions import IsUniversityAdmin
-# from rest_framework_simplejwt.authentication import JWTStatelessUserAuthentication
-# from .models import EntityType, ApprovalRequest
-# from .serializers import EntityTypeSerializer, ApprovalRequestSerializer
+from rest_framework import viewsets, status
+from rest_framework import generics
+from rest_framework.response import Response
+from rest_framework.decorators import action
+from .models import ApprovalChain, ApprovalEntity, Approval
+from .serializers import ApprovalChainSerializer, ApprovalEntitySerializer, ApprovalSerializer
+from user_management.models import CustomUser
 
-# class EntityTypeListView(generics.CreateAPIView):
-#     queryset = EntityType.objects.all()
-#     serializer_class = EntityTypeSerializer
+class ApprovalEntityView(generics.ListCreateAPIView):
+    queryset = ApprovalEntity.objects.all()
+    serializer_class = ApprovalEntitySerializer
 
-# class EntityTypeListView(generics.ListAPIView):
-#     queryset = EntityType.objects.all()
-#     serializer_class = EntityTypeSerializer
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-# class ApprovalRequestListView(generics.CreateAPIView):
-#     serializer_class = ApprovalRequestSerializer
+class ApprovalChainViewSet(viewsets.ModelViewSet):
+    queryset = ApprovalChain.objects.all()
+    serializer_class = ApprovalChainSerializer
 
-#     def get_queryset(self):
-#         # Filter by user permissions or other criteria if needed
-#         return ApprovalRequest.objects.all()
+class ApprovalViewSet(viewsets.ViewSet):
+    @action(detail=True, methods=['post'])
+    def approve(self, request, pk=None):
+        entity_type = request.data.get('entity_type')
+        user = CustomUser.objects.get(pk=request.user.id)
+        try:
+            approval_entity = ApprovalEntity.objects.get(name=entity_type)
+            approval = Approval.objects.create(
+                entity_id=pk,
+                entity_type=approval_entity,
+                approved_by=user,
+                status=True
+            )
+            approval.save()
+            return Response({'status': 'Approved'}, status=status.HTTP_200_OK)
+        except ApprovalEntity.DoesNotExist:
+            return Response({'error': 'Invalid entity type'}, status=status.HTTP_400_BAD_REQUEST)
 
-# class ApprovalRequestListView(generics.ListAPIView):
-#     serializer_class = ApprovalRequestSerializer
-
-#     def get_queryset(self):
-#         # Filter by user permissions or other criteria if needed
-#         return ApprovalRequest.objects.all()
-
-# class ApprovalRequestDetailView(generics.RetrieveAPIView):
-#     serializer_class = ApprovalRequestSerializer
-
-#     def get_object(self):
-#         pk = self.kwargs['pk']
-#         return get_object_or_404(ApprovalRequest, pk=pk)
-
-# # Additional views for CRUD operations on ApprovalGroup (not shown here)
-# # can be implemented using generics.CreateAPIView, generics.UpdateAPIView, etc.
+    @action(detail=True, methods=['post'])
+    def reject(self, request, pk=None):
+        entity_type = request.data.get('entity_type')
+        user = CustomUser.objects.get(pk=request.user.id)
+        try:
+            approval_entity = ApprovalEntity.objects.get(name=entity_type)
+            approval = Approval.objects.create(
+                entity_id=pk,
+                entity_type=approval_entity,
+                approved_by=user,
+                status=False
+            )
+            approval.save()
+            return Response({'status': 'Rejected'}, status=status.HTTP_200_OK)
+        except ApprovalEntity.DoesNotExist:
+            return Response({'error': 'Invalid entity type'}, status=status.HTTP_400_BAD_REQUEST)
