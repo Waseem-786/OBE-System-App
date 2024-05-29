@@ -53,8 +53,8 @@ class MyApp extends StatelessWidget {
       home: SplashScreen(),
       routes: {
         '/Program_Management': (context) => Program_Management(),
-        '/PLO': (context) => PLO_Page(),
-        '/PEO': (context) => PEO_Page(),
+        '/PLO_Page': (context) => PLO_Page(),
+        '/PEO_Page': (context) => PEO_Page(),
         '/Batch_Management': (context) => BatchPage(),
         '/Course_Page': (context) => Course_Page(),
         '/Approval_Process': (context) => Approval_Process(),

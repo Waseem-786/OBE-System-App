@@ -332,7 +332,7 @@ class Role {
 
 
   //Get all Groups for Specific User
-  Future<List> getUserGroups(int userId) async {
+  static Future<List> getUserGroups(int userId) async {
     final accessToken = await storage.read(key: "access_token");
     final url = Uri.parse('$ipAddress:8000/api/user/$userId/groups');
 

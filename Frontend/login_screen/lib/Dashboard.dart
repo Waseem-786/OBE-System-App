@@ -63,11 +63,11 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
       for (Map<String, dynamic> permission in userPermissions) {
         if (permission["codename"] == "view_customuser") {
           headings.add('User Management');
-          icons.add(Icons.add);
+          icons.add(Icons.person);
           screenNames.add('User_Management');
         } else if (permission["codename"] == "view_customgroup") {
-          headings.add('Add  Group');
-          icons.add(Icons.add);
+          headings.add('Group Management');
+          icons.add(Icons.group);
           screenNames.add('Role Page');
         } else if (permission["codename"] == "view_university") {
           hasUniversity = true;
@@ -77,17 +77,13 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
           hasDepartment =  true;
         } else if (permission["codename"] == "view_batch") {
           hasBatch = true;
-        } else if (permission["codename"] == "view_section") {
-          headings.add("Section");
-          icons.add(FontAwesomeIcons.landmark);
-          screenNames.add("Section_Page");
         } else if (permission["codename"] == "view_peo") {
           headings.add("PEO");
           icons.add(FontAwesomeIcons.landmark);
           screenNames.add("PEO_Page");
         } else if (permission["codename"] == "view_plo") {
           headings.add("PLO");
-          icons.add(FontAwesomeIcons.landmark);
+          icons.add(FontAwesomeIcons.schoolLock);
           screenNames.add("PLO_Page");
         } else if (permission["codename"] == "view_courseinformation") {
           headings.add("Courses");
@@ -105,7 +101,7 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
         else if(permission['codename']=="view_assessment")
           {
             headings.add("Assessment");
-            icons.add(FontAwesomeIcons.paperclip);
+            icons.add(FontAwesomeIcons.pencil);
             screenNames.add("Assessment_Page");
           }
       }

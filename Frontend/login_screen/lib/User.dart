@@ -339,6 +339,66 @@ class User {
     }
   }
 
+
+  static Future<List> getUniversityUsersNotInGroup(int group_Id) async {
+    final accessToken = await storage.read(key: "access_token");
+    final url = Uri.parse('$ipAddress:8000/api/group/$group_Id/users/university');
+
+    final response = await http.get(
+      url,
+      headers: {'Authorization': 'Bearer $accessToken'},
+    );
+
+    if (response.statusCode == 200) {
+      // Return the users as a list
+      return jsonDecode(response.body);
+    } else {
+      // If there's an error, return an empty list
+      return [];
+    }
+  }
+
+
+  static Future<List> getCampusUsersNotInGroup(int group_Id) async {
+    final accessToken = await storage.read(key: "access_token");
+    final url = Uri.parse('$ipAddress:8000/api/group/$group_Id/users/campus');
+
+    final response = await http.get(
+      url,
+      headers: {'Authorization': 'Bearer $accessToken'},
+    );
+
+    if (response.statusCode == 200) {
+      // Return the users as a list
+      return jsonDecode(response.body);
+    } else {
+      // If there's an error, return an empty list
+      return [];
+    }
+  }
+
+
+
+  static Future<List> getDeptUsersNotInGroup(int group_Id) async {
+    final accessToken = await storage.read(key: "access_token");
+    final url = Uri.parse('$ipAddress:8000/api/group/$group_Id/users/department');
+
+    final response = await http.get(
+      url,
+      headers: {'Authorization': 'Bearer $accessToken'},
+    );
+
+    if (response.statusCode == 200) {
+      // Return the users as a list
+      return jsonDecode(response.body);
+    } else {
+      // If there's an error, return an empty list
+      return [];
+    }
+  }
+
+
+
   //Get All users of Specific Campus
   static Future<List> getUsersByCampusId(int campusId) async {
     final accessToken = await storage.read(key: "access_token");
@@ -357,6 +417,25 @@ class User {
       return [];
     }
   }
+
+  static Future<List> getTopLevelUsers() async {
+    final accessToken = await storage.read(key: "access_token");
+    final url = Uri.parse('$ipAddress:8000/api/users/top');
+
+    final response = await http.get(
+      url,
+      headers: {'Authorization': 'Bearer $accessToken'},
+    );
+
+    if (response.statusCode == 200) {
+      // Return the users as a list
+      return jsonDecode(response.body);
+    } else {
+      // If there's an error, return an empty list
+      return [];
+    }
+  }
+
 
   //Get All users of Specific Department
   static Future<List> getUsersByDepartmentId(int departmentId) async {

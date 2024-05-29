@@ -25,7 +25,6 @@ class _CourseDashboardState extends State<CourseDashboard> {
     'Course Schedule',
     'Course CLO',
     'Course Books',
-    'CLO PLO Mapping',
     'Weekly Topics'
   ];
 
@@ -38,7 +37,6 @@ class _CourseDashboardState extends State<CourseDashboard> {
     FontAwesomeIcons.bookOpen,
     FontAwesomeIcons.projectDiagram,
     FontAwesomeIcons.calendarAlt,
-    FontAwesomeIcons.calendarAlt,
 
   ];
 
@@ -49,7 +47,6 @@ class _CourseDashboardState extends State<CourseDashboard> {
     'Course_Schedule_Profile',
     'CLO_Page',
     'Course_Books',
-    'Show_CLO_PLO_Mapping',
     'Weekly_Topics_Page'
   ];
 

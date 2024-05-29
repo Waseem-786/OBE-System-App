@@ -115,6 +115,7 @@ class _Create_Role_Page extends State<Create_Role> {
                 child: MultiSelectField(
                   options: _userOptions,
                   selectedOptions: _selectedUserIds,
+                  displayKey: "username",
                   onSelectionChanged: (values) {
                     setState(() {
                       _selectedUserIds = values;

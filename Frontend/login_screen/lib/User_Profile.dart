@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:login_screen/BatchPage.dart';
 import 'package:login_screen/Custom_Widgets/DetailCard.dart';
 import 'package:login_screen/Permission.dart';
+import 'package:login_screen/Role_Page.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
 import 'Custom_Widgets/DeleteAlert.dart';
 import 'Custom_Widgets/PermissionBasedButton.dart';
 import 'Department.dart';
 import 'SelectedUser.dart';
+import 'Specific_Role_Page.dart';
 import 'User.dart';
 
 class User_Profile extends StatefulWidget {
@@ -151,7 +153,8 @@ class _User_ProfileState extends State<User_Profile> {
             backgroundColor: Colors.green,
             foregroundColor: Colors.white,
             buttonWidth: 170,
-            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => BatchPage())),
+            onPressed: () => Navigator.push(context, MaterialPageRoute
+              (builder: (context) => Specific_Role_Page())),
             permissionFuture: hasViewGroupPermissionFuture
         ),
         SizedBox(height: 20),
