@@ -6,9 +6,9 @@ import 'package:multi_select_flutter/util/multi_select_item.dart';
 import 'package:multi_select_flutter/util/multi_select_list_type.dart';
 
 class MultiSelectField extends StatefulWidget {
-  final List<String> options;
-  final List<String> selectedOptions;
-  final ValueChanged<List<String>> onSelectionChanged;
+  final List<Map<String, dynamic>> options; // Updated to accept a list of objects containing both name and ID
+  final List<int> selectedOptions; // Updated to store IDs
+  final ValueChanged<List<int>> onSelectionChanged; // Updated to pass IDs instead of names
   final Text buttonText;
   final Widget title;
 
@@ -26,7 +26,7 @@ class MultiSelectField extends StatefulWidget {
 }
 
 class _MultiSelectFieldState extends State<MultiSelectField> {
-  late List<String> _selectedOptions;
+  late List<int> _selectedOptions; // Updated to store IDs
 
   @override
   void initState() {
@@ -45,11 +45,11 @@ class _MultiSelectFieldState extends State<MultiSelectField> {
           buttonText: widget.buttonText,
           title: widget.title,
           items: widget.options
-              .map((option) => MultiSelectItem<String>(option, option))
+              .map((option) => MultiSelectItem<int>(option['id'], option['name'])) // Extracting both ID and name
               .toList(),
           onConfirm: (values) {
             setState(() {
-              _selectedOptions = values.cast<String>();
+              _selectedOptions = values.cast<int>();
             });
             widget.onSelectionChanged(_selectedOptions);
           },
@@ -62,7 +62,7 @@ class _MultiSelectFieldState extends State<MultiSelectField> {
             },
             chipColor: Colors.green, // Background color of chips
             textStyle: TextStyle(color: Colors.white), // Text color of chips
-             // Icon to show before the chip label
+            // Icon to show before the chip label
             //iconColor: Colors.white, // Color of the icon
           ),
         ),

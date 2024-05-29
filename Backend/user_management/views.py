@@ -192,7 +192,7 @@ class AllUsers_for_SpecificUniversity(generics.ListAPIView):
         queryset = CustomUser.objects.filter(university=university_id)
         return queryset
 
-# Get All Users for Specific University
+# Get All Users for Specific Campus
 class AllUsers_for_SpecificCampus(generics.ListAPIView):
     serializer_class = CustomUserSerializer
     authentication_classes = [JWTStatelessUserAuthentication]
@@ -202,7 +202,7 @@ class AllUsers_for_SpecificCampus(generics.ListAPIView):
         queryset = CustomUser.objects.filter(campus=campus_id)
         return queryset
     
-# Get All Users for Specific University
+# Get All Users for Specific Department
 class AllUsers_for_SpecificDepartment(generics.ListAPIView):
     serializer_class = CustomUserSerializer
     authentication_classes = [JWTStatelessUserAuthentication]
@@ -210,8 +210,18 @@ class AllUsers_for_SpecificDepartment(generics.ListAPIView):
     def get_queryset(self):
         department_id = self.kwargs['department_id']
         queryset = CustomUser.objects.filter(department=department_id)
-        return queryset# Get All Users for Specific University
-    
+        return queryset
+
+# Get User by Id
+class SingleUser(generics.ListAPIView):
+    serializer_class = CustomUserSerializer
+    authentication_classes = [JWTStatelessUserAuthentication]
+    permission_classes = [IsSuper_University_Campus_Department]
+    def get_queryset(self):
+        user_id = self.kwargs['user_id']
+        queryset = CustomUser.objects.filter(id=user_id)
+        return queryset
+
 # All Permissions
 class PermissionsView(generics.ListAPIView):
     queryset = Permission.objects.all()

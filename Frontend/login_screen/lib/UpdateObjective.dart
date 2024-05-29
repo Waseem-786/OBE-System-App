@@ -84,7 +84,7 @@ class _UpdateObjectiveState extends State<UpdateObjective> {
                       isLoading = true;
                     });
                     result = await CourseObjective.updateObjective(
-                        widget.ObjectiveData?['id'], ObjectiveDescription);
+                        widget.ObjectiveData?['id'], ObjectiveDescription as List<String?>);
                     if (result) {
                       ObjectiveDescriptionController.clear();
                       setState(() {

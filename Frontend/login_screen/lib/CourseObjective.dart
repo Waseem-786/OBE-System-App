@@ -1,13 +1,11 @@
-
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'main.dart';
 
 class CourseObjective {
-
-  static int _id=0;
-  static String? _description;
+  static int _id = 0;
+  static List<String?> _description = [];
   static const ipAddress = MyApp.ip;
 
   static int get id => _id;
@@ -16,17 +14,17 @@ class CourseObjective {
     _id = value;
   }
 
-  static String? get description => _description;
+  static List<String?> get description => _description;
 
-  static set description(String? value) {
+  static set description(List<String?> value) {
     _description = value;
   }
 
   static const storage = FlutterSecureStorage(
-      aOptions: AndroidOptions(encryptedSharedPreferences: true));
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+  );
 
-  static Future<bool> createCourseObjective(List<String> description,int courseId)
-  async {
+  static Future<bool> createCourseObjective(List<String?> description, int courseId) async {
     try {
       final accessToken = await storage.read(key: "access_token");
       final url = Uri.parse('$ipAddress:8000/api/objective');
@@ -38,16 +36,13 @@ class CourseObjective {
         },
         body: jsonEncode({
           'description': description,
-          'course' : courseId
-
-
+          'course': courseId,
         }),
       );
       if (response.statusCode == 201) {
         return true;
       } else {
-        print(
-            'Failed to create Objective. Status code: ${response.statusCode}');
+        print('Failed to create Objective. Status code: ${response.statusCode}');
         return false;
       }
     } catch (e) {
@@ -56,9 +51,9 @@ class CourseObjective {
     }
   }
 
-  static  Future<List<dynamic>> fetchObjectivesByCourseId(int course_id) async {
+  static Future<List<dynamic>> fetchObjectivesByCourseId(int courseId) async {
     final accessToken = await storage.read(key: "access_token");
-    final url = Uri.parse('$ipAddress:8000/api/course/$course_id/objective');
+    final url = Uri.parse('$ipAddress:8000/api/course/$courseId/objective');
     final response = await http.get(
       url,
       headers: {'Authorization': 'Bearer $accessToken'},
@@ -71,11 +66,9 @@ class CourseObjective {
     }
   }
 
-  static Future<Map<String, dynamic>?> getObjectivebyObjectiveId(int
-  ObjectiveId)
-  async {
+  static Future<Map<String, dynamic>?> getObjectivebyObjectiveId(int objectiveId) async {
     final accessToken = await storage.read(key: "access_token");
-    final url = Uri.parse('$ipAddress:8000/api/objective/$ObjectiveId');
+    final url = Uri.parse('$ipAddress:8000/api/objective/$objectiveId');
     final response = await http.get(
       url,
       headers: {'Authorization': 'Bearer $accessToken'},
@@ -84,19 +77,17 @@ class CourseObjective {
     if (response.statusCode == 200) {
       return jsonDecode(response.body) as Map<String, dynamic>;
     } else if (response.statusCode == 404) {
-      // Return null if the CLO with the given ID does not exist
+      // Return null if the objective with the given ID does not exist
       return null;
     } else {
       return {};
     }
   }
 
-
-  static Future<bool> deleteObjective(int ObjectiveId) async {
+  static Future<bool> deleteObjective(int objectiveId) async {
     try {
       final accessToken = await storage.read(key: "access_token");
-
-      final url = Uri.parse('$ipAddress:8000/api/objective/$ObjectiveId');
+      final url = Uri.parse('$ipAddress:8000/api/objective/$objectiveId');
       final response = await http.delete(
         url,
         headers: {
@@ -114,15 +105,19 @@ class CourseObjective {
       return false;
     }
   }
-  static Future<bool> updateObjective(int id,String desc) async {
+
+  static Future<bool> updateObjective(int id, List<String?> description) async {
     try {
       final accessToken = await storage.read(key: "access_token");
       final url = Uri.parse('$ipAddress:8000/api/objective/$id');
       final response = await http.patch(
         url,
-        headers: {'Authorization': 'Bearer $accessToken', 'Content-Type': 'application/json'},
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
+        },
         body: jsonEncode({
-          'description': desc,
+          'description': description,
         }),
       );
       if (response.statusCode == 200) {

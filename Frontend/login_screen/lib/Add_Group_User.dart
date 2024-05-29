@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:multi_select_flutter/bottom_sheet/multi_select_bottom_sheet_field.dart';
-import 'package:multi_select_flutter/chip_display/multi_select_chip_display.dart';
 import 'package:multi_select_flutter/util/multi_select_item.dart';
 import 'package:multi_select_flutter/util/multi_select_list_type.dart';
 
@@ -21,13 +19,12 @@ class Add_Group_User extends StatefulWidget {
 }
 
 class _Add_Group_UserState extends State<Add_Group_User> {
-
   String? errorMessage;
   Color colorMessage = Colors.red;
   var isLoading = false;
   Color errorColor = Colors.black12;
 
-  List<String> _selectedUserNames = [];
+  List<int> _selectedUserIds = [];
   List<Map<String, dynamic>> _userOptions = [];
 
   @override
@@ -58,17 +55,9 @@ class _Add_Group_UserState extends State<Add_Group_User> {
       users = await User.getUsersByDepartmentId(Department.id);
     }
 
-    return users.map((user) => {
-      'id': user['id'],
-      'username': user['username']
-    }).toList();
+    return users.map((user) => {'id': user['id'], 'username': user['username']}).toList();
   }
 
-  List<int> getSelectedUserIds() {
-    return _selectedUserNames.map((username) {
-      return _userOptions.firstWhere((option) => option['username'] == username)['id'] as int;
-    }).toList();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,23 +74,22 @@ class _Add_Group_UserState extends State<Add_Group_User> {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-
           children: [
             Padding(
               padding: const EdgeInsets.only(left: 10, right: 10),
               child: MultiSelectField(
-                options: _userOptions.map((option) => option['username'].toString()).toList(),
-                selectedOptions: _selectedUserNames,
+                options: _userOptions,
+                selectedOptions: _selectedUserIds,
                 onSelectionChanged: (values) {
                   setState(() {
-                    _selectedUserNames = values;
+                    _selectedUserIds = values;
                   });
                 },
               ),
             ),
             Custom_Button(
               onPressedFunction: () async {
-                List<int> selectedUserIds = getSelectedUserIds();
+                List<int> selectedUserIds = _selectedUserIds;
 
                 if (selectedUserIds.isEmpty) {
                   setState(() {
@@ -120,7 +108,7 @@ class _Add_Group_UserState extends State<Add_Group_User> {
                   setState(() {
                     isLoading = false;
                     if (created) {
-                      _selectedUserNames = [];
+                      _selectedUserIds = [];
                       colorMessage = Colors.green;
                       errorMessage = 'Users Added successfully';
                     } else {

@@ -1,11 +1,16 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:login_screen/CourseObjective.dart';
+import 'package:login_screen/Create_CLO.dart';
 import 'Course.dart';
 import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Field.dart';
 
 class CreateCourseObjective extends StatefulWidget {
+  final bool isFromOutline;
+
+  CreateCourseObjective({this.isFromOutline = false});
+
   @override
   State<CreateCourseObjective> createState() => _CreateObjectiveState();
 }
@@ -47,16 +52,16 @@ class _CreateObjectiveState extends State<CreateCourseObjective> {
     });
   }
 
+  @override
   Widget build(BuildContext context) {
+    String buttonText = widget.isFromOutline ? 'Next' : 'Create';
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xffc19a6b),
-        title: Container(
-          margin: EdgeInsets.only(left: 25),
-          child: Text(
-            'Create Objective',
-            style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Merri'),
-          ),
+        backgroundColor: const Color(0xffc19a6b),
+        title: const Text(
+          'Create Objective',
+          style: TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Merri'),
         ),
       ),
       body: Container(
@@ -66,8 +71,8 @@ class _CreateObjectiveState extends State<CreateCourseObjective> {
         child: ListView(
           children: [
             Container(
-              margin: EdgeInsets.only(top: 50),
-              padding: EdgeInsets.all(16),
+              margin: const EdgeInsets.only(top: 50),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -80,28 +85,24 @@ class _CreateObjectiveState extends State<CreateCourseObjective> {
                           label: 'Enter Objective',
                           hintText: 'Enter Objective Here',
                           suffixIcon: Icons.remove,
-                          onSuffixIconPressed: ()=>_removeTextField(i),
-
+                          onSuffixIconPressed: () => _removeTextField(i),
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                       ],
                     ),
                   Custom_Button(
                     onPressedFunction: _addTextField,
                     ButtonText: 'Add More',
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Custom_Button(
                     onPressedFunction: () async {
-
                       List<String> objectiveDescription = objectiveControllers
                           .map((controller) => controller.text)
                           .toList();
 
-                      print(objectiveDescription);
                       if (objectiveDescription.isEmpty ||
-                          objectiveDescription.any((element) =>
-                          element.isEmpty)) {
+                          objectiveDescription.any((element) => element.isEmpty)) {
                         setState(() {
                           colorMessage = Colors.red;
                           errorColor = Colors.red;
@@ -111,27 +112,38 @@ class _CreateObjectiveState extends State<CreateCourseObjective> {
                         setState(() {
                           isLoading = true;
                         });
-                        // Your logic to create course objective
-                        bool created = await CourseObjective.createCourseObjective(
-                          objectiveDescription,Course.id);
-                        if (created) {
-                          //Clear all the fields
-                         objectiveControllers.clear();
+                        if (widget.isFromOutline) {
+                          CourseObjective.description = objectiveDescription;
+                          // Navigate to the next screen if coming from outline
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Create_CLO(isFromOutline: true), // Replace with your next screen
+                            ),
+                          );
+                        } else {
+                          bool created = await CourseObjective.createCourseObjective(
+                            objectiveDescription,
+                            Course.id,
+                          );
+                          if (created) {
+                            // Clear all the fields
+                            objectiveControllers.clear();
+                            objectiveControllers.add(TextEditingController());
 
-                          setState(() {
-                            isLoading = false;
-                            colorMessage = Colors.green;
-                            errorColor =
-                                Colors.black12; // Reset errorColor to default value
-                            errorMessage = 'Objective Created successfully';
-                          });
+                            setState(() {
+                              isLoading = false;
+                              colorMessage = Colors.green;
+                              errorColor = Colors.black12; // Reset errorColor to default value
+                              errorMessage = 'Objective Created successfully';
+                            });
+                          }
                         }
-
                       }
                     },
-                    ButtonText: 'Create Objective',
+                    ButtonText: buttonText,
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Visibility(
                     visible: isLoading,
                     child: const CircularProgressIndicator(),
@@ -141,7 +153,7 @@ class _CreateObjectiveState extends State<CreateCourseObjective> {
                     errorMessage!,
                     style: TextStyle(color: colorMessage),
                   )
-                      : SizedBox(),
+                      : const SizedBox(),
                 ],
               ),
             ),

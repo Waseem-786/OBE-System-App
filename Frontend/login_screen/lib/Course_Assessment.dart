@@ -13,7 +13,7 @@ class Course_Assessment
   static int  _count = 0;
   static double  _weight = 0;
   static int  _course_outline = 0;
-  static List<int> _clo = [];
+  static List<int?> _clo = [];
 
   static const ipAddress = MyApp.ip;
   static const storage = FlutterSecureStorage(
@@ -52,9 +52,9 @@ class Course_Assessment
     _course_outline = value;
   }
 
-  static List<int> get clo => _clo;
+  static List<int?> get clo => _clo;
 
-  static set clo(List<int> value) {
+  static set clo(List<int?> value) {
     _clo = value;
   }
 

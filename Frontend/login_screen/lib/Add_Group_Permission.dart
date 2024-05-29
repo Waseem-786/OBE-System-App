@@ -23,7 +23,7 @@ class _Add_Group_PermissionsState extends State<Add_Group_Permissions> {
   var isLoading = false;
   Color errorColor = Colors.black12;
 
-  List<String> _selectedPermissionNames = [];
+  List<int> _selectedPermissionIds = [];
   List<Map<String, dynamic>> _permissionOptions = [];
 
   @override
@@ -43,17 +43,7 @@ class _Add_Group_PermissionsState extends State<Add_Group_Permissions> {
 
   Future<List<Map<String, dynamic>>> fetchPermissions() async {
     List<dynamic> permissions = await Permission.getUserPermissions(User.id);
-    return permissions.map((permission) => {
-      'id': permission['id'],
-      'name': permission['name']
-    }).toList();
-  }
-
-
-  List<int> getSelectedPermissionIds() {
-    return _selectedPermissionNames.map((name) {
-      return _permissionOptions.firstWhere((option) => option['name'] == name)['id'] as int;
-    }).toList();
+    return permissions.map((permission) => {'id': permission['id'], 'name': permission['name']}).toList();
   }
 
 
@@ -81,11 +71,11 @@ class _Add_Group_PermissionsState extends State<Add_Group_Permissions> {
             Padding(
               padding: EdgeInsets.only(left: 10, right: 10),
               child: MultiSelectField(
-                options: _permissionOptions.map((option) => option['name'].toString()).toList(),
-                selectedOptions: _selectedPermissionNames,
+                options: _permissionOptions,
+                selectedOptions: _selectedPermissionIds,
                 onSelectionChanged: (values) {
                   setState(() {
-                    _selectedPermissionNames = values;
+                    _selectedPermissionIds = values;
                   });
                 },
                 buttonText: Text('Add Permissions'),
@@ -95,7 +85,7 @@ class _Add_Group_PermissionsState extends State<Add_Group_Permissions> {
             SizedBox(height: 10,),
             Custom_Button(
               onPressedFunction: () async {
-                List<int> selectedPermissionIds = getSelectedPermissionIds();
+                List<int> selectedPermissionIds = _selectedPermissionIds;
 
                 if (selectedPermissionIds.isEmpty) {
                   setState(() {
@@ -116,7 +106,7 @@ class _Add_Group_PermissionsState extends State<Add_Group_Permissions> {
                   setState(() {
                     isLoading = false;
                     if (created) {
-                      _selectedPermissionNames = [];
+                      _selectedPermissionIds = [];
                       colorMessage = Colors.green;
                       errorMessage = 'Permission Added successfully';
                     } else {

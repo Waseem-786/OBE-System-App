@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:login_screen/CourseBooks.dart';
+import 'package:login_screen/CreateCourseObjective.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Button.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Field.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Style.dart';
 import 'package:login_screen/Outline.dart';
-
-import 'Custom_Widgets/UpdateWidget.dart';
+import 'package:login_screen/Custom_Widgets/UpdateWidget.dart';
 
 class CreateCourseBook extends StatefulWidget {
+  final bool isFromOutline;
   final bool isUpdate;
   final Map<String, dynamic>? BookData;
 
-  CreateCourseBook({this.isUpdate = false, this.BookData});
+  CreateCourseBook(
+      {this.isFromOutline = false, this.isUpdate = false, this.BookData});
 
   @override
   State<CreateCourseBook> createState() => _CreateCourseBookState();
@@ -31,15 +33,19 @@ class _CreateCourseBookState extends State<CreateCourseBook> {
   @override
   void initState() {
     super.initState();
-    BookTitleController = TextEditingController(text: widget.BookData?['title'] ?? '');
-    BookDescriptionController = TextEditingController(text: widget.BookData?['description'] ?? '');
-    BookLinkController = TextEditingController(text: widget.BookData?['link'] ?? '');
+    BookTitleController =
+        TextEditingController(text: widget.BookData?['title'] ?? '');
+    BookDescriptionController =
+        TextEditingController(text: widget.BookData?['description'] ?? '');
+    BookLinkController =
+        TextEditingController(text: widget.BookData?['link'] ?? '');
     SelectedBookType = widget.BookData?['book_type'] ?? null;
   }
 
   @override
   Widget build(BuildContext context) {
-    String buttonText = widget.isUpdate ? 'Update' : 'Create';
+    String buttonText =
+        widget.isFromOutline ? 'Next' : (widget.isUpdate ? 'Update' : 'Create');
 
     return Scaffold(
       appBar: AppBar(
@@ -117,10 +123,15 @@ class _CreateCourseBookState extends State<CreateCourseBook> {
                     return; // Cancel the update if user selects 'No' in the dialog
                   }
                 }
+
                 String BookTitle = BookTitleController.text;
                 String BookDescription = BookDescriptionController.text;
                 String BookLink = BookLinkController.text;
-                if (BookTitle.isEmpty || BookDescription.isEmpty || BookLink.isEmpty || SelectedBookType == null) {
+
+                if (BookTitle.isEmpty ||
+                    BookDescription.isEmpty ||
+                    BookLink.isEmpty ||
+                    SelectedBookType == null) {
                   setState(() {
                     colorMessage = Colors.red;
                     errorColor = Colors.red;
@@ -130,35 +141,46 @@ class _CreateCourseBookState extends State<CreateCourseBook> {
                   setState(() {
                     isLoading = true;
                   });
-                  bool result;
-                  if (widget.isUpdate) {
-                    result = await CourseBooks.updateCourseBook(
-                      widget.BookData?['id'],
-                      BookTitle,
-                      SelectedBookType,
-                      BookDescription,
-                      BookLink,
-                    );
+                  if (widget.isFromOutline) {
+                    // Navigate to the next screen if coming from outline
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                CreateCourseObjective(isFromOutline: true))); // Replace with your next screen
                   } else {
-                    result = await CourseBooks.createBook(
-                      BookTitle,
-                      SelectedBookType,
-                      BookDescription,
-                      BookLink,
-                      Outline.id,
-                    );
-                  }
-                  if (result) {
-                    BookTitleController.clear();
-                    BookDescriptionController.clear();
-                    BookLinkController.clear();
-                    SelectedBookType = null;
-                    setState(() {
-                      isLoading = false;
-                      colorMessage = Colors.green;
-                      errorColor = Colors.black12;
-                      errorMessage = widget.isUpdate ? 'Course Book Updated successfully' : 'Course Book Created successfully';
-                    });
+                    bool result;
+                    if (widget.isUpdate) {
+                      result = await CourseBooks.updateCourseBook(
+                        widget.BookData?['id'],
+                        BookTitle,
+                        SelectedBookType,
+                        BookDescription,
+                        BookLink,
+                      );
+                    } else {
+                      result = await CourseBooks.createBook(
+                        BookTitle,
+                        SelectedBookType,
+                        BookDescription,
+                        BookLink,
+                        Outline.id,
+                      );
+                    }
+                    if (result) {
+                      BookTitleController.clear();
+                      BookDescriptionController.clear();
+                      BookLinkController.clear();
+                      SelectedBookType = null;
+                      setState(() {
+                        isLoading = false;
+                        colorMessage = Colors.green;
+                        errorColor = Colors.black12;
+                        errorMessage = widget.isUpdate
+                            ? 'Course Book Updated successfully'
+                            : 'Course Book Created successfully';
+                      });
+                    }
                   }
                 }
               },
@@ -172,9 +194,9 @@ class _CreateCourseBookState extends State<CreateCourseBook> {
             ),
             errorMessage != null
                 ? Text(
-              errorMessage!,
-              style: CustomTextStyles.bodyStyle(color: colorMessage),
-            )
+                    errorMessage!,
+                    style: CustomTextStyles.bodyStyle(color: colorMessage),
+                  )
                 : const SizedBox(),
           ],
         ),

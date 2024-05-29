@@ -9,6 +9,7 @@ urlpatterns = [
     path('department/role/<int:department_id>',views.DepartmentLevelRoles.as_view()),
     
     path('users',views.AllUsers.as_view()),
+    path('user/<int:user_id>',views.SingleUser.as_view()),
     path('university/<int:university_id>/users',views.AllUsers_for_SpecificUniversity.as_view()),
     path('campus/<int:campus_id>/users',views.AllUsers_for_SpecificCampus.as_view()),
     path('department/<int:department_id>/users',views.AllUsers_for_SpecificDepartment.as_view()),

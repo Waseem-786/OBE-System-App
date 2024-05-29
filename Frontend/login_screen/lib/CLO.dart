@@ -11,6 +11,8 @@ class CLO {
   static String? _bloom_taxonomy;
   static int? _level;
   static int? _course;
+  static List<int?> _PLOs = [];
+
 
   static const ipAddress = MyApp.ip;
   static const storage = FlutterSecureStorage(
@@ -46,8 +48,14 @@ class CLO {
     _course = value;
   }
 
+  static List<int?> get PLOs => _PLOs;
+
+  static set PLOs(List<int?> value) {
+    _PLOs = value;
+  }
+
   static Future<bool> createCLO(
-      String description, String BT, int BTLevel, int course_id) async {
+      String description, String BT, int BTLevel, int course_id, List<int> plos) async {
     try {
       final accessToken = await storage.read(key: "access_token");
       final url = Uri.parse('$ipAddress:8000/api/clo');
@@ -61,7 +69,8 @@ class CLO {
           'description': description,
           'bloom_taxonomy': BT,
           'level': BTLevel,
-          'course': course_id
+          'course': course_id,
+          'plo': plos
         }),
       );
       if (response.statusCode == 201) {

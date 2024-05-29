@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:login_screen/Course.dart';
 import 'package:login_screen/CourseDashboard.dart';
+import 'package:login_screen/Create_Course_Outline.dart';
 import 'package:login_screen/Custom_Widgets/PermissionBasedButton.dart';
 import 'package:login_screen/Outline.dart';
 import 'package:login_screen/Permission.dart';
@@ -143,7 +144,7 @@ class _Course_Outline_PageState extends State<Course_Outline_Page> {
               buttonText: "Add Course Outline",
               buttonWidth: 300,
               onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => Create_University()));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => Create_Course_Outline()));
               },
               permissionFuture: hasAddOutlinePermissionFuture,
           ),

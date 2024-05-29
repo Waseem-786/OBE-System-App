@@ -16,7 +16,7 @@ import 'Custom_Widgets/Multi_Select_Field.dart';
 import 'Role.dart';
 
 class Create_Role extends StatefulWidget {
-  const Create_Role({super.key});
+  const Create_Role({Key? key});
 
   @override
   State<Create_Role> createState() => _Create_Role_Page();
@@ -30,10 +30,10 @@ class _Create_Role_Page extends State<Create_Role> {
 
   final TextEditingController Role_Controller = TextEditingController();
 
-  List<String> _selectedUserNames = [];
+  List<int> _selectedUserIds = [];
   List<Map<String, dynamic>> _userOptions = [];
 
-  List<String> _selectedPermissionNames = [];
+  List<int> _selectedPermissionIds = [];
   List<Map<String, dynamic>> _permissionOptions = [];
 
   @override
@@ -60,49 +60,26 @@ class _Create_Role_Page extends State<Create_Role> {
     });
   }
 
-
   Future<List<Map<String, dynamic>>> fetchUserNames() async {
-
     List<dynamic> users = [];
 
-    if(User.isSuperUser){
+    if (User.isSuperUser) {
       users = await User.getAllUsers();
       print(users);
-    }
-    else if(User.isUniLevel()){
+    } else if (User.isUniLevel()) {
       users = await User.getUsersByUniversityId(University.id);
-    }
-    else if(User.iscampusLevel()){
-     users = await User.getUsersByCampusId(Campus.id);
-    }
-    else if(User.isdeptLevel()){
+    } else if (User.iscampusLevel()) {
+      users = await User.getUsersByCampusId(Campus.id);
+    } else if (User.isdeptLevel()) {
       users = await User.getUsersByDepartmentId(Department.id);
     }
 
-    return users.map((user) => {
-      'id': user['id'],
-      'username': user['username']
-    }).toList();
+    return users.map((user) => {'id': user['id'], 'username': user['username']}).toList();
   }
 
   Future<List<Map<String, dynamic>>> fetchPermissions() async {
     List<dynamic> permissions = await Permission.getUserPermissions(User.id);
-    return permissions.map((permission) => {
-      'id': permission['id'],
-      'name': permission['name']
-    }).toList();
-  }
-
-  List<int> getSelectedUserIds() {
-    return _selectedUserNames.map((username) {
-      return _userOptions.firstWhere((option) => option['username'] == username)['id'] as int;
-    }).toList();
-  }
-
-  List<int> getSelectedPermissionIds() {
-    return _selectedPermissionNames.map((name) {
-      return _permissionOptions.firstWhere((option) => option['name'] == name)['id'] as int;
-    }).toList();
+    return permissions.map((permission) => {'id': permission['id'], 'name': permission['name']}).toList();
   }
 
   @override
@@ -136,11 +113,11 @@ class _Create_Role_Page extends State<Create_Role> {
               Padding(
                 padding: const EdgeInsets.only(left: 10, right: 10),
                 child: MultiSelectField(
-                  options: _userOptions.map((option) => option['username'].toString()).toList(),
-                  selectedOptions: _selectedUserNames,
+                  options: _userOptions,
+                  selectedOptions: _selectedUserIds,
                   onSelectionChanged: (values) {
                     setState(() {
-                      _selectedUserNames = values;
+                      _selectedUserIds = values;
                     });
                   },
                 ),
@@ -149,11 +126,11 @@ class _Create_Role_Page extends State<Create_Role> {
               Padding(
                 padding: EdgeInsets.only(left: 10, right: 10),
                 child: MultiSelectField(
-                  options: _permissionOptions.map((option) => option['name'].toString()).toList(),
-                  selectedOptions: _selectedPermissionNames,
+                  options: _permissionOptions,
+                  selectedOptions: _selectedPermissionIds,
                   onSelectionChanged: (values) {
                     setState(() {
-                      _selectedPermissionNames = values;
+                      _selectedPermissionIds = values;
                     });
                   },
                   buttonText: Text('Add Permissions'),
@@ -177,28 +154,26 @@ class _Create_Role_Page extends State<Create_Role> {
                     });
 
                     bool created = false;
-                    List<int> selectedUserIds = getSelectedUserIds();
-                    List<int> selectedPermissionIds = getSelectedPermissionIds();
 
                     if (User.isSuperUser) {
                       created = await Role.createTopLevelRole(roleName,
-                        selectedUserIds,selectedPermissionIds);
+                          _selectedUserIds, _selectedPermissionIds);
                     } else if (User.isUniLevel()) {
-                      created = await Role.createUniversityLevelRole(roleName, University.id, selectedUserIds, selectedPermissionIds);
+                      created = await Role.createUniversityLevelRole(roleName, University.id, _selectedUserIds, _selectedPermissionIds);
                     } else if (User.iscampusLevel()) {
                       created = await Role.createCampusLevelRole(roleName,
-                        Campus.id,selectedUserIds,selectedPermissionIds);
+                          Campus.id,_selectedUserIds,_selectedPermissionIds);
                     } else if (User.isdeptLevel()) {
                       created = await Role.createDepartmentLevelRole
-                        (roleName, Department.id,selectedUserIds,selectedPermissionIds);
+                        (roleName, Department.id,_selectedUserIds,_selectedPermissionIds);
                     }
 
                     if (created) {
                       Role_Controller.clear();
 
                       setState(() {
-                        _selectedUserNames = [];
-                        _selectedPermissionNames = [];
+                        _selectedUserIds = [];
+                        _selectedPermissionIds = [];
                         isLoading = false;
                         colorMessage = Colors.green;
                         errorColor = Colors.black12; // Reset errorColor to default value

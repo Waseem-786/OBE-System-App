@@ -151,31 +151,14 @@ class _CourseObjectiveProfileState extends State<CourseObjectiveProfile> {
             style: CustomTextStyles.bodyStyle(color: colorMessage),
           )
               : const SizedBox()
-
-
-
-
-
-
         ],
-
-
       )
-
-
-
-
-
-
-      ,
-
-
-    );}
+    );
+  }
 
     List<Widget> _buildObjectiveInfoCards() {
       return [
-        _buildObjectiveDetailCard("Objective Description", CourseObjective
-            .description),
+        _buildObjectiveDetailCard("Objective Description", CourseObjective.description as String?),
 
       ];
     }
