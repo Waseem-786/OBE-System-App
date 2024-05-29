@@ -43,10 +43,8 @@ class _Add_Group_UserState extends State<Add_Group_User> {
 
   Future<List<Map<String, dynamic>>> fetchUserNames() async {
     List<dynamic> users = [];
-
     if (User.isSuperUser) {
       users = await User.getAllUsers();
-      print(users);
     } else if (User.isUniLevel()) {
       users = await User.getUsersByUniversityId(University.id);
     } else if (User.iscampusLevel()) {
@@ -54,7 +52,6 @@ class _Add_Group_UserState extends State<Add_Group_User> {
     } else if (User.isdeptLevel()) {
       users = await User.getUsersByDepartmentId(Department.id);
     }
-
     return users.map((user) => {'id': user['id'], 'username': user['username']}).toList();
   }
 
@@ -80,6 +77,7 @@ class _Add_Group_UserState extends State<Add_Group_User> {
               child: MultiSelectField(
                 options: _userOptions,
                 selectedOptions: _selectedUserIds,
+                displayKey: "username",
                 onSelectionChanged: (values) {
                   setState(() {
                     _selectedUserIds = values;

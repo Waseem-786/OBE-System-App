@@ -213,14 +213,11 @@ class AllUsers_for_SpecificDepartment(generics.ListAPIView):
         return queryset
 
 # Get User by Id
-class SingleUser(generics.ListAPIView):
+class SingleUser(generics.RetrieveUpdateDestroyAPIView):
+    queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
     authentication_classes = [JWTStatelessUserAuthentication]
     permission_classes = [IsSuper_University_Campus_Department]
-    def get_queryset(self):
-        user_id = self.kwargs['user_id']
-        queryset = CustomUser.objects.filter(id=user_id)
-        return queryset
 
 # All Permissions
 class PermissionsView(generics.ListAPIView):

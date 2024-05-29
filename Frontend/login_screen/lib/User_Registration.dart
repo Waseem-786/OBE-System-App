@@ -79,6 +79,27 @@ class _User_RegistrationState extends State<User_Registration> {
     return true;
   }
 
+  void _resetFields() {
+    firstNameController.clear();
+    lastNameController.clear();
+    emailController.clear();
+    passwordController.clear();
+    confirmPasswordController.clear();
+    userNameController.clear();
+    universityController.clear();
+    campusController.clear();
+    departmentController.clear();
+    roleController.clear();
+
+    setState(() {
+      universitySelected = false;
+      campusSelected = false;
+      departmentSelected = false;
+      selectedUniversityId = null;
+      selectedCampusId = null;
+      selectedDepartmentId = null;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -250,18 +271,8 @@ class _User_RegistrationState extends State<User_Registration> {
                           borderColor = Colors.black;
                           messageColor = Colors.green;
 
-
-                          //Reset Fields
-                          firstNameController.clear();
-                          lastNameController.clear();
-                          emailController.clear();
-                          passwordController.clear();
-                          confirmPasswordController.clear();
-                          userNameController.clear();
-                          universityController.clear();
-                          campusController.clear();
-                          departmentController.clear();
-                          roleController.clear();
+                          // Reset Fields
+                          _resetFields();
                         });
                       }
 
@@ -288,4 +299,3 @@ class _User_RegistrationState extends State<User_Registration> {
     );
   }
 }
-

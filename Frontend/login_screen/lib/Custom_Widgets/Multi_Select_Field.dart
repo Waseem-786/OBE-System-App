@@ -11,6 +11,7 @@ class MultiSelectField extends StatefulWidget {
   final ValueChanged<List<int>> onSelectionChanged; // Updated to pass IDs instead of names
   final Text buttonText;
   final Widget title;
+  final String displayKey;
 
   const MultiSelectField({
     Key? key,
@@ -19,6 +20,7 @@ class MultiSelectField extends StatefulWidget {
     required this.onSelectionChanged,
     this.buttonText = const Text('Add Users'),
     this.title = const Text('Select Users'),
+    this.displayKey = 'name',
   }) : super(key: key);
 
   @override
@@ -45,7 +47,7 @@ class _MultiSelectFieldState extends State<MultiSelectField> {
           buttonText: widget.buttonText,
           title: widget.title,
           items: widget.options
-              .map((option) => MultiSelectItem<int>(option['id'], option['name'])) // Extracting both ID and name
+              .map((option) => MultiSelectItem<int>(option['id'], option[widget.displayKey])) // Use dynamic key
               .toList(),
           onConfirm: (values) {
             setState(() {
