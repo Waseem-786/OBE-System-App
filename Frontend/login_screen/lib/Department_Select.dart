@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:login_screen/Campus.dart';
 import 'package:login_screen/Course.dart';
 import 'package:login_screen/Department.dart';
+import 'package:login_screen/PEO_Page.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
 
 class Department_Select extends StatefulWidget {
+  static bool isForPEO = false;
+
   @override
   State<Department_Select> createState() => _Department_SelectState();
 }
@@ -67,9 +70,10 @@ class _Department_SelectState extends State<Department_Select> {
                               Department.mission = departmentData['mission'];
                               Department.vision = departmentData['vision'];
                               Department.campus_id = departmentData['campus'];
-                              Department.campus_name =
-                              departmentData['campus_name'];
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => Department_Select()));
+                              Department.campus_name = departmentData['campus_name'];
+                              if(Department_Select.isForPEO){
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => PEO_Page()));
+                              }
                               // Perform actions with campusData
                             }
                           },

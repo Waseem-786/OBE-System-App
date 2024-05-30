@@ -59,7 +59,22 @@ class PEO {
     if (response.statusCode == 200) {
       return jsonDecode(response.body) as List<dynamic>;
     } else {
-      throw Exception('Failed to Load PEOs');
+      return [];
+    }
+  }
+
+  static Future<List<dynamic>> AllPEOsbyDeptId(int deptId) async {
+    final accessToken = await storage.read(key: "access_token");
+    final url = Uri.parse('$ipAddress:8000/api/program/${deptId}/peo');
+    final response = await http.get(
+      url,
+      headers: {'Authorization': 'Bearer $accessToken'},
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body) as List<dynamic>;
+    } else {
+      return [];
     }
   }
 

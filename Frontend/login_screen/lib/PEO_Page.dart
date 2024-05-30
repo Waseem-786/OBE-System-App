@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:login_screen/Department.dart';
 import 'Create_PEO.dart';
 import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
@@ -17,7 +18,7 @@ class _PEO_PageState extends State<PEO_Page> {
   @override
   void initState() {
     super.initState();
-    peoFuture = PEO.fetchPEO();
+    peoFuture = PEO.AllPEOsbyDeptId(Department.id);
   }
 
   @override
@@ -28,7 +29,7 @@ class _PEO_PageState extends State<PEO_Page> {
     if (currentRoute != null && currentRoute.isCurrent) {
       // Call your refresh function here
       setState(() {
-        peoFuture = PEO.fetchPEO();
+        peoFuture = PEO.AllPEOsbyDeptId(Department.id);
       });
     }
   }
@@ -77,7 +78,7 @@ class _PEO_PageState extends State<PEO_Page> {
                               if (result != null && result) {
                                 // Set the state of the page here
                                 setState(() {
-                                  peoFuture = PEO.fetchPEO();
+                                  peoFuture = PEO.AllPEOsbyDeptId(Department.id);
                                 });
                               }
                             });

@@ -2,10 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:login_screen/Campus_Select.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Style.dart';
 import 'package:login_screen/Department.dart';
+import 'package:login_screen/Department_Select.dart';
 import 'package:login_screen/Login_Page.dart';
 import 'package:login_screen/University.dart';
+import 'package:login_screen/University_Select.dart';
 import 'Campus.dart';
 import 'Permission.dart';
 import 'Token.dart';
@@ -59,7 +62,8 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
       bool hasDepartment = false;
       bool hasBatch = false;
 
-      List<dynamic> userPermissions = await Permission.getUserPermissions(User.id);
+      List<dynamic> userPermissions =
+          await Permission.getUserPermissions(User.id);
       for (Map<String, dynamic> permission in userPermissions) {
         if (permission["codename"] == "view_customuser") {
           headings.add('User Management');
@@ -74,13 +78,21 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
         } else if (permission["codename"] == "view_campus") {
           hasCampus = true;
         } else if (permission["codename"] == "view_department") {
-          hasDepartment =  true;
+          hasDepartment = true;
         } else if (permission["codename"] == "view_batch") {
           hasBatch = true;
         } else if (permission["codename"] == "view_peo") {
           headings.add("PEO");
           icons.add(FontAwesomeIcons.landmark);
-          screenNames.add("PEO_Page");
+          if (User.isUniLevel()) {
+            screenNames.add("Campus_Select");
+          } else if (User.iscampusLevel()) {
+            screenNames.add("Department_Select");
+          } else if (User.isdeptLevel()) {
+            screenNames.add("PEO_Page");
+          } else if (User.isSuperUser) {
+            screenNames.add("University_Select");
+          }
         } else if (permission["codename"] == "view_plo") {
           headings.add("PLO");
           icons.add(FontAwesomeIcons.schoolLock);
@@ -97,32 +109,26 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
           } else if (User.isSuperUser) {
             screenNames.add("University_Select");
           }
+        } else if (permission['codename'] == "view_assessment") {
+          headings.add("Assessment");
+          icons.add(FontAwesomeIcons.pencil);
+          screenNames.add("Assessment_Page");
         }
-        else if(permission['codename']=="view_assessment")
-          {
-            headings.add("Assessment");
-            icons.add(FontAwesomeIcons.pencil);
-            screenNames.add("Assessment_Page");
-          }
       }
-
 
       if (hasUniversity) {
         headings.add("University");
         icons.add(FontAwesomeIcons.landmark);
         screenNames.add("University_Page");
-      }
-      else if (hasCampus) {
+      } else if (hasCampus) {
         headings.add("Campus");
         icons.add(FontAwesomeIcons.landmark);
         screenNames.add("Campus_Page");
-      }
-      else if (hasDepartment) {
+      } else if (hasDepartment) {
         headings.add("Department");
         icons.add(FontAwesomeIcons.landmark);
         screenNames.add("Department_Page");
-      }
-      else if (hasBatch) {
+      } else if (hasBatch) {
         headings.add("Batch Management");
         icons.add(FontAwesomeIcons.calendarAlt);
         screenNames.add("Batch_Management");
@@ -216,119 +222,130 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
       body: isLoading
           ? Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 15, bottom: 15, left: 10, right: 10),
-              child: Row(
+              child: Column(
                 children: [
-                  CircleAvatar(
-                    radius: 35,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(35),
-                      child: Image.asset(
-                        "assets/images/MyProfile.jpeg",
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        top: 15, bottom: 15, left: 10, right: 10),
+                    child: Row(
                       children: [
-                        Text(User.username,
-                            style: CustomTextStyles.bodyStyle(fontSize: 27)),
-                        Text(
-                          User.email,
-                          style: CustomTextStyles.bodyStyle(),
+                        CircleAvatar(
+                          radius: 35,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(35),
+                            child: Image.asset(
+                              "assets/images/MyProfile.jpeg",
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(User.username,
+                                  style:
+                                      CustomTextStyles.bodyStyle(fontSize: 27)),
+                              Text(
+                                User.email,
+                                style: CustomTextStyles.bodyStyle(),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(right: 8.0),
+                          child: Icon(Icons.notifications, size: 35),
                         ),
                       ],
                     ),
                   ),
-                  const Padding(
-                    padding: EdgeInsets.only(right: 8.0),
-                    child: Icon(Icons.notifications, size: 35),
+                  const Divider(thickness: 1, color: Colors.black),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height -
+                        220, // Adjust height as needed
+                    child: GridView.builder(
+                      shrinkWrap: true,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 4,
+                        mainAxisSpacing: 4,
+                      ),
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(7.0),
+                          child: InkWell(
+                            onTap: () {
+                              if (headings[index] == 'PEO') {
+                                University_Select.isForPEO = true;
+                                Campus_Select.isForPEO = true;
+                                Department_Select.isForPEO = true;
+                              } else {
+                                University_Select.isForPEO = false;
+                                Campus_Select.isForPEO = false;
+                                Department_Select.isForPEO = false;
+                              }
+                              Navigator.pushNamed(context, '/${screenNames[index]}');
+                            },
+                            child: Card(
+                              elevation: 7,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  gradient: const LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      Color(0xFF8B5A2B), // Dark brown
+                                      Color(0xFFC19A6B), // Light brown
+                                      Color(0xFF8B5A2B), // Dark brown
+                                    ],
+                                  ),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Center(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          icons[index],
+                                          size: 39,
+                                          color: Colors.white,
+                                        ),
+                                        const SizedBox(
+                                          height: 15,
+                                        ),
+                                        Text(
+                                          headings[index],
+                                          style: CustomTextStyles.headingStyle(
+                                            color: Colors.white,
+                                            fontSize: 19,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                      itemCount: headings.length,
+                    ),
                   ),
                 ],
               ),
             ),
-            const Divider(thickness: 1, color: Colors.black),
-            SizedBox(
-              height: MediaQuery.of(context).size.height - 220, // Adjust height as needed
-              child: GridView.builder(
-                shrinkWrap: true,
-                gridDelegate:
-                const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 4,
-                  mainAxisSpacing: 4,
-                ),
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(7.0),
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.pushNamed(
-                            context, '/${screenNames[index]}');
-                      },
-                      child: Card(
-                        elevation: 7,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            gradient: const LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                Color(0xFF8B5A2B), // Dark brown
-                                Color(0xFFC19A6B), // Light brown
-                                Color(0xFF8B5A2B), // Dark brown
-                              ],
-                            ),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Center(
-                              child: Column(
-                                mainAxisAlignment:
-                                MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    icons[index],
-                                    size: 39,
-                                    color: Colors.white,
-                                  ),
-                                  const SizedBox(
-                                    height: 15,
-                                  ),
-                                  Text(
-                                    headings[index],
-                                    style: CustomTextStyles.headingStyle(
-                                      color: Colors.white,
-                                      fontSize: 19,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-                itemCount: headings.length,
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

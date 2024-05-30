@@ -102,7 +102,6 @@ class Assessment {
     );
 
     if (response.statusCode == 200) {
-      print(response.body);
       return jsonDecode(response.body) as List<dynamic>;
     } else {
       return [];
@@ -197,7 +196,6 @@ class Assessment {
           'instructions': instructions
         }),
       );
-      print(response.body);
       if (response.statusCode == 201) {
         print('Assessment Created successfully');
         return true;
@@ -292,7 +290,6 @@ class Assessment {
     );
 
     if (response.statusCode == 200) {
-      print(response.body);
       return [jsonDecode(response.body)]; // Wrap the result in a List
     } else {
       return [];

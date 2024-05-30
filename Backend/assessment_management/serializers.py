@@ -37,7 +37,7 @@ class CompleteAssessmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Assessment
-        fields = ['name', 'teacher', 'batch', 'course', 'total_marks', 'duration', 'instruction', 'questions']
+        fields = ['id', 'name', 'teacher', 'batch', 'course', 'total_marks', 'duration', 'instruction', 'questions']
 
     def create(self, validated_data):
         questions_data = validated_data.pop('questions')

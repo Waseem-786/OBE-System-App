@@ -20,7 +20,6 @@ class _Assessment_PageState extends State<Assessment_Page> {
   @override
   void initState() {
     super.initState();
-    // print("KJ");
     // Assessment.fetchAllAssessmentData(11);
     AssessmentsFuture = Assessment.fetchAssessment();
     hasEditAssessmentPermissionFuture =
@@ -102,6 +101,7 @@ class _Assessment_PageState extends State<Assessment_Page> {
                                 }
                               }),
                           onTap: () async {
+
                             var assessment = await Assessment.fetchAllAssessmentData(assessments[index]['id']);
                             if (assessment != null) {
                               Navigator.push(

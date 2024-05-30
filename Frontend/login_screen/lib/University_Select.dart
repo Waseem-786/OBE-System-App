@@ -4,6 +4,7 @@ import 'package:login_screen/Custom_Widgets/Custom_Text_Style.dart';
 import 'package:login_screen/University.dart';
 
 class University_Select extends StatefulWidget {
+  static bool isForPEO = false;
   @override
   State<University_Select> createState() => _University_SelectState();
 }
@@ -61,7 +62,11 @@ class _University_SelectState extends State<University_Select> {
                               University.name = university['name'];
                               University.vision = university['vision'];
                               University.mission = university['mission'];
+                              if(University_Select.isForPEO){
+                                Campus_Select.isForPEO = true;
+                              }
                               Navigator.push(context, MaterialPageRoute(builder: (context) => Campus_Select()));
+
                             }
                           },
                         ),

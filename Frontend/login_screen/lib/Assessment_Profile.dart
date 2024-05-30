@@ -12,7 +12,6 @@ import 'Custom_Widgets/PermissionBasedButton.dart';
 
 class Assessment_Profile extends StatefulWidget {
   final List<dynamic> Data;
-
   Assessment_Profile({ required this.Data});
   @override
   State<Assessment_Profile> createState() => _Assessment_ProfileState();
@@ -20,8 +19,7 @@ class Assessment_Profile extends StatefulWidget {
 
 class _Assessment_ProfileState extends State<Assessment_Profile> {
 
-
-  final assessment_id = Assessment.id; // Assuming University is a class with static members
+  final assessment_id = Assessment.id;
   late Future<bool> hasDeleteAssessmentPermissionFuture;
   late Future<bool> hasViewAssessmentPermissionFuture;
 
@@ -32,10 +30,6 @@ class _Assessment_ProfileState extends State<Assessment_Profile> {
   @override
   void initState() {
     super.initState();
-    print("ME");
-
-    print(widget.Data);
-    print("ME");
     hasDeleteAssessmentPermissionFuture = Permission.searchPermissionByCodename("delete_assessment");
     hasViewAssessmentPermissionFuture = Permission.searchPermissionByCodename("view_assessment");
   }
@@ -141,7 +135,7 @@ class _Assessment_ProfileState extends State<Assessment_Profile> {
     );
     if (confirmDelete) {
       setState(() => isLoading = true);
-      bool deleted = await Assessment.deleteAssessment(assessment_id);
+      bool deleted = await Assessment.deleteAssessment(widget.Data[0]['id']);
       if (deleted) {
         setState(() {
           isLoading = false;

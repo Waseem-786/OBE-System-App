@@ -2,11 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:login_screen/Campus.dart';
 import 'package:login_screen/Course_Page.dart';
+import 'package:login_screen/Department_Select.dart';
 import 'package:login_screen/University.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
-import 'Department_Select.dart';
 
 class Campus_Select extends StatefulWidget {
+  static bool isForPEO = false;
+
+
   @override
   State<Campus_Select> createState() => _Campus_SelectState();
 }
@@ -66,10 +69,13 @@ class _Campus_SelectState extends State<Campus_Select> {
                               Campus.mission = campusData['mission'];
                               Campus.vision = campusData['vision'];
                               Campus.university_id = campusData['university'];
-                              Campus.university_name =
-                              campusData['university_name'];
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => Course_Page()));
-                              // Perform actions with campusData
+                              Campus.university_name = campusData['university_name'];
+                              if(Campus_Select.isForPEO){
+                                Department_Select.isForPEO = true;
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => Department_Select()));
+                              } else{
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => Course_Page()));
+                              }
                             }
                           },
                         ),
