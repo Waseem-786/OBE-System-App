@@ -5,6 +5,9 @@ from rest_framework_simplejwt.authentication import JWTStatelessUserAuthenticati
 from user_management.permissions import IsSuper_University_Campus_Department
 from .models import CourseInformation, CourseSchedule, CourseObjective, CourseAssessment, CourseBooks, CourseLearningOutcomes, CourseOutline, WeeklyTopic
 from .serializers import CourseInformationSerializer, CourseScheduleSerializer, CourseObjectiveSerializer, CourseObjectiveListSerializer, CourseAssessmentSerializer, CourseBookSerializer, CourseLearningOutcomesSerializer, CourseOutlineSerializer, WeeklyTopicSerializer, CompleteOutlineSerializer
+from .utils import determine_clo_details
+import openai
+from rest_framework.decorators import api_view
 
 # Create your views here.
 class CourseInformationView(generics.ListCreateAPIView):
@@ -331,3 +334,102 @@ def get_clo_plo_peo_mappings(request, course_id):
                 })
     
     return JsonResponse(data, safe=False)
+
+
+
+# views.py
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from .utils import determine_clo_details
+from .models import CourseLearningOutcomes
+
+class clo_view(APIView):
+    def post(self, request):
+        clo_description = request.data['clo_description']
+        domain, level, related_plos = determine_clo_details(clo_description)
+
+        # plo_data = [{'name': plo.name, 'description': plo.description} for plo in related_plos]
+
+        data = {
+            'clo_description': clo_description,
+            'domain': domain,
+            'level': level,
+            'related_plos': related_plos
+        }
+
+        return Response(data)
+    
+
+
+@api_view(['POST'])
+def generate_weekly_topics(request, course_id):
+    # Fetch the course information
+    course = get_object_or_404(CourseInformation, id=course_id)
+    objectives = CourseObjective.objects.filter(course=course)
+    
+    # Prepare the data to send to OpenAI
+    course_data = {
+        "course_description": course.description,
+        "course_objectives": [obj.description for obj in objectives],
+        "pec_content": course.pec_content
+    }
+    
+    # Create the prompt for OpenAI
+    prompt = f"""
+    Generate a weekly breakdown of topics for a course with the following details:
+    Course Description: {course_data['course_description']}
+    Course Objectives: {', '.join(course_data['course_objectives'])}
+    Content: {course_data['pec_content']}
+    
+    The course should have topics for weeks 1-7, an exam in week 8, topics for weeks 9-15, and a final exam in week 16.
+    
+    Week 1: 
+    Week 2: 
+    Week 3: 
+    Week 4: 
+    Week 5: 
+    Week 6: 
+    Week 7: 
+    Week 8: Midterm Exam
+    Week 9: 
+    Week 10: 
+    Week 11: 
+    Week 12: 
+    Week 13: 
+    Week 14: 
+    Week 15: 
+    Week 16: Final Exam
+    """
+    
+    # Call OpenAI API to generate topics
+    response = openai.Completion.create(
+        engine="text-davinci-003",
+        prompt=prompt,
+        max_tokens=1000,
+        temperature=0.7,
+        n=1
+    )
+    
+    # Parse the response
+    generated_text = response.choices[0].text.strip()
+    weekly_topics = generated_text.split("\n")
+    
+    # Save the topics in the database
+    weekly_topics_objects = []
+    for week, topic in enumerate(weekly_topics, start=1):
+        if week != 8 and week != 16:  # Skip midterm and final exam weeks for topic creation
+            week_number = week if week <= 7 else week - 1  # Adjust for week 8
+            topic_title, topic_description = topic.split(": ")
+            weekly_topic = WeeklyTopic(
+                week_number=week_number,
+                topic=topic_title.strip(),
+                description=topic_description.strip(),
+                course_outline=course
+            )
+            weekly_topics_objects.append(weekly_topic)
+    
+    WeeklyTopic.objects.bulk_create(weekly_topics_objects)
+    
+    # Serialize the saved weekly topics and return in response
+    serialized_data = WeeklyTopicSerializer(weekly_topics_objects, many=True)
+    return Response(serialized_data.data, status=status.HTTP_201_CREATED)

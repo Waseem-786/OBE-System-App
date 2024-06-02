@@ -13,6 +13,7 @@ class CourseInformation(models.Model):
     required_elective = models.CharField(max_length=20)
     prerequisite = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='prerequisite_for')
     description = models.CharField(max_length=1000)
+    pec_content = models.TextField()
     campus = models.ForeignKey(Campus, on_delete=models.CASCADE)
 
     def __str__(self) -> str:

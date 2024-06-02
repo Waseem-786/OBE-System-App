@@ -9,6 +9,7 @@ from rest_framework_simplejwt.authentication import JWTStatelessUserAuthenticati
 from user_management.permissions import IsSuperUser, IsUniversityAdmin, IsCampusAdmin, IsDepartmentAdmin, IsSuper_University, IsSuper_University_Campus, IsSuper_University_Campus_Department
 from university_management.permissions import IsUserUniversity, IsUserCampus, IsUserDepartment
 
+from program_management.utils import refine_statement
 # Create your views here.
 
 class UniversityView(generics.ListCreateAPIView):
@@ -156,3 +157,22 @@ class SingleSectionView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
     
+
+
+
+
+class RefineStatementView(APIView):
+    permission_classes = [JWTStatelessUserAuthentication]
+    def post(self, request):
+        statement_type = request.data.get('statement_type')
+        statement = request.data.get('statement')
+        additional_message = request.data.get('additional_message', '')
+
+        if statement_type not in ['vision', 'mission']:
+            return Response({"error": "Invalid statement type provided. Choose 'vision' or 'mission'."}, status=400)
+
+        result = refine_statement(statement_type, statement, additional_message)
+        if result['status'] == 'success':
+            return Response({"refined_statement": result['refined_statement']}, status=200)
+        else:
+            return Response({"error": result['message']}, status=400)
