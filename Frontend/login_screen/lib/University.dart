@@ -155,4 +155,27 @@ class University {
       return false;
     }
   }
+  static Future<String> fetchMissionData(String statement, String statement_type, String additional_message) async {
+    final accessToken = await storage.read(key: "access_token");
+    final url = Uri.parse('$ipAddress:8000/api/refine');
+    final response = await http.post(
+      url,
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+        'Content-Type': 'application/json'
+      },
+      body: jsonEncode({
+        'statement': statement,
+        'statement_type': statement_type,
+        'additional_message': additional_message,
+      }),
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+
+    } else {
+      return jsonEncode(response.body);
+    }
+  }
 }
+

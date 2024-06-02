@@ -9,6 +9,8 @@ class Custom_Button extends StatelessWidget{
  final String? ButtonText;
  final VoidCallback onPressedFunction;
  final double ButtonWidth;
+ final double ButtonHeight;
+ final IconData? ButtonIcon;
 
 
  const Custom_Button({
@@ -16,15 +18,17 @@ class Custom_Button extends StatelessWidget{
    this.ForegroundColor,
    this.BackgroundColor,
    this.ButtonText,
+   this.ButtonIcon,
    required this.onPressedFunction,
    this.ButtonWidth = double.infinity,
+   this.ButtonHeight = 40,
  }):super(key: key);
 
 
 
   Widget build(BuildContext context) {
     return Container(
-      height: 50,
+      height: ButtonHeight,
       width : ButtonWidth,
       child: ElevatedButton(
         onPressed: onPressedFunction,
@@ -35,7 +39,13 @@ class Custom_Button extends StatelessWidget{
             borderRadius: BorderRadius.circular(8.0), // Border radius
           ),
         ),
-        child: Text('$ButtonText', style: CustomTextStyles.bodyStyle
+          child: ButtonIcon != null
+              ? Center(
+                child: Icon(
+                            ButtonIcon,
+                            color: ForegroundColor ?? Colors.white,
+                          ),
+              ) : Text('$ButtonText', style: CustomTextStyles.bodyStyle
           (fontSize: 18,color: Colors.white)
         ),
       ),

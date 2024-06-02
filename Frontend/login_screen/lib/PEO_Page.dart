@@ -112,8 +112,16 @@ class _PEO_PageState extends State<PEO_Page> {
               }
             },
           ),
+          Custom_Button(onPressedFunction: (){
+
+          },
+            ButtonWidth: 180,
+            ButtonText: 'Generate PEO',
+            BackgroundColor: Colors.green,
+            ForegroundColor: Colors.white,
+          ),
           Padding(
-            padding: const EdgeInsets.all(30.0),
+            padding: const EdgeInsets.all(15.0),
             child: Custom_Button(
               onPressedFunction: () {
                 Navigator.push(context,
