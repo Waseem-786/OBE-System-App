@@ -1,11 +1,11 @@
 import 'package:duration_picker/duration_picker.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:login_screen/Batch.dart';
-import 'package:login_screen/Course.dart';
-import 'package:login_screen/Custom_Widgets/Custom_Text_Field.dart';
-import 'package:login_screen/Question_Page.dart';
-import 'package:login_screen/User.dart';
+import 'package:provider/provider.dart';
+import 'Batch.dart';
+import 'Course.dart';
+import 'Custom_Widgets/Custom_Text_Field.dart';
+import 'Question_Page.dart';
+import 'User.dart';
 import 'Assessment.dart';
 import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
@@ -33,10 +33,6 @@ class _Create_AssessmentState extends State<Create_Assessment> {
   late TextEditingController AssessmentCourseController;
   late TextEditingController AssessmentTotalMarksController;
   late TextEditingController AssessmentInstructionsController;
-  Duration _DurationofAssessment = Duration.zero;
-
-  dynamic? SelectedBatch;
-  dynamic? SelectedCourse;
 
   @override
   void initState() {
@@ -56,6 +52,7 @@ class _Create_AssessmentState extends State<Create_Assessment> {
   @override
   Widget build(BuildContext context) {
     String buttonText = widget.isUpdate ? 'Update' : 'Create';
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xffc19a6b),
@@ -78,40 +75,45 @@ class _Create_AssessmentState extends State<Create_Assessment> {
                     hintText: 'Quizzes or Mids...',
                     borderColor: errorColor,
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  DropDown(
-                    fetchData: () => Batch.getBatchBydeptId(User.departmentid),
-                    selectedValue: SelectedBatch,
-                    label: "Batch",
-                    hintText: "Select Batch",
-                    controller: AssessmentBatchController,
-                    onValueChanged: (dynamic id) {
-                      setState(() {
-                        SelectedBatch = id;
-                      });
+                  const SizedBox(height: 20),
+
+                  // Batch DropDown
+                  Selector<AssessmentProvider, dynamic>(
+                    selector: (_, provider) => provider.selectedBatch,
+                    builder: (_, selectedBatch, __) {
+                      return DropDown(
+                        fetchData: () => Batch.getBatchBydeptId(User.departmentid),
+                        selectedValue: selectedBatch,
+                        label: "Batch",
+                        hintText: "Select Batch",
+                        controller: AssessmentBatchController,
+                        onValueChanged: (dynamic id) {
+                          context.read<AssessmentProvider>().setSelectedBatch(id);
+                        },
+                      );
                     },
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  DropDown(
-                    fetchData: () => Course.fetchCoursesbyCampusId(User.campusid),
-                    selectedValue: SelectedCourse,
-                    label: "Course",
-                    hintText: "Select Course",
-                    keyName: "title",
-                    controller: AssessmentCourseController,
-                    onValueChanged: (dynamic id) {
-                      setState(() {
-                        SelectedCourse = id;
-                      });
+                  const SizedBox(height: 20),
+
+                  // Course DropDown
+                  Selector<AssessmentProvider, dynamic>(
+                    selector: (_, provider) => provider.selectedCourse,
+                    builder: (_, selectedCourse, __) {
+                      return DropDown(
+                        fetchData: () => Course.fetchCoursesbyCampusId(User.campusid),
+                        selectedValue: selectedCourse,
+                        label: "Course",
+                        hintText: "Select Course",
+                        keyName: "title",
+                        controller: AssessmentCourseController,
+                        onValueChanged: (dynamic id) {
+                          context.read<AssessmentProvider>().setSelectedCourse(id);
+                        },
+                      );
                     },
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
+                  const SizedBox(height: 20),
+
                   CustomTextFormField(
                     controller: AssessmentTotalMarksController,
                     label: 'Assessment Total Marks',
@@ -119,71 +121,69 @@ class _Create_AssessmentState extends State<Create_Assessment> {
                     borderColor: errorColor,
                     Keyboard_Type: TextInputType.number,
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
+                  const SizedBox(height: 20),
                   CustomTextFormField(
                     controller: AssessmentInstructionsController,
                     label: 'Instructions',
                     hintText: 'Paper is open book',
                     borderColor: errorColor,
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Builder(
-                    builder: (BuildContext context) => Column(
-                      children: [
-                        Custom_Button(
-                          onPressedFunction: () async {
-                            final resultingDuration = await showDurationPicker(
-                              context: context,
-                              initialTime: const Duration(minutes: 30),
-                              baseUnit: BaseUnit.minute,
-                            );
-                            if (!mounted) return;
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Chose duration: $resultingDuration'),
-                              ),
-                            );
-                            setState(() {
-                              _DurationofAssessment = resultingDuration ?? Duration.zero;
-                            });
-                          },
-                          ButtonText: "Duration",
-                          BackgroundColor: Colors.blue,
-                        ),
-                        const SizedBox(height: 10),
-                        Container(
-                          padding: EdgeInsets.all(19),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            'Selected Duration: ${_DurationofAssessment.inHours} hours ${_DurationofAssessment.inMinutes.remainder(60)} minutes',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  const SizedBox(height: 20),
 
-                  const SizedBox(
-                    height: 20,
+                  // Duration Picker
+                  Selector<AssessmentProvider, Duration>(
+                    selector: (_, provider) => provider.durationOfAssessment,
+                    builder: (_, duration, __) {
+                      return Column(
+                        children: [
+                          Custom_Button(
+                            onPressedFunction: () async {
+                              final resultingDuration = await showDurationPicker(
+                                context: context,
+                                initialTime: const Duration(minutes: 30),
+                                baseUnit: BaseUnit.minute,
+                              );
+                              if (!mounted) return;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Chose duration: $resultingDuration'),
+                                ),
+                              );
+                              context.read<AssessmentProvider>().setDurationOfAssessment(
+                                  resultingDuration ?? Duration.zero);
+                            },
+                            ButtonText: "Duration",
+                            BackgroundColor: Colors.blue,
+                          ),
+                          const SizedBox(height: 10),
+                          Container(
+                            padding: EdgeInsets.all(19),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              'Selected Duration: ${duration.inHours} hours ${duration.inMinutes.remainder(60)} minutes',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
                   ),
+                  const SizedBox(height: 20),
+
                   Padding(
                     padding: const EdgeInsets.all(20.0),
                     child: Custom_Button(
                       onPressedFunction: () async {
+                        final provider = Provider.of<AssessmentProvider>(context, listen: false);
+
                         String AssessmentName = AssessmentNameController.text;
-                        int? AssessmentBatch = SelectedBatch;
-                        int? AssessmentCourse = SelectedCourse;
-                        int AssessmentTotalMarks =
-                        int.parse(AssessmentTotalMarksController.text);
-                        String AssessmentInstructions =
-                            AssessmentInstructionsController.text;
+                        int? AssessmentBatch = provider.selectedBatch;
+                        int? AssessmentCourse = provider.selectedCourse;
+                        int AssessmentTotalMarks = int.parse(AssessmentTotalMarksController.text);
+                        String AssessmentInstructions = AssessmentInstructionsController.text;
 
                         if (AssessmentName.isEmpty ||
                             AssessmentInstructions.isEmpty ||
@@ -207,7 +207,7 @@ class _Create_AssessmentState extends State<Create_Assessment> {
                           Assessment.course = AssessmentCourse;
                           Assessment.total_marks = AssessmentTotalMarks;
                           Assessment.instructions = AssessmentInstructions;
-                          Assessment.duration = _DurationofAssessment.toString();
+                          Assessment.duration = provider.durationOfAssessment.toString();
 
                           print(Assessment.name);
                           print(Assessment.batch);
@@ -215,7 +215,6 @@ class _Create_AssessmentState extends State<Create_Assessment> {
                           print(Assessment.total_marks);
                           print(Assessment.instructions);
                           print(Assessment.duration);
-
 
                           // Navigate to the next page
                           Navigator.pushReplacement(
@@ -254,5 +253,31 @@ class _Create_AssessmentState extends State<Create_Assessment> {
         ),
       ),
     );
+  }
+}
+
+
+class AssessmentProvider extends ChangeNotifier {
+  dynamic _selectedBatch;
+  dynamic _selectedCourse;
+  Duration _durationOfAssessment = Duration.zero;
+
+  dynamic get selectedBatch => _selectedBatch;
+  dynamic get selectedCourse => _selectedCourse;
+  Duration get durationOfAssessment => _durationOfAssessment;
+
+  void setSelectedBatch(dynamic batch) {
+    _selectedBatch = batch;
+    notifyListeners();
+  }
+
+  void setSelectedCourse(dynamic course) {
+    _selectedCourse = course;
+    notifyListeners();
+  }
+
+  void setDurationOfAssessment(Duration duration) {
+    _durationOfAssessment = duration;
+    notifyListeners();
   }
 }

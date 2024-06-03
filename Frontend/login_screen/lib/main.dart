@@ -23,15 +23,25 @@ import 'package:login_screen/University_Select.dart';
 import 'package:login_screen/User_Management.dart';
 import 'package:login_screen/Splash_Screen.dart';
 import 'package:login_screen/Weekly_Topics_Page.dart';
+import 'package:provider/provider.dart';
 import 'Add_Group_User.dart';
 import 'Assessment_Page.dart';
 import 'CourseObjectivePage.dart';
 import 'Course_Assessment_Page.dart';
+import 'Create_Assessment.dart';
 import 'PEO_Page.dart';
 import 'Show_CLO_PLO_Mapping.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+      MultiProvider(
+          providers: [
+            ChangeNotifierProvider(create: (_) => AssessmentProvider()),
+          ],
+          child: MyApp(),
+
+      ));
+
 }
 
 class MyApp extends StatelessWidget {
