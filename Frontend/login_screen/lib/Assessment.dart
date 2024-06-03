@@ -127,8 +127,7 @@ class Assessment {
     }
   }
 
-  static Future<bool> updateAssessment(
-      int id,
+  static Future<bool> updateAssessment(int id,
       String name,
       int teacher,
       int batch,
@@ -169,8 +168,7 @@ class Assessment {
     }
   }
 
-  static Future<bool> createAssessment(
-      String name,
+  static Future<bool> createAssessment(String name,
       int teacher,
       int batch,
       int course,
@@ -215,7 +213,7 @@ class Assessment {
       final accessToken = await storage.read(key: "access_token");
 
       final url =
-          Uri.parse('$ipAddress:8000/api/assessment-creation/$assessmentId');
+      Uri.parse('$ipAddress:8000/api/assessment-creation/$assessmentId');
       final response = await http.delete(
         url,
         headers: {
@@ -236,16 +234,14 @@ class Assessment {
     }
   }
 
-  static Future<bool> createCompleteAssessment(
-    String name,
-    int teacher,
-    int batch,
-    int course,
-    int totalMarks,
-    String duration,
-    String instruction,
-    List<Map<String, dynamic>> questions,
-  ) async {
+  static Future<bool> createCompleteAssessment(String name,
+      int teacher,
+      int batch,
+      int course,
+      int totalMarks,
+      String duration,
+      String instruction,
+      List<Map<String, dynamic>> questions,) async {
     try {
       final accessToken = await storage.read(key: "access_token");
       final url = Uri.parse('$ipAddress:8000/api/complete-assessment');
@@ -293,6 +289,31 @@ class Assessment {
       return [jsonDecode(response.body)]; // Wrap the result in a List
     } else {
       return [];
+    }
+  }
+
+
+  static Future<String> fetchRefinedDescription(String statement,
+      String additionalMessage) async {
+    final accessToken = await storage.read(key: "access_token");
+    final url = Uri.parse('$ipAddress:8000/api/refine');
+    final response = await http.post(
+      url,
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+        'Content-Type': 'application/json'
+      },
+      body: jsonEncode({
+        'statement': statement,
+        'statement_type': 'question',
+        // Assuming 'question' as the statement type
+        'additional_message': additionalMessage,
+      }),
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      return jsonEncode(response.body);
     }
   }
 }
