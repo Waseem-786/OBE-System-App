@@ -15,7 +15,7 @@ class CLO_Page extends StatefulWidget {
 
 class _CLO_PageState extends State<CLO_Page> {
   late Future<List<dynamic>> cloFuture;
-
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -36,6 +36,24 @@ class _CLO_PageState extends State<CLO_Page> {
     }
   }
 
+  Future<void> _generateCLOs() async {
+    setState(() {
+      isLoading = true;
+      // cloFuture = CLO.generateCLOs(Course.id); // Replace with your CLO generation method
+    });
+
+    cloFuture.then((_) {
+      setState(() {
+        isLoading = false;
+      });
+    }).catchError((error) {
+      setState(() {
+        isLoading = false;
+      });
+      // Handle error
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,6 +69,7 @@ class _CLO_PageState extends State<CLO_Page> {
       ),
       body: Column(
         children: [
+          if (isLoading) const LinearProgressIndicator(),
           FutureBuilder(
             future: cloFuture,
             builder: (context, snapshot) {
@@ -121,15 +140,27 @@ class _CLO_PageState extends State<CLO_Page> {
           ),
           Padding(
             padding: const EdgeInsets.all(30.0),
-            child: Custom_Button(
-              onPressedFunction: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => Create_CLO()));
-              },
-              BackgroundColor: Colors.green,
-              ForegroundColor: Colors.white,
-              ButtonText: "Create CLO",
-              ButtonWidth: 160,
+            child: Column(
+              children: [
+                Custom_Button(
+                  onPressedFunction: _generateCLOs,
+                  BackgroundColor: Colors.blue,
+                  ForegroundColor: Colors.white,
+                  ButtonText: "Generate CLOs",
+                  ButtonWidth: 180,
+                ),
+                const SizedBox(height: 10),
+                Custom_Button(
+                  onPressedFunction: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Create_CLO()));
+                  },
+                  BackgroundColor: Colors.green,
+                  ForegroundColor: Colors.white,
+                  ButtonText: "Create CLO",
+                  ButtonWidth: 180,
+                ),
+              ],
             ),
           )
         ],

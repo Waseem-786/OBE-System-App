@@ -13,7 +13,6 @@ class CLO {
   static int? _course;
   static List<int?> _PLOs = [];
 
-
   static const ipAddress = MyApp.ip;
   static const storage = FlutterSecureStorage(
       aOptions: AndroidOptions(encryptedSharedPreferences: true));
@@ -54,8 +53,8 @@ class CLO {
     _PLOs = value;
   }
 
-  static Future<bool> createCLO(
-      String description, String BT, int BTLevel, int course_id, List<int> plos) async {
+  static Future<bool> createCLO(String description, String BT, int BTLevel,
+      int course_id, List<int> plos) async {
     try {
       final accessToken = await storage.read(key: "access_token");
       final url = Uri.parse('$ipAddress:8000/api/clo');
@@ -145,13 +144,18 @@ class CLO {
       return false;
     }
   }
-  static Future<bool> updateCLO(int id,String description, String BT, int BTLevel) async {
+
+  static Future<bool> updateCLO(
+      int id, String description, String BT, int BTLevel) async {
     try {
       final accessToken = await storage.read(key: "access_token");
       final url = Uri.parse('$ipAddress:8000/api/clo/$id');
       final response = await http.patch(
         url,
-        headers: {'Authorization': 'Bearer $accessToken', 'Content-Type': 'application/json'},
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json'
+        },
         body: jsonEncode({
           'description': description,
           'bloom_taxonomy': BT,
@@ -170,6 +174,7 @@ class CLO {
       return false;
     }
   }
+
   static Future<bool> mapCLOwithPLO(int CLO_id, int PLO_id) async {
     final accessToken = await storage.read(key: "access_token");
     final url = Uri.parse('$ipAddress:8000/api/plo/clo/mapping');
@@ -179,7 +184,8 @@ class CLO {
     };
     final response = await http.post(
       url,
-      headers: {'Authorization': 'Bearer $accessToken',
+      headers: {
+        'Authorization': 'Bearer $accessToken',
         'Content-Type': 'application/json',
       },
       body: jsonEncode(requestBody),
@@ -193,6 +199,7 @@ class CLO {
       return false;
     }
   }
+
   static Future<List<Map<String, dynamic>>> fetchMappedCLOPLOData() async {
     final accessToken = await storage.read(key: "access_token");
     final url = Uri.parse('$ipAddress:8000/api/plo/clo/mapping');
@@ -206,6 +213,29 @@ class CLO {
       return responseData.map((data) => data as Map<String, dynamic>).toList();
     } else {
       throw Exception('Failed to fetch mapped CLOs and PLOs');
+    }
+  }
+
+  static Future<Map<String, dynamic>> fetchCLODetails(
+      String description) async {
+    final accessToken = await storage.read(key: "access_token");
+    final url = Uri.parse('$ipAddress:8000/api/CLOdata');
+    final response = await http.post(
+      url,
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'clo_description': description,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      print ('Failed to fetch CLO details');
+      return {};
     }
   }
 }

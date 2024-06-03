@@ -5,7 +5,7 @@ from rest_framework_simplejwt.authentication import JWTStatelessUserAuthenticati
 from .models import Assessment, Question, QuestionPart
 from .serializers import AssessmentSerializer, QuestionSerializer, QuestionPartSerializer, CompleteAssessmentSerializer
 from user_management.permissions import IsSuper_University_Campus_Department
-from django.db import transaction
+from .utils import check_question_consistency, convert_question_with_clos
 
 
 class AssessmentView(generics.ListCreateAPIView):
@@ -90,3 +90,36 @@ class CompleteAssessmentView(generics.ListAPIView):
         
         serializer = self.get_serializer(assessment)
         return Response(serializer.data)
+    
+
+
+
+# View for checking question consistency with selected CLOs
+class CheckQuestionConsistencyView(APIView):
+    # permission_classes = [IsSuper_University_Campus_Department]
+    # authentication_classes = [JWTStatelessUserAuthentication]
+
+    def post(self, request, *args, **kwargs):
+        question_description = request.data.get('question_description', '')
+        clo_ids = request.data.get('clo_ids', [])
+
+        if not question_description or not clo_ids:
+            return Response({"status": "error", "message": "Question description and CLO IDs are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        result = check_question_consistency(question_description, clo_ids)
+        return Response(result, status=status.HTTP_200_OK if result['status'] == 'success' else status.HTTP_400_BAD_REQUEST)
+
+# View for converting question to be consistent with selected CLOs
+class ConvertQuestionWithCLOsView(APIView):
+    permission_classes = [IsSuper_University_Campus_Department]
+    authentication_classes = [JWTStatelessUserAuthentication]
+
+    def post(self, request, *args, **kwargs):
+        question_description = request.data.get('question_description', '')
+        clo_ids = request.data.get('clo_ids', [])
+
+        if not question_description or not clo_ids:
+            return Response({"status": "error", "message": "Question description and CLO IDs are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        result = convert_question_with_clos(question_description, clo_ids)
+        return Response(result, status=status.HTTP_200_OK if result['status'] == 'success' else status.HTTP_400_BAD_REQUEST)

@@ -2,12 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:login_screen/Course.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Button.dart';
-import 'package:login_screen/Custom_Widgets/Custom_Text_Field.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Style.dart';
-import 'package:login_screen/CLO.dart';
-import 'package:login_screen/Outline.dart';
+import 'package:login_screen/User.dart';
 import 'package:login_screen/Weekly_Topics.dart';
-import 'package:multi_select_flutter/multi_select_flutter.dart';
 
 class CreateWeeklyTopic extends StatefulWidget {
   final bool isFromOutline;
@@ -19,26 +16,16 @@ class CreateWeeklyTopic extends StatefulWidget {
 }
 
 class CreateWeeklyTopicState extends State<CreateWeeklyTopic> {
-  String?
-  errorMessage; //variable to show the error when the wrong credentials are entered or the fields are empty
-  Color colorMessage = Colors.red; // color of the message when the error occurs
-  var isLoading =
-  false; // variable for use the functionality of loading while request is processed to server
-  Color errorColor = Colors
-      .black12; // color of border of text fields when the error is not occurred
+  String? errorMessage;
+  Color colorMessage = Colors.red;
+  bool isLoading = false;
+  Color errorColor = Colors.black12;
+  String buttonText = 'Generate Weekly Topics';
 
-  late Future<List<dynamic>> cloFuture = CLO.fetchCLO(Course.id);
-  final TextEditingController weekNumberController = TextEditingController();
-  final TextEditingController topicController = TextEditingController();
-  final TextEditingController descriptionController = TextEditingController();
-  List<dynamic> selectedCLOs = [];
-  final assessmentsController = TextEditingController();
-
+  List<dynamic> weeklyTopics = [];
 
   @override
   Widget build(BuildContext context) {
-    String buttonText = widget.isFromOutline ? 'Next' : 'Add Weekly Topic';
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xffc19a6b),
@@ -53,167 +40,112 @@ class CreateWeeklyTopicState extends State<CreateWeeklyTopic> {
           child: SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                CustomTextFormField(
-                  controller: weekNumberController,
-                  label: 'Week Number',
-                  hintText: 'Enter Week Number',
-                  borderColor: errorColor,
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                CustomTextFormField(
-                  controller: topicController,
-                  label: 'Weekly Topic',
-                  hintText: 'Enter Weekly Topic',
-                  borderColor: errorColor,
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                CustomTextFormField(
-                  controller: descriptionController,
-                  label: 'Topic Description',
-                  hintText: 'Enter Topic Description',
-                  borderColor: errorColor,
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                FutureBuilder(
-                  future: cloFuture,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else if (snapshot.hasError) {
-                      return Center(
-                        child: Text(
-                          'Error: ${snapshot.error}',
-                          style: TextStyle(
-                              color:
-                              errorColor), // Set text color to errorColor
-                        ),
-                      );
-                    } else {
-                      final clos = snapshot.data as List<dynamic>;
-                      final List<MultiSelectItem<dynamic>> multiSelectItems =
-                      List.generate(clos.length, (index) {
-                        return MultiSelectItem<dynamic>(
-                          clos[index]['id'],
-                          'CLO-${index + 1}',
-                        );
-                      });
-                      return MultiSelectDialogField(
-                        items: multiSelectItems,
-                        listType: MultiSelectListType.CHIP,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: errorColor, // Set border color to errorColor
-                          ),
-                          borderRadius:
-                          const BorderRadius.all(Radius.circular(10.0)),
-                        ),
-                        onConfirm: (values) {
-                          setState(() {
-                            selectedCLOs = values;
-                          });
-                        },
-                      );
-                    }
-                  },
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                CustomTextFormField(
-                  controller: assessmentsController,
-                  label: 'Weekly Assessments',
-                  hintText: 'Enter Weekly Assessments',
-                  borderColor: errorColor,
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
+                if (weeklyTopics.isNotEmpty) ..._buildWeeklyTopicList(),
+                const SizedBox(height: 20),
+                if (isLoading)
+                  const Center(child: CircularProgressIndicator()),
+                if (errorMessage != null)
+                  Center(
+                    child: Text(
+                      errorMessage!,
+                      style: CustomTextStyles.bodyStyle(color: colorMessage),
+                    ),
+                  ),
                 Custom_Button(
-                  onPressedFunction: () async {
-                    final weekNumber = weekNumberController.text;
-                    final topic = topicController.text;
-                    final description = descriptionController.text;
-                    final assessments = assessmentsController.text;
-                    final courseOutlineId = Outline.id;
-
-                    if (weekNumber.isEmpty ||
-                        topic.isEmpty ||
-                        description.isEmpty ||
-                        selectedCLOs.isEmpty ||
-                        assessments.isEmpty) {
-                      setState(() {
-                        colorMessage = Colors.red;
-                        errorColor = Colors.red;
-                        errorMessage = 'Please enter all fields';
-                      });
-                    } else {
-                      setState(() {
-                        isLoading = true;
-                      });
-
-                      if (widget.isFromOutline) {
-                        // Handle navigation to the next screen
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //     builder: (context) => NextScreen(), // Replace with your next screen
-                        //   ),
-                        // );
-                      } else {
-                        final bool added = await WeeklyTopics.addWeeklyTopics(
-                            int.parse(weekNumber),
-                            topic,
-                            description,
-                            selectedCLOs,
-                            assessments,
-                            courseOutlineId);
-
-                        if (added) {
-                          weekNumberController.clear();
-                          topicController.clear();
-                          descriptionController.clear();
-                          selectedCLOs.clear();
-                          assessmentsController.clear();
-
-                          setState(() {
-                            isLoading = false;
-                            colorMessage = Colors.green;
-                            errorColor = Colors
-                                .black12; // Reset errorColor to default value
-                            errorMessage = 'Weekly Topic Added Successfully';
-                          });
-                        }
-                      }
-                    }
-                  },
-                  ButtonWidth: 180,
+                  onPressedFunction: _showCommentsDialog,
+                  ButtonWidth: 280,
+                  ButtonHeight: 50,
                   ButtonText: buttonText,
                 ),
-                const SizedBox(height: 20),
-                Visibility(
-                  visible: isLoading,
-                  child: const CircularProgressIndicator(),
-                ),
-                errorMessage != null
-                    ? Text(
-                  errorMessage!,
-                  style: CustomTextStyles.bodyStyle(color: colorMessage),
-                )
-                    : const SizedBox(),
               ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  Future<void> _showCommentsDialog() async {
+    String comments = "";
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Add Comments"),
+          content: TextField(
+            onChanged: (value) {
+              comments = value;
+            },
+            decoration: InputDecoration(
+              hintText: "Enter any additional comments or messages",
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _generateWeeklyTopics(comments);
+              },
+              child: Text("Generate"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("Cancel"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _generateWeeklyTopics(String comments) async {
+    setState(() {
+      isLoading = true;
+      errorMessage = null;
+      weeklyTopics.clear();
+    });
+
+    try {
+      List<dynamic> topics = await WeeklyTopics.generateWeeklyTopics(Course.id, User.id, 2, comments);
+
+      setState(() {
+        isLoading = false;
+        weeklyTopics = topics;
+        buttonText = 'Regenerate Weekly Topics';  // Change button text after topics are generated
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+        errorMessage = 'Failed to generate weekly topics';
+        colorMessage = Colors.red;
+      });
+    }
+  }
+
+  List<Widget> _buildWeeklyTopicList() {
+    return weeklyTopics.map((topic) {
+      return Card(
+        elevation: 5,
+        margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+        child: ListTile(
+          title: Text(
+            topic['topic'],
+            style: CustomTextStyles.headingStyle(fontSize: 16),
+          ),
+          subtitle: Text(
+            topic['description'],
+            style: CustomTextStyles.bodyStyle(),
+          ),
+          trailing: Text(
+            'Week ${topic['week_number']}',
+            style: CustomTextStyles.bodyStyle(),
+          ),
+        ),
+      );
+    }).toList();
   }
 }

@@ -14,28 +14,22 @@ class Create_Course extends StatefulWidget {
 }
 
 class Create_Course_State extends State<Create_Course> {
-  String?
-      errorMessage; //variable to show the error when the wrong credentials are entered or the fields are empty
-  Color colorMessage = Colors.red; // color of the message when the error occurs
-  var isLoading =
-      false; // variable for use the functionality of loading while request is processed to server
-  Color errorColor = Colors
-      .black12; // color of border of text fields when the error is not occurred
+  String? errorMessage;
+  Color colorMessage = Colors.red;
+  bool isLoading = false;
+  Color errorColor = Colors.black12;
 
-  // Text Editing controllers for this form page
-  final TextEditingController CourseCodeController = TextEditingController();
-  final TextEditingController CourseTitleController = TextEditingController();
-  final TextEditingController CourseTheoryCreditsController =
-      TextEditingController();
-  final TextEditingController CourseLabCreditsController =
-      TextEditingController();
-  final TextEditingController CourseDescriptionController =
-      TextEditingController();
+  final TextEditingController courseCodeController = TextEditingController();
+  final TextEditingController courseTitleController = TextEditingController();
+  final TextEditingController courseTheoryCreditsController = TextEditingController();
+  final TextEditingController courseLabCreditsController = TextEditingController();
+  final TextEditingController courseDescriptionController = TextEditingController();
+  final TextEditingController courseContentController = TextEditingController();
+  final TextEditingController preReqController = TextEditingController();
 
-  final TextEditingController PreReqController  = TextEditingController();
-  String? SelectedCourseReqElec;
-  String? SelectedCourseType;
-  dynamic SelectedCoursePrerequisite;
+  String? selectedCourseReqElec;
+  String? selectedCourseType;
+  dynamic selectedCoursePrerequisite;
 
   @override
   Widget build(BuildContext context) {
@@ -49,210 +43,229 @@ class Create_Course_State extends State<Create_Course> {
       ),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              CustomTextFormField(
-                controller: CourseCodeController,
-                label: 'Course Code',
-                hintText: 'MGT-271',
-                borderColor: errorColor,
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              CustomTextFormField(
-                controller: CourseTitleController,
-                label: 'Course Title',
-                hintText: 'Machine Learning',
-                borderColor: errorColor,
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              CustomTextFormField(
-                controller: CourseTheoryCreditsController,
-                label: 'Theory Credits',
-                hintText: '2',
-                borderColor: errorColor,
-                Keyboard_Type: TextInputType.number,
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              CustomTextFormField(
-                controller: CourseLabCreditsController,
-                label: 'Lab Credits',
-                hintText: '1',
-                borderColor: errorColor,
-                Keyboard_Type: TextInputType.number,
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Row(
-                children: [
-                  Radio<String>(
-                      value: 'Required',
-                      groupValue: SelectedCourseType,
-                      onChanged: (value) {
-                        setState(() {
-                          SelectedCourseType = value as String;
-                        });
-                      }),
-                  Text('Lecture', style: CustomTextStyles.bodyStyle()),
-                  Radio<String>(
-                      value: 'Lab',
-                      groupValue: SelectedCourseType,
-                      onChanged: (value) {
-                        setState(() {
-                          SelectedCourseType = value as String;
-                        });
-                      }),
-                  Text(
-                    'Lab',
-                    style: CustomTextStyles.bodyStyle(),
-                  )
-                ],
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Row(
-                children: [
-                  Radio<String>(
-                      value: 'Required',
-                      groupValue: SelectedCourseReqElec,
-                      onChanged: (value) {
-                        setState(() {
-                          SelectedCourseReqElec = value as String;
-                        });
-                      }),
-                  Text('Required', style: CustomTextStyles.bodyStyle()),
-                  Radio<String>(
-                      value: 'Elective',
-                      groupValue: SelectedCourseReqElec,
-                      onChanged: (value) {
-                        setState(() {
-                          SelectedCourseReqElec = value as String;
-                        });
-                      }),
-                  Text(
-                    'Elective',
-                    style: CustomTextStyles.bodyStyle(),
-                  )
-                ],
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              DropDown(
-                fetchData: ( )=> Course.fetchCoursesbyCampusId(Campus.id),
-                selectedValue: SelectedCoursePrerequisite,
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CustomTextFormField(
+              controller: courseCodeController,
+              label: 'Course Code',
+              hintText: 'MGT-271',
+              borderColor: errorColor,
+            ),
+            const SizedBox(height: 20),
+            CustomTextFormField(
+              controller: courseTitleController,
+              label: 'Course Title',
+              hintText: 'Machine Learning',
+              borderColor: errorColor,
+            ),
+            const SizedBox(height: 20),
+            CustomTextFormField(
+              controller: courseTheoryCreditsController,
+              label: 'Theory Credits',
+              hintText: '2',
+              borderColor: errorColor,
+              Keyboard_Type: TextInputType.number,
+            ),
+            const SizedBox(height: 20),
+            CustomTextFormField(
+              controller: courseLabCreditsController,
+              label: 'Lab Credits',
+              hintText: '1',
+              borderColor: errorColor,
+              Keyboard_Type: TextInputType.number,
+            ),
+            const SizedBox(height: 20),
+            _buildCourseTypeRadioButtons(),
+            const SizedBox(height: 20),
+            _buildCourseRequirementRadioButtons(),
+            const SizedBox(height: 20),
+            DropDown(
+                fetchData: () => Course.fetchCoursesbyCampusId(Campus.id),
+                selectedValue: selectedCoursePrerequisite,
                 keyName: 'title',
-                controller: PreReqController,
+                controller: preReqController,
                 hintText: 'Select Requisite',
                 label: "Pre Requisite",
                 onValueChanged: (dynamic id) {
                   setState(() {
-                    SelectedCoursePrerequisite = id;
+                    selectedCoursePrerequisite = id;
                   });
                 }
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              CustomTextFormField(
-                controller: CourseDescriptionController,
-                label: 'Course Description',
-                hintText: 'Enter Course Description',
-                borderColor: errorColor,
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Custom_Button(
-                onPressedFunction: () async {
-                  String CourseCode = CourseCodeController.text;
-                  String CourseTitle = CourseTitleController.text;
-                  int? theoryCredits =
-                      int.tryParse(CourseTheoryCreditsController.text);
-                  int? labCredits =
-                      int.tryParse(CourseLabCreditsController.text);
-                  String? CourseType = SelectedCourseType;
-                  String? ReqEelc = SelectedCourseReqElec;
-                  int? PreReq = SelectedCoursePrerequisite;
-                  String Description = CourseDescriptionController.text;
-                  labCredits ??= 0;
-                  if (CourseCode.isEmpty ||
-                      CourseTitle.isEmpty ||
-                      theoryCredits == null ||
-                      CourseType == null ||
-                      ReqEelc == null ||
-                      Description.isEmpty) {
-                    setState(() {
-                      colorMessage = Colors.red;
-                      errorColor = Colors.red;
-                      errorMessage = 'Please enter all fields';
-                    });
-                  } else {
-                    setState(() {
-                      isLoading = true;
-                    });
-
-                    bool created = await Course.createCourse(
-                        CourseCode,
-                        CourseTitle,
-                        theoryCredits,
-                        labCredits,
-                        CourseType,
-                        ReqEelc,
-                        PreReq,
-                        Description,
-                        Campus.id
-                    );
-                    if (created) {
-                      //Clear all the fields and deselect the radio button and dropdown
-                      CourseCodeController.clear();
-                      CourseTitleController.clear();
-                      CourseTheoryCreditsController.clear();
-                      CourseLabCreditsController.clear();
-                      SelectedCourseType = null;
-                      SelectedCourseReqElec = null;
-                      SelectedCoursePrerequisite = null;
-                      CourseDescriptionController.clear();
-
-                      setState(() {
-                        isLoading = false;
-                        colorMessage = Colors.green;
-                        errorColor =
-                            Colors.black12; // Reset errorColor to default value
-                        errorMessage = 'Course Created successfully';
-                      });
-                    }
-                  }
-                },
+            ),
+            const SizedBox(height: 20),
+            CustomTextFormField(
+              controller: courseDescriptionController,
+              label: 'Course Description',
+              hintText: 'Enter Course Description',
+              borderColor: errorColor,
+              maxLines: 3,
+            ),
+            const SizedBox(height: 20),
+            CustomTextFormField(
+              controller: courseContentController,
+              label: 'Course Content',
+              hintText: 'Enter Course Content',
+              borderColor: errorColor,
+              maxLines: 10,
+            ),
+            const SizedBox(height: 20),
+            Center(
+              child: Custom_Button(
+                onPressedFunction: _createCourse,
                 ButtonText: 'Create Course',
                 ButtonWidth: 200,
               ),
-              const SizedBox(height: 20),
-              Visibility(
-                visible: isLoading,
-                child: const CircularProgressIndicator(),
+            ),
+            const SizedBox(height: 20),
+            if (isLoading)
+              const Center(child: CircularProgressIndicator()),
+            if (errorMessage != null)
+              Center(
+                child: Text(
+                  errorMessage!,
+                  style: CustomTextStyles.bodyStyle(color: colorMessage),
+                ),
               ),
-              errorMessage != null
-                  ? Text(
-                      errorMessage!,
-                      style: CustomTextStyles.bodyStyle(color: colorMessage),
-                    )
-                  : const SizedBox(),
-            ],
-          ),
+          ],
         ),
       ),
     );
+  }
+
+  Widget _buildCourseTypeRadioButtons() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Course Type', style: CustomTextStyles.bodyStyle()),
+        Row(
+          children: [
+            Radio<String>(
+              value: 'Lecture',
+              groupValue: selectedCourseType,
+              onChanged: (value) {
+                setState(() {
+                  selectedCourseType = value;
+                });
+              },
+            ),
+            Text('Lecture', style: CustomTextStyles.bodyStyle()),
+            Radio<String>(
+              value: 'Lab',
+              groupValue: selectedCourseType,
+              onChanged: (value) {
+                setState(() {
+                  selectedCourseType = value;
+                });
+              },
+            ),
+            Text('Lab', style: CustomTextStyles.bodyStyle())
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCourseRequirementRadioButtons() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Course Requirement', style: CustomTextStyles.bodyStyle()),
+        Row(
+          children: [
+            Radio<String>(
+              value: 'Required',
+              groupValue: selectedCourseReqElec,
+              onChanged: (value) {
+                setState(() {
+                  selectedCourseReqElec = value;
+                });
+              },
+            ),
+            Text('Required', style: CustomTextStyles.bodyStyle()),
+            Radio<String>(
+              value: 'Elective',
+              groupValue: selectedCourseReqElec,
+              onChanged: (value) {
+                setState(() {
+                  selectedCourseReqElec = value;
+                });
+              },
+            ),
+            Text('Elective', style: CustomTextStyles.bodyStyle())
+          ],
+        ),
+      ],
+    );
+  }
+
+  Future<void> _createCourse() async {
+    String courseCode = courseCodeController.text;
+    String courseTitle = courseTitleController.text;
+    int? theoryCredits = int.tryParse(courseTheoryCreditsController.text);
+    int? labCredits = int.tryParse(courseLabCreditsController.text);
+    String? courseType = selectedCourseType;
+    String? reqElec = selectedCourseReqElec;
+    int? preReq = selectedCoursePrerequisite;
+    String description = courseDescriptionController.text;
+    String content = courseContentController.text;
+    labCredits ??= 0;
+
+    if (courseCode.isEmpty ||
+        courseTitle.isEmpty ||
+        theoryCredits == null ||
+        courseType == null ||
+        reqElec == null ||
+        description.isEmpty ||
+        content.isEmpty) {
+      setState(() {
+        colorMessage = Colors.red;
+        errorColor = Colors.red;
+        errorMessage = 'Please enter all fields';
+      });
+    } else {
+      setState(() {
+        isLoading = true;
+      });
+
+      bool created = await Course.createCourse(
+          courseCode,
+          courseTitle,
+          theoryCredits,
+          labCredits,
+          courseType,
+          reqElec,
+          preReq,
+          description,
+          content,
+          Campus.id
+      );
+      if (created) {
+        // Clear all the fields and deselect the radio button and dropdown
+        courseCodeController.clear();
+        courseTitleController.clear();
+        courseTheoryCreditsController.clear();
+        courseLabCreditsController.clear();
+        courseDescriptionController.clear();
+        courseContentController.clear();
+        selectedCourseType = null;
+        selectedCourseReqElec = null;
+        selectedCoursePrerequisite = null;
+
+        setState(() {
+          isLoading = false;
+          colorMessage = Colors.green;
+          errorColor = Colors.black12;
+          errorMessage = 'Course Created successfully';
+        });
+      } else {
+        setState(() {
+          isLoading = false;
+          colorMessage = Colors.red;
+          errorMessage = 'Failed to create course';
+        });
+      }
+    }
   }
 }

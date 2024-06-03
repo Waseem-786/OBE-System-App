@@ -5,11 +5,13 @@ from rest_framework_simplejwt.authentication import JWTStatelessUserAuthenticati
 from user_management.permissions import IsSuper_University_Campus_Department
 from .models import CourseInformation, CourseSchedule, CourseObjective, CourseAssessment, CourseBooks, CourseLearningOutcomes, CourseOutline, WeeklyTopic
 from .serializers import CourseInformationSerializer, CourseScheduleSerializer, CourseObjectiveSerializer, CourseObjectiveListSerializer, CourseAssessmentSerializer, CourseBookSerializer, CourseLearningOutcomesSerializer, CourseOutlineSerializer, WeeklyTopicSerializer, CompleteOutlineSerializer
-from .utils import determine_clo_details
-import openai
-from rest_framework.decorators import api_view
+from .utils import determine_clo_details, generate_weekly_topics
 
-# Create your views here.
+# CLO and PLO Mapping View
+from django.http import JsonResponse
+from program_management.models import PEO, PLO, PEO_PLO_Mapping
+
+# Course Information Views
 class CourseInformationView(generics.ListCreateAPIView):
     queryset = CourseInformation.objects.all()
     serializer_class = CourseInformationSerializer
@@ -31,14 +33,25 @@ class Course_of_Specific_Campus(generics.ListAPIView):
         pk = self.kwargs['pk']
         queryset = CourseInformation.objects.filter(campus__id=pk)
         return queryset
-    
+
+# Course Learning Outcomes Views
 class CourseLearningOutcomesView(generics.CreateAPIView):
     queryset = CourseLearningOutcomes.objects.all()
     serializer_class = CourseLearningOutcomesSerializer
     permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
-    
+
     def create(self, request, *args, **kwargs):
+        # Manually add CLO or generate via AI
+        if request.data.get('generate', False):
+            # Use AI to generate CLO
+            clo_description = request.data.get('clo_description', '')
+            domain, level, related_plos = determine_clo_details(clo_description)
+            request.data.update({
+                'bloom_taxonomy': domain,
+                'level': level,
+                'plo': related_plos
+            })
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
@@ -61,8 +74,7 @@ class SingleCLO(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
 
-
-
+# Course Objectives Views
 class CourseObjectiveCreateView(generics.CreateAPIView):
     queryset = CourseObjective.objects.all()
     serializer_class = CourseObjectiveSerializer
@@ -73,25 +85,25 @@ class CourseObjectiveCreateView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         is_valid = serializer.is_valid()
         if not is_valid:
-            errors = serializer.errors  # Get validation errors
-            return Response({"errors": errors}, status=status.HTTP_400_BAD_REQUEST)  # Send custom response with errors
-
+            errors = serializer.errors
+            return Response({"errors": errors}, status=status.HTTP_400_BAD_REQUEST)
+        
         course = serializer.validated_data.get('course')
         descriptions = serializer.validated_data.get('description', [])
-
+        
         if not isinstance(descriptions, list):
             return Response({"error": "Description must be a list"}, status=status.HTTP_400_BAD_REQUEST)
-
-        for description in descriptions:
-            if not isinstance(description, str):
-                return Response({"error": "Each description must be a string"}, status=status.HTTP_400_BAD_REQUEST)
-            
-        if not descriptions:  # If descriptions list is empty
+        
+        if not descriptions:
             return Response({"error": "Description can't be null"}, status=status.HTTP_400_BAD_REQUEST)
         
         for description in descriptions:
+            if not isinstance(description, str):
+                return Response({"error": "Each description must be a string"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        for description in descriptions:
             CourseObjective.objects.create(course=course, description=description)
-
+        
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class CourseObjective_SpecificCourse_View(generics.ListAPIView):
@@ -103,16 +115,14 @@ class CourseObjective_SpecificCourse_View(generics.ListAPIView):
         pk = self.kwargs['pk']
         queryset = CourseObjective.objects.filter(course__id=pk)
         return queryset
-    
+
 class SingleCourseObjectiveView(generics.RetrieveUpdateDestroyAPIView):
     queryset = CourseObjective.objects.all()
     serializer_class = CourseObjectiveListSerializer
     permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
 
-
-
-
+# Course Outline Views
 class CourseOutlineCreateView(generics.CreateAPIView):
     queryset = CourseOutline.objects.all()
     serializer_class = CourseOutlineSerializer
@@ -128,7 +138,7 @@ class CourseOutline_SpecificCourse_View(generics.ListAPIView):
         pk = self.kwargs['pk']
         queryset = CourseOutline.objects.filter(course__id=pk)
         return queryset
-    
+
 class CourseOutline_SpecificBatch_View(generics.ListAPIView):
     serializer_class = CourseOutlineSerializer
     permission_classes = [IsSuper_University_Campus_Department]
@@ -155,11 +165,7 @@ class SingleCourseOutlineView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
 
-
-
-
-
-
+# Course Schedule Views
 class CourseScheduleCreateView(generics.CreateAPIView):
     queryset = CourseSchedule.objects.all()
     serializer_class = CourseScheduleSerializer
@@ -175,24 +181,21 @@ class CourseSchedule_SpecificOutline_View(generics.ListAPIView):
         pk = self.kwargs['pk']
         queryset = CourseSchedule.objects.filter(course_outline__id=pk)
         return queryset
-    
+
 class SingleCourseScheduleView(generics.RetrieveUpdateDestroyAPIView):
     queryset = CourseSchedule.objects.all()
     serializer_class = CourseScheduleSerializer
     permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
 
-
-
-
-
+# Course Assessment Views
 class CourseAssessmentCreateView(generics.CreateAPIView):
     queryset = CourseAssessment.objects.all()
     serializer_class = CourseAssessmentSerializer
     permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
+
     def create(self, request):
-        # Check if 'clo' and 'description' are empty lists
         clo_list = request.data.get('clo', [])
         
         if not isinstance(clo_list, list):
@@ -212,23 +215,20 @@ class CourseAssessment_SpecificOutline_View(generics.ListAPIView):
         pk = self.kwargs['pk']
         queryset = CourseAssessment.objects.filter(course_outline__id=pk)
         return queryset
-    
+
 class SingleCourseAssessmentView(generics.RetrieveUpdateDestroyAPIView):
     queryset = CourseAssessment.objects.all()
     serializer_class = CourseAssessmentSerializer
     permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
 
-
-
-
-
-
+# Course Books Views
 class CourseBookCreateView(generics.CreateAPIView):
     queryset = CourseBooks.objects.all()
     serializer_class = CourseBookSerializer
     permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
+
 
 class CourseBook_SpecificOutline_View(generics.ListAPIView):
     serializer_class = CourseBookSerializer
@@ -264,21 +264,29 @@ class Reference_CourseBook(generics.ListAPIView):
         queryset = CourseBooks.objects.filter(course_outline__id=pk, book_type='Reference')
         return queryset
 
+
+# Weekly Topic Views
 class WeeklyTopicCreateView(generics.CreateAPIView):
     queryset = WeeklyTopic.objects.all()
     serializer_class = WeeklyTopicSerializer
     permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
 
-    def create(self, request):
-        # Check if 'clo' and 'description' are empty lists
-        clo_list = request.data.get('clo', [])
-        
-        if not isinstance(clo_list, list):
-            return Response({"message": "Invalid data format"}, status=status.HTTP_400_BAD_REQUEST)
+    def create(self, request, *args, **kwargs):
+        if request.data.get('generate', False):
+            course_id = request.data.get('course_id')
+            teacher_id = request.data.get('teacher_id')
+            batch_id = request.data.get('batch_id')
+            user_comments = request.data.get('comments', '')
 
-        if not clo_list:
-            return Response({"message": "'clo' cannot be empty"}, status=status.HTTP_400_BAD_REQUEST)
+            try:
+                weekly_topics_objects = generate_weekly_topics(course_id, teacher_id, batch_id, user_comments)
+                serialized_data = WeeklyTopicSerializer(weekly_topics_objects, many=True)
+                return Response(serialized_data.data, status=status.HTTP_201_CREATED)
+            except ValueError as e:
+                return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            except Exception as e:
+                return Response({"detail": "An unexpected error occurred."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return super().create(request)
 
@@ -291,25 +299,23 @@ class WeeklyTopic_SpecificOutline_View(generics.ListAPIView):
         pk = self.kwargs['pk']
         queryset = WeeklyTopic.objects.filter(course_outline__id=pk)
         return queryset
-    
+
 class WeeklyTopicRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     queryset = WeeklyTopic.objects.all()
     serializer_class = WeeklyTopicSerializer
     permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
 
-
-
+# Complete Outline View
 class CompleteOutlineView(APIView):
     permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
     def get(self, request, pk):
         outline = get_object_or_404(CourseOutline, id=pk)
-        serialized_data =  CompleteOutlineSerializer(outline)
+        serialized_data = CompleteOutlineSerializer(outline)
         return Response(serialized_data.data, status=status.HTTP_200_OK)
-    
 
-# views.py
+# CLO and PLO Mapping View
 from django.http import JsonResponse
 from program_management.models import PEO, PLO, PEO_PLO_Mapping
 
@@ -335,20 +341,11 @@ def get_clo_plo_peo_mappings(request, course_id):
     
     return JsonResponse(data, safe=False)
 
-
-
-# views.py
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from .utils import determine_clo_details
-from .models import CourseLearningOutcomes
-
-class clo_view(APIView):
+# CLO View
+class CLODataView(APIView):
     def post(self, request):
         clo_description = request.data['clo_description']
         domain, level, related_plos = determine_clo_details(clo_description)
-
-        # plo_data = [{'name': plo.name, 'description': plo.description} for plo in related_plos]
 
         data = {
             'clo_description': clo_description,
@@ -358,78 +355,3 @@ class clo_view(APIView):
         }
 
         return Response(data)
-    
-
-
-@api_view(['POST'])
-def generate_weekly_topics(request, course_id):
-    # Fetch the course information
-    course = get_object_or_404(CourseInformation, id=course_id)
-    objectives = CourseObjective.objects.filter(course=course)
-    
-    # Prepare the data to send to OpenAI
-    course_data = {
-        "course_description": course.description,
-        "course_objectives": [obj.description for obj in objectives],
-        "pec_content": course.pec_content
-    }
-    
-    # Create the prompt for OpenAI
-    prompt = f"""
-    Generate a weekly breakdown of topics for a course with the following details:
-    Course Description: {course_data['course_description']}
-    Course Objectives: {', '.join(course_data['course_objectives'])}
-    Content: {course_data['pec_content']}
-    
-    The course should have topics for weeks 1-7, an exam in week 8, topics for weeks 9-15, and a final exam in week 16.
-    
-    Week 1: 
-    Week 2: 
-    Week 3: 
-    Week 4: 
-    Week 5: 
-    Week 6: 
-    Week 7: 
-    Week 8: Midterm Exam
-    Week 9: 
-    Week 10: 
-    Week 11: 
-    Week 12: 
-    Week 13: 
-    Week 14: 
-    Week 15: 
-    Week 16: Final Exam
-    """
-    
-    # Call OpenAI API to generate topics
-    response = openai.Completion.create(
-        engine="text-davinci-003",
-        prompt=prompt,
-        max_tokens=1000,
-        temperature=0.7,
-        n=1
-    )
-    
-    # Parse the response
-    generated_text = response.choices[0].text.strip()
-    weekly_topics = generated_text.split("\n")
-    
-    # Save the topics in the database
-    weekly_topics_objects = []
-    for week, topic in enumerate(weekly_topics, start=1):
-        if week != 8 and week != 16:  # Skip midterm and final exam weeks for topic creation
-            week_number = week if week <= 7 else week - 1  # Adjust for week 8
-            topic_title, topic_description = topic.split(": ")
-            weekly_topic = WeeklyTopic(
-                week_number=week_number,
-                topic=topic_title.strip(),
-                description=topic_description.strip(),
-                course_outline=course
-            )
-            weekly_topics_objects.append(weekly_topic)
-    
-    WeeklyTopic.objects.bulk_create(weekly_topics_objects)
-    
-    # Serialize the saved weekly topics and return in response
-    serialized_data = WeeklyTopicSerializer(weekly_topics_objects, many=True)
-    return Response(serialized_data.data, status=status.HTTP_201_CREATED)

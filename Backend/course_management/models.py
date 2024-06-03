@@ -1,7 +1,7 @@
 from django.db import models
 from university_management.models import Department, Batch
 from user_management.models import CustomUser
-from university_management.models import Campus, Department
+from university_management.models import Campus
 from program_management.models import PLO
 
 class CourseInformation(models.Model):
@@ -13,7 +13,7 @@ class CourseInformation(models.Model):
     required_elective = models.CharField(max_length=20)
     prerequisite = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='prerequisite_for')
     description = models.CharField(max_length=1000)
-    pec_content = models.TextField()
+    pec_content = models.TextField(default="")
     campus = models.ForeignKey(Campus, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
@@ -25,7 +25,7 @@ class CourseObjective(models.Model):
 
     def __str__(self) -> str:
         return self.description
-    
+
 class CourseLearningOutcomes(models.Model):
     course = models.ForeignKey(CourseInformation, on_delete=models.CASCADE)
     description = models.TextField()
@@ -40,7 +40,6 @@ class CourseLearningOutcomes(models.Model):
 
     def __str__(self) -> str:
         return self.description
-    
 
 class CourseOutline(models.Model):
     course = models.ForeignKey(CourseInformation, on_delete=models.CASCADE)
@@ -61,11 +60,10 @@ class CourseAssessment(models.Model):
     name = models.CharField(max_length=255)
     count = models.IntegerField()
     weight = models.DecimalField(max_digits=5, decimal_places=2)
-    clo = models.ManyToManyField(CourseLearningOutcomes)
+    clo = models.ManyToManyField(CourseLearningOutcomes, related_name='assessments')
+    week = models.ForeignKey('WeeklyTopic', on_delete=models.CASCADE, null=True, blank=True)
     def __str__(self):
         return self.name
-        
-
 
 class CourseBooks(models.Model):
     course_outline = models.ForeignKey(CourseOutline, on_delete=models.CASCADE)
@@ -82,31 +80,12 @@ class CourseBooks(models.Model):
         return self.title
 
 class WeeklyTopic(models.Model):
-    WEEK_CHOICES = [
-        (1, 'Week 1'),
-        (2, 'Week 2'),
-        (3, 'Week 3'),
-        (4, 'Week 4'),
-        (5, 'Week 5'),
-        (7, 'Week 7'),
-        (8, 'Week 8'),
-        (10, 'Week 10'),
-        (11, 'Week 11'),
-        (13, 'Week 13'),
-        (14, 'Week 14'),
-        (15, 'Week 15'),
-        (16, 'Week 16'),
-    ]
+    WEEK_CHOICES = [(i, f'Week {i}') for i in range(1, 17)]
     week_number = models.IntegerField(choices=WEEK_CHOICES)
     topic = models.CharField(max_length=255)
     description = models.TextField()
     course_outline = models.ForeignKey(CourseOutline, on_delete=models.CASCADE)
-    clo = models.ManyToManyField(CourseLearningOutcomes)
-    assessments = models.TextField()
+    assessments = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f"Week {self.week_number}: {self.topic}"
-
-class CourseDepartment(models.Model):
-    department = models.ForeignKey(Department, on_delete=models.CASCADE)
-    course = models.ForeignKey(CourseInformation, on_delete=models.CASCADE)
