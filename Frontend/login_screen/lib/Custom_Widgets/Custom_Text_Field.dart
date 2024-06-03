@@ -1,6 +1,4 @@
-
 import 'package:flutter/material.dart';
-
 import 'Custom_Text_Style.dart';
 
 class CustomTextFormField extends StatelessWidget {
@@ -11,8 +9,9 @@ class CustomTextFormField extends StatelessWidget {
   final String? hintText;
   final Color? borderColor;
   final bool? passField;
-  final TextInputType?  Keyboard_Type;
+  final TextInputType? Keyboard_Type;
   final VoidCallback? onSuffixIconPressed;
+  final int? maxLines; // Added maxLines property
 
   const CustomTextFormField({
     Key? key,
@@ -24,8 +23,8 @@ class CustomTextFormField extends StatelessWidget {
     this.borderColor,
     this.passField,
     this.Keyboard_Type,
-    this.onSuffixIconPressed
-
+    this.onSuffixIconPressed,
+    this.maxLines, // Added maxLines parameter
   }) : super(key: key);
 
   @override
@@ -33,6 +32,7 @@ class CustomTextFormField extends StatelessWidget {
     return TextFormField(
       controller: controller,
       obscureText: passField ?? false,
+      maxLines: maxLines ?? 1, // Default to 1 line if maxLines is not provided
       validator: (value) {
         if (value == null || value.isEmpty) {
           return 'Please Enter ${label}';
@@ -50,28 +50,25 @@ class CustomTextFormField extends StatelessWidget {
         label: label != null
             ? Text(
           label!,
-          style: CustomTextStyles.bodyStyle()
+          style: CustomTextStyles.bodyStyle(),
         )
             : null,
         hintText: hintText ?? 'Enter Email',
         hintStyle: CustomTextStyles.bodyStyle(color: Colors.grey),
         border: OutlineInputBorder(
           borderSide: BorderSide(
-            color:  borderColor ??   Colors.black12, // Default border
-            // color
+            color: borderColor ?? Colors.black12, // Default border color
           ),
           borderRadius: BorderRadius.circular(10),
         ),
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(
-            color: borderColor??  Colors.black12, // Default border color
+            color: borderColor ?? Colors.black12, // Default border color
           ),
           borderRadius: BorderRadius.circular(10),
         ),
       ),
       keyboardType: Keyboard_Type,
-
-
     );
   }
 }

@@ -162,12 +162,13 @@ class SingleSectionView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class RefineStatementView(APIView):
-    permission_classes = [JWTStatelessUserAuthentication]
+    authentication_classes = [JWTStatelessUserAuthentication]
+
     def post(self, request):
         statement_type = request.data.get('statement_type')
         statement = request.data.get('statement')
         additional_message = request.data.get('additional_message', '')
-
+        
         if statement_type not in ['vision', 'mission']:
             return Response({"error": "Invalid statement type provided. Choose 'vision' or 'mission'."}, status=400)
 

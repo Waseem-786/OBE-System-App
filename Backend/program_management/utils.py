@@ -2,9 +2,6 @@ import openai
 import os
 from .models import Department
 
-import openai
-import os
-from .models import Department
 
 def generate_peos(department_id, num_peos, additional_message=None):
     try:

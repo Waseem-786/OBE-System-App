@@ -81,7 +81,7 @@ class Course {
 
 
   static Future<bool> createCourse(String code, String title, int theoryCredits, int labCredits, String courseType,
-      String reqElec, int? preReq, String description, int campus) async {
+      String reqElec, int? preReq, String description, String content, int campus) async {
     try {
       final accessToken = await storage.read(key: "access_token");
       final url = Uri.parse('$ipAddress:8000/api/course');
@@ -93,6 +93,7 @@ class Course {
         'course_type': courseType,
         'required_elective': reqElec,
         'description': description,
+        'pec_content': content,
         'campus': campus
       };
 

@@ -14,4 +14,7 @@ urlpatterns = [
     path('complete-question', views.CompleteQuestionView.as_view()),
     path('complete-assessment', views.CompleteAssessmentCreateView.as_view()),
     path('complete-assessment/<int:assessment_id>', views.CompleteAssessmentView.as_view()),
+
+    path('assessment/question/consistency',views.CheckQuestionConsistencyView.as_view()),
+    path('assessment/question/generate',views.ConvertQuestionWithCLOsView.as_view()),
 ]

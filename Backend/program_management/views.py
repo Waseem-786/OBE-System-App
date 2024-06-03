@@ -54,7 +54,7 @@ class ALL_PEO_For_Specific_Program(generics.ListAPIView):
 
 
 class GeneratePEOView(APIView):
-    permission_classes = [JWTStatelessUserAuthentication]  # Adjust permissions as needed
+    authentication_classes = [JWTStatelessUserAuthentication]  # Adjust permissions as needed
 
     def post(self, request, department_id):
         num_peos = request.data.get('num_peos', 3)  # Default to generating 3 PEOs if not specified

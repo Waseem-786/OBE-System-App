@@ -25,7 +25,6 @@ class CourseObjectiveListSerializer(serializers.ModelSerializer):
         model = CourseObjective
         fields = '__all__'
     
-
 class CourseAssessmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = CourseAssessment
@@ -48,15 +47,13 @@ class CourseLearningOutcomesSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("At least one PLO must be provided.")
         return value
 
-
 class CourseOutlineSerializer(serializers.ModelSerializer):
-    course_name = serializers.CharField(source='course.title',read_only=True)
-    batch_name = serializers.CharField(source='batch.name',read_only=True)
-    teacher_name = serializers.CharField(source='teacher.first_name',read_only=True)
+    course_name = serializers.CharField(source='course.title', read_only=True)
+    batch_name = serializers.CharField(source='batch.name', read_only=True)
+    teacher_name = serializers.CharField(source='teacher.first_name', read_only=True)
     class Meta:
         model = CourseOutline
-        fields = ['id','course', 'course_name', 'batch', 'batch_name','teacher','teacher_name']
-
+        fields = ['id', 'course', 'course_name', 'batch', 'batch_name', 'teacher', 'teacher_name']
 
 class WeeklyTopicSerializer(serializers.ModelSerializer):
     class Meta:

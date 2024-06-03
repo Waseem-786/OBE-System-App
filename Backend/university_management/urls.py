@@ -21,5 +21,5 @@ urlpatterns = [
     path('section/<int:pk>',views.SingleSectionView.as_view()),
     path('batch/<int:pk>/section',views.AllSections_of_SpecificBatch_View.as_view()),
 
-    path('refine', views.RefinementView.as_view())
+    path('refine', views.RefineStatementView.as_view())
 ]
