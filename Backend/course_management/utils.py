@@ -6,6 +6,7 @@ import openai
 import os
 from django.shortcuts import get_object_or_404
 from .models import CourseInformation, CourseObjective, CourseOutline, WeeklyTopic
+from program_management.models import PLO
 from university_management.models import Batch
 from user_management.models import CustomUser
 
@@ -40,7 +41,7 @@ bloom_keywords = {
         'mechanism': process_text('assemble calibrate construct dismantle fasten fix grind manipulate measure mend mix organize sketch perform execute'),
         'complex overt response': process_text('build operate perform coordinate master excel'),
         'adaptation': process_text('adapt alter change rearrange revise vary modify'),
-        'origination': process_text('arrange combine compose construct create design initiate originate innvate lead')
+        'origination': process_text('arrange combine compose construct create design initiate originate innovate lead')
     },
     'Affective': {
         'receiving': process_text('ask choose describe follow give hold identify locate name select attend listen notice acknowledge receive'),
@@ -97,7 +98,8 @@ def get_related_plos(clo_description):
     related_plos = []
     for plo_id, keywords in plos_keywords.items():
         if clo_words.intersection(keywords):
-            related_plos.append(plo_id)
+            plo = get_object_or_404(PLO, id=plo_id)
+            related_plos.append(plo.name)
     return related_plos
 
 def determine_clo_details(clo_description):

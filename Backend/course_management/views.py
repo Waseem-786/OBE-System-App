@@ -342,7 +342,7 @@ def get_clo_plo_peo_mappings(request, course_id):
     return JsonResponse(data, safe=False)
 
 # CLO View
-class clo_view(APIView):
+class CLODataView(APIView):
     def post(self, request):
         clo_description = request.data['clo_description']
         domain, level, related_plos = determine_clo_details(clo_description)

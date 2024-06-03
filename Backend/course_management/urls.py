@@ -40,5 +40,5 @@ urlpatterns = [
     path('weekly-topics/<int:pk>', views.WeeklyTopicRetrieveUpdateDestroy.as_view(), name='weekly-topic-detail'),
 
     path('mapping/<int:course_id>', views.get_clo_plo_peo_mappings),
-    path('test-clo', views.clo_view.as_view()),
+    path('CLOdata', views.CLODataView.as_view()),
 ]
