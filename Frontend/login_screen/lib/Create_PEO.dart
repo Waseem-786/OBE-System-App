@@ -2,8 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Button.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Field.dart';
-import 'package:login_screen/User.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
+import 'Department.dart';
 import 'PEO.dart';
 
 class Create_PEO extends StatefulWidget {
@@ -12,7 +12,7 @@ class Create_PEO extends StatefulWidget {
 }
 
 class _Create_PEOState extends State<Create_PEO> {
-  int departmentid = User.departmentid;
+  int departmentid = Department.id;
   String?
   errorMessage;
   //variable to show the error when the wrong credentials are entered or the fields are empty
@@ -36,7 +36,7 @@ class _Create_PEOState extends State<Create_PEO> {
         title: Container(
           margin: const EdgeInsets.only(left: 90),
           child: Text(
-            "Create PLO",
+            "Create PEO",
             style: CustomTextStyles.headingStyle(fontSize: 20),
           ),
         ),

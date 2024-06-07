@@ -7,6 +7,7 @@ import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
 import 'PEO.dart';
 import 'PEO_Profile.dart';
+import 'Show_PEO_Consistency_Page.dart'; // Import the new page
 
 class PEO_Page extends StatefulWidget {
   @override
@@ -40,8 +41,7 @@ class _PEO_PageState extends State<PEO_Page> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xffc19a6b),
-        title: Container(
-          margin: const EdgeInsets.only(left: 90),
+        title: Center(
           child: Text(
             "PEO Page",
             style: CustomTextStyles.headingStyle(fontSize: 20),
@@ -96,7 +96,7 @@ class _PEO_PageState extends State<PEO_Page> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                "PEO-${(index+1).toString()}",
+                                "PEO-${(index + 1).toString()}",
                                 style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                               ),
                               const Icon(
@@ -113,28 +113,47 @@ class _PEO_PageState extends State<PEO_Page> {
               }
             },
           ),
-          Custom_Button(onPressedFunction: (){
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => Generate_PEO_Page()));
-          },
-            ButtonWidth: 180,
-            ButtonText: 'Generate PEOs',
-            BackgroundColor: Colors.green,
-            ForegroundColor: Colors.white,
+          Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Custom_Button(
+                  onPressedFunction: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Generate_PEO_Page()));
+                  },
+                  ButtonWidth: 180,
+                  ButtonText: 'Generate PEOs',
+                  BackgroundColor: Colors.green,
+                  ForegroundColor: Colors.white,
+                ),
+                Custom_Button(
+                  onPressedFunction: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Create_PEO()));
+                  },
+                  BackgroundColor: Colors.green,
+                  ForegroundColor: Colors.white,
+                  ButtonText: "Create PEO",
+                  ButtonWidth: 150,
+                ),
+              ],
+            ),
           ),
           Padding(
             padding: const EdgeInsets.all(15.0),
             child: Custom_Button(
               onPressedFunction: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => Create_PEO()));
+                    MaterialPageRoute(builder: (context) => ShowPEOConsistencyPage()));
               },
-              BackgroundColor: Colors.green,
+              BackgroundColor: Colors.blue,
               ForegroundColor: Colors.white,
-              ButtonText: "Create PEO",
-              ButtonWidth: 160,
+              ButtonText: "Show Consistency",
+              ButtonWidth: 250,
             ),
-          )
+          ),
         ],
       ),
     );

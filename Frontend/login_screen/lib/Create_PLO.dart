@@ -2,8 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Button.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Field.dart';
-import 'package:login_screen/User.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
+import 'Department.dart';
 import 'PLO.dart';
 
 class Create_PLO extends StatefulWidget {
@@ -12,7 +12,7 @@ class Create_PLO extends StatefulWidget {
 }
 
 class _Create_PLOState extends State<Create_PLO> {
-  int departmentId = User.departmentid;
+  int departmentId = Department.id;
   String?
   errorMessage;
   //variable to show the error when the wrong credentials are entered or the fields are empty

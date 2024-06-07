@@ -36,6 +36,7 @@ class PEO {
         body: jsonEncode({'description': description, 'program': deptid}),
       );
 
+      print(response.body);
       if (response.statusCode == 201) {
         return true;
       } else {
@@ -65,7 +66,7 @@ class PEO {
 
   static Future<List<dynamic>> AllPEOsbyDeptId(int deptId) async {
     final accessToken = await storage.read(key: "access_token");
-    final url = Uri.parse('$ipAddress:8000/api/program/${deptId}/peo');
+    final url = Uri.parse('$ipAddress:8000/api/program/$deptId/peo');
     final response = await http.get(
       url,
       headers: {'Authorization': 'Bearer $accessToken'},
@@ -89,10 +90,8 @@ class PEO {
     if (response.statusCode == 200) {
       return jsonDecode(response.body) as Map<String, dynamic>;
     } else if (response.statusCode == 404) {
-      // Return null if the CLO with the given ID does not exist
       return null;
     } else {
-      // Throw an exception for any other error status code
       return {};
     }
   }
@@ -121,49 +120,50 @@ class PEO {
       return false;
     }
   }
-  // static Future<bool> Generate_PEOs(int num_of_peos, String comments, int id) async {
-  //   try {
-  //     final accessToken = await storage.read(key: "access_token");
-  //     final url = Uri.parse('$ipAddress:8000/api/generate/$id');
-  //     final response = await http.post(
-  //       url,
-  //       headers: {
-  //         'Authorization': 'Bearer $accessToken',
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: jsonEncode({'num_peos': num_of_peos, 'additional_message': comments}),
-  //     );
-  //     print(response.body);
-  //
-  //     if (response.statusCode == 201) {
-  //       return true;
-  //     } else {
-  //       print('Failed to generate PEO. Status code: ${response.statusCode}');
-  //       return false;
-  //     }
-  //   } catch (e) {
-  //     print('Exception while generating PEO: $e');
-  //     return false;
-  //   }
-  // }
-  static Future<List<String>> Generate_PEOs(int num_of_peos, String comments, int id) async {
-    // Create a list of predefined PEO statements
-    List<String> predefinedPEOs = [
-      'PEO Statement 1: Graduates will demonstrate strong analytical and problem-solving skills.',
-      'PEO Statement 2: Graduates will exhibit effective communication and teamwork abilities.',
-      'PEO Statement 3: Graduates will show commitment to ethical practices and lifelong learning.',
-      'PEO Statement 4: Graduates will apply engineering knowledge to address societal needs and challenges.'
-    ];
 
-    // Take only the required number of PEO statements
-    List<String> dummyPEOs = predefinedPEOs.take(num_of_peos).map((peo) => '$peo $comments').toList();
+  static Future<String> Generate_PEOs(int num_of_peos, String comments, int id) async {
+    try {
+      final accessToken = await storage.read(key: "access_token");
+      final url = Uri.parse('$ipAddress:8000/api/generate/peo/$id');
+      final response = await http.post(
+        url,
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({'num_peos': num_of_peos, 'additional_message': comments}),
+      );
 
-    // Simulate a delay to mimic asynchronous operation
-    await Future.delayed(Duration(seconds: 1));
-
-    // Return the list of dummy PEO statements
-    print(dummyPEOs);
-    return dummyPEOs;
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['peos'].toString();
+      } else {
+        return '${response.body}';
+      }
+    } catch (e) {
+      return 'Exception while generating PEO: $e';
+    }
   }
 
+  static Future<void> createGeneratedPEOs(List<String> peoStatements, int deptid) async {
+    for (String peo in peoStatements) {
+      await createPEO(peo, deptid);
+    }
+  }
+
+
+  static Future<Map<String, dynamic>> getPEOConsistency(int deptId) async {
+    final accessToken = await storage.read(key: "access_token");
+    final url = Uri.parse('$ipAddress:8000/api/consistency_check/$deptId');
+    final response = await http.get(
+      url,
+      headers: {'Authorization': 'Bearer $accessToken'},
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body) as Map<String, dynamic>;
+    } else {
+      return {};
+    }
+  }
 }

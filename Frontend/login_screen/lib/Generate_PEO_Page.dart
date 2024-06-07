@@ -45,7 +45,7 @@ class _Generate_PEO_PageState extends State<Generate_PEO_Page> {
             const SizedBox(height: 20),
             CustomTextFormField(
               controller: commentsController,
-              label: 'Comments',
+              label: 'Comments (optional)',
               hintText: 'Please refine it...',
               borderColor: errorColor,
             ),
@@ -59,17 +59,17 @@ class _Generate_PEO_PageState extends State<Generate_PEO_Page> {
                   numOfPEOs = null;
                 }
                 String comments = commentsController.text;
-                if (comments.isEmpty || numOfPEOs == null) {
+                if (numOfPEOs == null) {
                   setState(() {
                     colorMessage = Colors.red;
                     errorColor = Colors.red;
-                    errorMessage = 'Please enter all fields correctly';
+                    errorMessage = 'Please enter the number of PEOs correctly';
                   });
                 } else {
                   setState(() {
                     isLoading = true;
                   });
-                  List<String>? peoStatements = await PEO.Generate_PEOs(numOfPEOs, comments, Department.id);
+                  String? peoStatements = await PEO.Generate_PEOs(numOfPEOs, comments, Department.id);
                   if (peoStatements != null) {
                     numberofPEOsController.clear();
                     commentsController.clear();
@@ -79,11 +79,15 @@ class _Generate_PEO_PageState extends State<Generate_PEO_Page> {
                       errorColor = Colors.black12; // Reset errorColor to default value
                       errorMessage = 'PEO generated successfully';
                     });
+
+                    // Split the generated PEO statements into a list of strings
+                    List<String> peoList = peoStatements.split('\n').where((peo) => peo.trim().isNotEmpty).toList();
+
                     // Navigate to the new page to display PEO statements
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => Display_Generated_PEOs(peoStatements: peoStatements),
+                        builder: (context) => Display_Generated_PEOs(peoStatements: peoList),
                       ),
                     );
                   } else {

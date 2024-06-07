@@ -71,10 +71,7 @@ class GeneratePEOView(APIView):
 
 
 class PEOConsistencyView(APIView):
-    """
-    API view to check the consistency of PEOs with the vision and mission of a department and its related entities.
-    """
-    permission_classes = [JWTStatelessUserAuthentication]  # Adjust permissions as needed
+    authentication_classes = [JWTStatelessUserAuthentication]  # Adjust permissions as needed
 
     def get(self, request, department_id):
         # Call the consistency check function
