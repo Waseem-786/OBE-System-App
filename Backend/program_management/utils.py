@@ -1,98 +1,75 @@
 import openai
 import os
+from django.shortcuts import get_object_or_404
 from .models import Department
 
-
 def generate_peos(department_id, num_peos, additional_message=None):
+    department = get_object_or_404(Department, id=department_id)
+    campus = department.campus
+    university = campus.university
+
+    # Prepare the chat messages for the AI
+    messages = [
+        {"role": "system", "content": "You are an assistant that generates educational objectives."},
+        {"role": "user", "content": f"""
+            Generate {num_peos} educational objectives aligned with these details:
+            University Vision: {university.vision}
+            University Mission: {university.mission}
+            Campus Vision: {campus.vision}
+            Campus Mission: {campus.mission}
+            Department Vision: {department.vision}
+            Department Mission: {department.mission}
+        """}
+    ]
+
+    if additional_message:
+        messages.append({"role": "user", "content": f"Additional instructions: {additional_message}"})
+
+    api_key = os.getenv('OPEN_AI_API')
+    if not api_key:
+        return {"status": "error", "message": "API key is not set or invalid."}
+
+    openai.api_key = api_key
     try:
-        # Fetch the department and related entities
-        department = Department.objects.get(id=department_id)
-        campus = department.campus
-        university = campus.university
-
-        # Prepare the input prompt for the AI
-        prompt = (
-            f"Generate {num_peos} educational objectives that align with the following vision and mission statements:\n"
-            f"University Vision: {university.vision}\n"
-            f"University Mission: {university.mission}\n"
-            f"Campus Vision: {campus.vision}\n"
-            f"Campus Mission: {campus.mission}\n"
-            f"Department Vision: {department.vision}\n"
-            f"Department Mission: {department.mission}\n"
-            f"These objectives should be concise, measurable, achievable, relevant, and time-bound."
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=messages,
+            max_tokens=200 * num_peos
         )
-
-        if additional_message:
-            prompt += f"\nAdditional instructions: {additional_message}"
-
-        # Call OpenAI API
-        api_key = os.getenv('OPEN_AI_API')
-        if not api_key:
-            return {"status": "error", "message": "API key is not set or invalid."}
-
-        openai.api_key = api_key
-        response = openai.Completion.create(
-            engine="text-davinci-003",
-            prompt=prompt,
-            max_tokens=200 * num_peos  # Assuming about 200 tokens per PEO
-        )
-        peos = response.choices[0].text.strip()
-
+        peos = response['choices'][0]['message']['content'].strip()
         return {"status": "success", "peos": peos}
-    except Department.DoesNotExist:
-        return {"status": "error", "message": "Department not found."}
-    except openai.Error as e:
-        return {"status": "error", "message": f"OpenAI API error: {str(e)}"}
-    except Exception as e:
-        return {"status": "error", "message": f"An unexpected error occurred: {str(e)}"}
+    except openai.error.OpenAIError as e:
+        return {"status": "error", "message": str(e)}
+
 
 
 
 def refine_statement(statement_type, statement, additional_message=None):
-    """
-    Refines a vision or mission statement using OpenAI's GPT.
-
-    Args:
-    statement_type (str): 'vision' or 'mission' indicating the type of statement.
-    statement (str): The vision or mission statement to be refined.
-    additional_message (str): Optional additional instructions or context for the refinement.
-
-    Returns:
-    dict: A dictionary containing the 'status' and 'message' or 'refined_statement'.
-    """
     openai_api_key = os.getenv("OPEN_AI_API")
     if not openai_api_key:
         return {"status": "error", "message": "OpenAI API key not found in environment variables."}
 
     openai.api_key = openai_api_key
 
-    # Setting the prompt based on statement type
-    if statement_type.lower() == 'vision':
-        prompt = f"Refine this vision statement to be more inspiring and forward-looking: '{statement}'"
-    elif statement_type.lower() == 'mission':
-        prompt = f"Refine this mission statement to be more clear and actionable: '{statement}'"
-    else:
-        return {"status": "error", "message": "Invalid statement type. Please choose 'vision' or 'mission'."}
+    # Prepare the chat messages
+    messages = [
+        {"role": "system", "content": "You are an assistant that refines vision and mission statements."},
+        {"role": "user", "content": f"Please refine this {statement_type} statement to be more impactful: '{statement}'"}
+    ]
 
     if additional_message:
-        prompt += f" Additional instructions: {additional_message}"
+        messages.append({"role": "user", "content": f"Additional instructions: {additional_message}"})
 
     try:
-        response = openai.Completion.create(
-            engine="text-davinci-003",  # or another suitable model
-            prompt=prompt,
-            max_tokens=150  # Adjusted to allow for longer inputs with additional instructions
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=messages,
+            max_tokens=150
         )
+        refined_statement = response['choices'][0]['message']['content'].strip()
+        return {"status": "success", "refined_statement": refined_statement}
     except openai.Error as e:
         return {"status": "error", "message": f"OpenAI API error: {str(e)}"}
-    except Exception as e:
-        return {"status": "error", "message": f"An unexpected error occurred: {str(e)}"}
-
-    # Check response status
-    if response['choices'] and response['choices'][0].text.strip():
-        return {"status": "success", "refined_statement": response.choices[0].text.strip()}
-    else:
-        return {"status": "error", "message": "Failed to refine the statement due to an empty response."}
     
 
 

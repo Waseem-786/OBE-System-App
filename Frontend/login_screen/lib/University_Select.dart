@@ -5,6 +5,7 @@ import 'package:login_screen/University.dart';
 
 class University_Select extends StatefulWidget {
   static bool isForPEO = false;
+  static bool isForAssessment = false;
   @override
   State<University_Select> createState() => _University_SelectState();
 }
@@ -64,6 +65,9 @@ class _University_SelectState extends State<University_Select> {
                               University.mission = university['mission'];
                               if(University_Select.isForPEO){
                                 Campus_Select.isForPEO = true;
+                              }
+                              else if(University_Select.isForAssessment){
+                                Campus_Select.isForAssessment = true;
                               }
                               Navigator.push(context, MaterialPageRoute(builder: (context) => Campus_Select()));
 

@@ -29,8 +29,6 @@ class _Create_AssessmentState extends State<Create_Assessment> {
   Color errorColor = Colors.black12;
 
   late TextEditingController AssessmentNameController;
-  late TextEditingController AssessmentBatchController;
-  late TextEditingController AssessmentCourseController;
   late TextEditingController AssessmentTotalMarksController;
   late TextEditingController AssessmentInstructionsController;
 
@@ -38,10 +36,6 @@ class _Create_AssessmentState extends State<Create_Assessment> {
   void initState() {
     AssessmentNameController =
         TextEditingController(text: widget.AssessmentData?['name'] ?? '');
-    AssessmentBatchController =
-        TextEditingController(text: widget.AssessmentData?['batch'] ?? '');
-    AssessmentCourseController =
-        TextEditingController(text: widget.AssessmentData?['course'] ?? '');
     AssessmentTotalMarksController =
         TextEditingController(text: widget.AssessmentData?['total_marks'] ?? '');
     AssessmentInstructionsController =
@@ -77,42 +71,6 @@ class _Create_AssessmentState extends State<Create_Assessment> {
                   ),
                   const SizedBox(height: 20),
 
-                  // Batch DropDown
-                  Selector<AssessmentProvider, dynamic>(
-                    selector: (_, provider) => provider.selectedBatch,
-                    builder: (_, selectedBatch, __) {
-                      return DropDown(
-                        fetchData: () => Batch.getBatchBydeptId(User.departmentid),
-                        selectedValue: selectedBatch,
-                        label: "Batch",
-                        hintText: "Select Batch",
-                        controller: AssessmentBatchController,
-                        onValueChanged: (dynamic id) {
-                          context.read<AssessmentProvider>().setSelectedBatch(id);
-                        },
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Course DropDown
-                  Selector<AssessmentProvider, dynamic>(
-                    selector: (_, provider) => provider.selectedCourse,
-                    builder: (_, selectedCourse, __) {
-                      return DropDown(
-                        fetchData: () => Course.fetchCoursesbyCampusId(User.campusid),
-                        selectedValue: selectedCourse,
-                        label: "Course",
-                        hintText: "Select Course",
-                        keyName: "title",
-                        controller: AssessmentCourseController,
-                        onValueChanged: (dynamic id) {
-                          context.read<AssessmentProvider>().setSelectedCourse(id);
-                        },
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 20),
 
                   CustomTextFormField(
                     controller: AssessmentTotalMarksController,
@@ -180,15 +138,11 @@ class _Create_AssessmentState extends State<Create_Assessment> {
                         final provider = Provider.of<AssessmentProvider>(context, listen: false);
 
                         String AssessmentName = AssessmentNameController.text;
-                        int? AssessmentBatch = provider.selectedBatch;
-                        int? AssessmentCourse = provider.selectedCourse;
                         int AssessmentTotalMarks = int.parse(AssessmentTotalMarksController.text);
                         String AssessmentInstructions = AssessmentInstructionsController.text;
 
                         if (AssessmentName.isEmpty ||
                             AssessmentInstructions.isEmpty ||
-                            AssessmentBatch == null ||
-                            AssessmentCourse == null ||
                             AssessmentTotalMarks == null) {
                           setState(() {
                             colorMessage = Colors.red;
@@ -202,19 +156,12 @@ class _Create_AssessmentState extends State<Create_Assessment> {
 
                           // Set the data to Assessment class variables
                           Assessment.name = AssessmentName;
-                          Assessment.batch = AssessmentBatch;
+                          Assessment.batch = Batch.id;
                           Assessment.teacher = User.id;
-                          Assessment.course = AssessmentCourse;
+                          Assessment.course = Course.id;
                           Assessment.total_marks = AssessmentTotalMarks;
                           Assessment.instructions = AssessmentInstructions;
                           Assessment.duration = provider.durationOfAssessment.toString();
-
-                          print(Assessment.name);
-                          print(Assessment.batch);
-                          print(Assessment.course);
-                          print(Assessment.total_marks);
-                          print(Assessment.instructions);
-                          print(Assessment.duration);
 
                           // Navigate to the next page
                           Navigator.pushReplacement(

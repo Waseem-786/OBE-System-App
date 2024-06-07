@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:login_screen/Campus_Select.dart';
+import 'package:login_screen/Course_Select.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Style.dart';
 import 'package:login_screen/Department.dart';
 import 'package:login_screen/Department_Select.dart';
 import 'package:login_screen/Login_Page.dart';
 import 'package:login_screen/University.dart';
 import 'package:login_screen/University_Select.dart';
+import 'Batch_Select.dart';
 import 'Campus.dart';
 import 'Permission.dart';
 import 'Token.dart';
@@ -112,7 +114,15 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
         } else if (permission['codename'] == "view_assessment") {
           headings.add("Assessment");
           icons.add(FontAwesomeIcons.pencil);
-          screenNames.add("Assessment_Page");
+          if (User.isUniLevel()) {
+            screenNames.add("Campus_Select");
+          } else if (User.iscampusLevel()) {
+            screenNames.add("Department_Select");
+          } else if (User.isdeptLevel()) {
+            screenNames.add("Batch_Select");
+          } else if (User.isSuperUser) {
+            screenNames.add("University_Select");
+          }
         }
       }
 
@@ -287,6 +297,19 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
                                 University_Select.isForPEO = false;
                                 Campus_Select.isForPEO = false;
                                 Department_Select.isForPEO = false;
+                              }
+                              if (headings[index] == 'Assessment') {
+                                University_Select.isForAssessment = true;
+                                Campus_Select.isForAssessment = true;
+                                Department_Select.isForAssessment = true;
+                                Batch_Select.isForAssessment = true;
+                                Course_Select.isForAssessment = true;
+                              } else {
+                                University_Select.isForAssessment = false;
+                                Campus_Select.isForAssessment = false;
+                                Department_Select.isForAssessment = false;
+                                Batch_Select.isForAssessment = false;
+                                Course_Select.isForAssessment = false;
                               }
                               Navigator.pushNamed(context, '/${screenNames[index]}');
                             },

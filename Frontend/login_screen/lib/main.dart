@@ -11,6 +11,7 @@ import 'package:login_screen/Course_Outline_Page.dart';
 import 'package:login_screen/Course_Outline_Profile.dart';
 import 'package:login_screen/Course_Schedule_Profile.dart';
 import 'package:login_screen/Course_Page.dart';
+import 'package:login_screen/Course_Select.dart';
 import 'package:login_screen/Create_Course_Schedule.dart';
 import 'package:login_screen/Department_Page.dart';
 import 'package:login_screen/Group_Permissions.dart';
@@ -26,6 +27,7 @@ import 'package:login_screen/Weekly_Topics_Page.dart';
 import 'package:provider/provider.dart';
 import 'Add_Group_User.dart';
 import 'Assessment_Page.dart';
+import 'Batch_Select.dart';
 import 'CourseObjectivePage.dart';
 import 'Course_Assessment_Page.dart';
 import 'Create_Assessment.dart';
@@ -45,7 +47,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  static const String ip = 'http://192.168.0.111';
+  static const String ip = 'http://192.168.0.114';
 
   const MyApp({super.key});
 
@@ -91,6 +93,8 @@ class MyApp extends StatelessWidget {
         '/Group Permissions Page' : (context) => Group_Permissions(),
         '/Add Group Users' : (context) => Add_Group_User(),
         '/Add Group Permissions' : (context) => Add_Group_Permissions(),
+        '/Batch_Select' : (context) => Batch_Select(),
+        '/Course_Select' : (context) => Course_Select(),
 
       },
     );

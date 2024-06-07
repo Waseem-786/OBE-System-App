@@ -1,38 +1,29 @@
-from rest_framework import serializers, status
-from rest_framework.response import Response
-from rest_framework import generics
-from .models import Assessment, Question, QuestionPart
-from user_management.models import CustomUser
-from university_management.models import Batch
-from course_management.models import CourseInformation, CourseLearningOutcomes
-
-class AssessmentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Assessment
-        fields = '__all__'
+from rest_framework import serializers
+from .models import Assessment, Question, QuestionPart, CourseLearningOutcomes
 
 class QuestionPartSerializer(serializers.ModelSerializer):
     class Meta:
         model = QuestionPart
-        fields = ['description', 'marks']
+        fields = ['id', 'description', 'marks']
 
 class QuestionSerializer(serializers.ModelSerializer):
     parts = QuestionPartSerializer(many=True)
+    clo = serializers.PrimaryKeyRelatedField(queryset=CourseLearningOutcomes.objects.all(), many=True)
 
     class Meta:
         model = Question
-        fields = ['description', 'parts', 'clo']
+        fields = ['id', 'description', 'clo', 'parts']
 
     def create(self, validated_data):
         parts_data = validated_data.pop('parts')
-        clo_ids = validated_data.pop('clo')
+        clo_data = validated_data.pop('clo')
         question = Question.objects.create(**validated_data)
-        question.clo.set(clo_ids)
+        question.clo.set(clo_data)
         for part_data in parts_data:
             QuestionPart.objects.create(question=question, **part_data)
         return question
 
-class CompleteAssessmentSerializer(serializers.ModelSerializer):
+class AssessmentSerializer(serializers.ModelSerializer):
     questions = QuestionSerializer(many=True)
 
     class Meta:
@@ -43,11 +34,10 @@ class CompleteAssessmentSerializer(serializers.ModelSerializer):
         questions_data = validated_data.pop('questions')
         assessment = Assessment.objects.create(**validated_data)
         for question_data in questions_data:
-            question_parts_data = question_data.pop('parts')
-            clo_ids = question_data.pop('clo')
-            question_data['assessment'] = assessment
-            question = Question.objects.create(**question_data)
-            question.clo.set(clo_ids)
-            for part_data in question_parts_data:
+            parts_data = question_data.pop('parts')
+            clo_data = question_data.pop('clo')
+            question = Question.objects.create(assessment=assessment, **question_data)
+            question.clo.set(clo_data)
+            for part_data in parts_data:
                 QuestionPart.objects.create(question=question, **part_data)
         return assessment

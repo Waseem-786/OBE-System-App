@@ -286,7 +286,7 @@ class WeeklyTopicCreateView(generics.CreateAPIView):
             except ValueError as e:
                 return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
             except Exception as e:
-                return Response({"detail": "An unexpected error occurred."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                return Response({"detail": "An unexpected error occurred."+str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return super().create(request)
 

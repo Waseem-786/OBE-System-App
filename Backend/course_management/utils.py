@@ -121,52 +121,35 @@ def generate_weekly_topics(course_id, teacher_id, batch_id, user_comments):
         "pec_content": course.pec_content
     }
 
-    prompt = f"""
-    Generate a weekly breakdown of topics for a course with the following details:
-    Course Description: {course_data['course_description']}
-    Course Objectives: {', '.join(course_data['course_objectives'])}
-    Content: {course_data['pec_content']}
-    
-    Additional Comments: {user_comments}
-    
-    The course should have topics for weeks 1-7, an exam in week 8, topics for weeks 9-15, and a final exam in week 16.
-    
-    Week 1: 
-    Week 2: 
-    Week 3: 
-    Week 4: 
-    Week 5: 
-    Week 6: 
-    Week 7: 
-    Week 8: Midterm Exam
-    Week 9: 
-    Week 10: 
-    Week 11: 
-    Week 12: 
-    Week 13: 
-    Week 14: 
-    Week 15: 
-    Week 16: Final Exam
-    """
+    # Set up the initial system and user messages
+    messages = [
+        {"role": "system", "content": "Generate a weekly breakdown of topics for the specified course details."},
+        {"role": "user", "content": f"""
+            Course Description: {course_data['course_description']}
+            Course Objectives: {', '.join(course_data['course_objectives'])}
+            Content: {course_data['pec_content']}
+            Additional Comments: {user_comments}
+            The course should have topics for weeks 1-7, an exam in week 8, topics for weeks 9-15, and a final exam in week 16.
+        """}
+    ]
 
     api_key = os.getenv('OPEN_AI_API')
+    print(api_key)
     if not api_key:
         raise ValueError("API key is not set or invalid.")
 
     openai.api_key = api_key
     try:
-        response = openai.Completion.create(
-            engine="text-davinci-003",
-            prompt=prompt,
-            max_tokens=1000,
-            temperature=0.7,
-            n=1
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=messages,
+            temperature=0.7
         )
     except openai.error.OpenAIError as e:
         raise ValueError(f"OpenAI API request failed: {str(e)}")
 
-    if response.choices:
-        generated_text = response.choices[0].text.strip()
+    if response['choices']:
+        generated_text = response['choices'][0]['message']['content']
         weekly_topics = generated_text.split("\n")
     else:
         raise ValueError("OpenAI API response did not contain any choices.")
@@ -175,17 +158,15 @@ def generate_weekly_topics(course_id, teacher_id, batch_id, user_comments):
 
     weekly_topics_objects = []
     for week, topic in enumerate(weekly_topics, start=1):
-        if week != 8 and week != 16:
-            week_number = week if week <= 7 else week - 1
-            if ": " in topic:
-                topic_title, topic_description = topic.split(": ", 1)
-                weekly_topic = WeeklyTopic(
-                    week_number=week_number,
-                    topic=topic_title.strip(),
-                    description=topic_description.strip(),
-                    course_outline=course_outline
-                )
-                weekly_topics_objects.append(weekly_topic)
+        if week != 8 and week != 16 and ": " in topic:
+            topic_title, topic_description = topic.split(": ", 1)
+            weekly_topic = WeeklyTopic(
+                week_number=week if week <= 7 else week - 1,
+                topic=topic_title.strip(),
+                description=topic_description.strip(),
+                course_outline=course_outline
+            )
+            weekly_topics_objects.append(weekly_topic)
 
     WeeklyTopic.objects.bulk_create(weekly_topics_objects)
     

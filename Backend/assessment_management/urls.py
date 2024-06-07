@@ -2,19 +2,9 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('assessment-creation',views.AssessmentView.as_view()),
-    path('assessment-creation/<int:pk>',views.SingleAssessmentView.as_view()),
-    
-    path('assessment/question',views.QuestionView.as_view()),
-    path('assessment/question/<int:pk>',views.SingleQuestionView.as_view()),
-    
-    path('assessment/question/part',views.QuestionPartView.as_view()),
-    path('assessment/question/part/<int:pk>',views.QuestionPartView.as_view()),
-
-    path('complete-question', views.CompleteQuestionView.as_view()),
-    path('complete-assessment', views.CompleteAssessmentCreateView.as_view()),
-    path('complete-assessment/<int:assessment_id>', views.CompleteAssessmentView.as_view()),
-
-    path('assessment/question/consistency',views.CheckQuestionConsistencyView.as_view()),
-    path('assessment/question/generate',views.ConvertQuestionWithCLOsView.as_view()),
+    path('complete-assessment', views.CompleteAssessmentCreateView.as_view(), name='create-complete-assessment'),
+    path('complete-assessment/<int:assessment_id>', views.CompleteAssessmentDetailView.as_view(), name='manage-complete-assessment'),
+    path('assessments', views.AllAssessmentsView.as_view(), name='all-assessments'),
+    path('assessment/question/consistency', views.CheckQuestionConsistencyView.as_view(), name='check-question-consistency'),
+    path('assessment/refine-complete', views.RefineCompleteAssessmentView.as_view(), name='refine-complete-assessment'),
 ]

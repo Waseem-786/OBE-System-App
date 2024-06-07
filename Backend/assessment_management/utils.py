@@ -73,19 +73,12 @@ def convert_question_with_clos(question_description, clo_ids):
     ]
     clo_details_str = "\n".join(clo_details)
     
-    # Create the prompt for OpenAI
-    prompt = f"""
-    The following question needs to be consistent with the provided CLOs:
-    
-    Question: {question_description}
-    
-    CLOs:
-    {clo_details_str}
-    
-    Please rewrite the question to ensure it aligns with the given CLOs.
-    """
-    
-    # Call OpenAI API
+    # Create the chat messages for OpenAI
+    messages = [
+        {"role": "system", "content": "You are an assistant that rewrites questions to align with educational outcomes."},
+        {"role": "user", "content": f"Here is a question: {question_description}\nCan you rewrite it to align with the following CLOs?\n{clo_details_str}"}
+    ]
+
     api_key = os.getenv('OPEN_AI_API')
     if not api_key:
         return {
@@ -93,14 +86,13 @@ def convert_question_with_clos(question_description, clo_ids):
             "message": "API key is not set or invalid."
         }
 
+    openai.api_key = api_key
     try:
-        openai.api_key = api_key
-        response = openai.Completion.create(
-            engine="text-davinci-003",
-            prompt=prompt,
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=messages,
             max_tokens=500,
-            temperature=0.7,
-            n=1
+            temperature=0.7
         )
     except openai.error.OpenAIError as e:
         return {
@@ -109,8 +101,54 @@ def convert_question_with_clos(question_description, clo_ids):
         }
     
     # Parse the response
-    generated_text = response.choices[0].text.strip()
+    if response.choices:
+        generated_text = response.choices[0]['message']['content'].strip()
+        return {
+            "status": "success",
+            "converted_question": generated_text
+        }
+    else:
+        return {
+            "status": "error",
+            "message": "Failed to generate a valid response."
+        }
+
+def convert_questions_with_clos(questions):
+    """
+    Convert multiple questions and their parts to be consistent with the selected CLOs using AI.
+    """
+    api_key = os.getenv('OPEN_AI_API')
+    if not api_key:
+        return {
+            "status": "error",
+            "message": "API key is not set or invalid."
+        }
+
+    openai.api_key = api_key
+
+    for question in questions:
+        question_description = question.get('description', '')
+        clo_ids = question.get('clo', [])
+
+        if question_description and clo_ids:
+            # Convert main question
+            conversion_result = convert_question_with_clos(question_description, clo_ids)
+            if conversion_result['status'] == 'success':
+                question['description'] = conversion_result['converted_question']
+            else:
+                return conversion_result
+            
+            # Convert each part's description
+            for part in question.get('parts', []):
+                part_description = part.get('description', '')
+                if part_description:
+                    conversion_result = convert_question_with_clos(part_description, clo_ids)
+                    if conversion_result['status'] == 'success':
+                        part['description'] = conversion_result['converted_question']
+                    else:
+                        return conversion_result
+
     return {
         "status": "success",
-        "converted_question": generated_text
+        "questions": questions
     }

@@ -110,7 +110,7 @@ class CreateWeeklyTopicState extends State<CreateWeeklyTopic> {
     });
 
     try {
-      List<dynamic> topics = await WeeklyTopics.generateWeeklyTopics(Course.id, User.id, 2, comments);
+      List<dynamic> topics = await WeeklyTopics.generateWeeklyTopics(4, User.id, 2, comments);
 
       setState(() {
         isLoading = false;

@@ -22,9 +22,18 @@ class Assessment {
   static List<Map<String, dynamic>>? _questions;
 
   static List<Map<String, dynamic>>? get questions => _questions;
-
   static set questions(List<Map<String, dynamic>>? value) {
     _questions = value;
+  }
+
+  static void addQuestion(Map<String, dynamic> question) {
+    _questions?.add(question);
+  }
+
+  static void addPartToQuestion(int questionIndex, Map<String, dynamic> part) {
+    if (_questions != null && questionIndex < _questions!.length) {
+      _questions![questionIndex]['parts'].add(part);
+    }
   }
 
   static List<int>? get CLOs => _CLOs;
@@ -93,9 +102,11 @@ class Assessment {
     _instructions = value;
   }
 
-  static Future<List<dynamic>> fetchAssessment() async {
+  static Future<List<dynamic>> fetchAllAssessments(
+      int batchId, int courseId, int teacherId) async {
     final accessToken = await storage.read(key: "access_token");
-    final url = Uri.parse('$ipAddress:8000/api/assessment-creation');
+    final url = Uri.parse(
+        '$ipAddress:8000/api/assessments?batch_id=$batchId&course_id=$courseId&teacher_id=$teacherId');
     final response = await http.get(
       url,
       headers: {'Authorization': 'Bearer $accessToken'},
@@ -108,9 +119,9 @@ class Assessment {
     }
   }
 
-  static Future<Map<String, dynamic>?> getAssessmentbyId(int id) async {
+  static Future<Map<String, dynamic>?> getAssessmentById(int id) async {
     final accessToken = await storage.read(key: "access_token");
-    final url = Uri.parse('$ipAddress:8000/api/assessment-creation/$id');
+    final url = Uri.parse('$ipAddress:8000/api/complete-assessment/$id');
     final response = await http.get(
       url,
       headers: {'Authorization': 'Bearer $accessToken'},
@@ -119,26 +130,26 @@ class Assessment {
     if (response.statusCode == 200) {
       return jsonDecode(response.body) as Map<String, dynamic>;
     } else if (response.statusCode == 404) {
-      // Return null if the CLO with the given ID does not exist
       return null;
     } else {
-      // Throw an exception for any other error status code
       return {};
     }
   }
 
-  static Future<bool> updateAssessment(int id,
+  static Future<bool> updateCompleteAssessment(
+      int id,
       String name,
       int teacher,
       int batch,
       int course,
-      int total_marks,
-      Duration duration,
-      String instructions) async {
+      int totalMarks,
+      String duration,
+      String instruction,
+      List<Map<String, dynamic>> questions) async {
     try {
       final accessToken = await storage.read(key: "access_token");
-      final url = Uri.parse('$ipAddress:8000/api/assessment-creation/$id');
-      final response = await http.patch(
+      final url = Uri.parse('$ipAddress:8000/api/complete-assessment/$id');
+      final response = await http.put(
         url,
         headers: {
           'Authorization': 'Bearer $accessToken',
@@ -149,9 +160,10 @@ class Assessment {
           'teacher': teacher,
           'batch': batch,
           'course': course,
-          'total_marks': total_marks,
+          'total_marks': totalMarks,
           'duration': duration,
-          'instructions': instructions
+          'instruction': instruction,
+          'questions': questions,
         }),
       );
       if (response.statusCode == 200) {
@@ -168,80 +180,15 @@ class Assessment {
     }
   }
 
-  static Future<bool> createAssessment(String name,
-      int teacher,
-      int batch,
-      int course,
-      int total_marks,
-      Duration duration,
-      String instructions) async {
-    try {
-      final accessToken = await storage.read(key: "access_token");
-      final url = Uri.parse('$ipAddress:8000/api/assessment-creation');
-      final response = await http.post(
-        url,
-        headers: {
-          'Authorization': 'Bearer $accessToken',
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({
-          'name': name,
-          'teacher': teacher,
-          'batch': batch,
-          'course': course,
-          'total_marks': total_marks,
-          'duration': duration,
-          'instructions': instructions
-        }),
-      );
-      if (response.statusCode == 201) {
-        print('Assessment Created successfully');
-        return true;
-      } else {
-        print(
-            'Failed to create Assessment. Status code: ${response.statusCode}');
-        return false;
-      }
-    } catch (e) {
-      print('Exception while creating Assessment: $e');
-      return false;
-    }
-  }
-
-  static Future<bool> deleteAssessment(int assessmentId) async {
-    try {
-      final accessToken = await storage.read(key: "access_token");
-
-      final url =
-      Uri.parse('$ipAddress:8000/api/assessment-creation/$assessmentId');
-      final response = await http.delete(
-        url,
-        headers: {
-          'Authorization': 'Bearer $accessToken',
-        },
-      );
-      if (response.statusCode == 204) {
-        print('Assessment deleted successfully');
-        return true;
-      } else {
-        print(
-            'Failed to delete Assessment. Status code: ${response.statusCode}');
-        return false;
-      }
-    } catch (e) {
-      print('Exception while deleting Assessment: $e');
-      return false;
-    }
-  }
-
-  static Future<bool> createCompleteAssessment(String name,
+  static Future<bool> createCompleteAssessment(
+      String name,
       int teacher,
       int batch,
       int course,
       int totalMarks,
       String duration,
       String instruction,
-      List<Map<String, dynamic>> questions,) async {
+      List<Map<String, dynamic>> questions) async {
     try {
       final accessToken = await storage.read(key: "access_token");
       final url = Uri.parse('$ipAddress:8000/api/complete-assessment');
@@ -277,43 +224,71 @@ class Assessment {
     }
   }
 
-  static Future<List<dynamic>> fetchAllAssessmentData(int id) async {
-    final accessToken = await storage.read(key: "access_token");
-    final url = Uri.parse('$ipAddress:8000/api/complete-assessment/$id');
-    final response = await http.get(
-      url,
-      headers: {'Authorization': 'Bearer $accessToken'},
-    );
-
-    if (response.statusCode == 200) {
-      return [jsonDecode(response.body)]; // Wrap the result in a List
-    } else {
-      return [];
+  static Future<bool> deleteAssessment(int assessmentId) async {
+    try {
+      final accessToken = await storage.read(key: "access_token");
+      final url =
+      Uri.parse('$ipAddress:8000/api/complete-assessment/$assessmentId');
+      final response = await http.delete(
+        url,
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+      if (response.statusCode == 204) {
+        print('Assessment deleted successfully');
+        return true;
+      } else {
+        print(
+            'Failed to delete Assessment. Status code: ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      print('Exception while deleting Assessment: $e');
+      return false;
     }
   }
 
-
-  static Future<String> fetchRefinedDescription(String statement,
-      String additionalMessage) async {
-    final accessToken = await storage.read(key: "access_token");
-    final url = Uri.parse('$ipAddress:8000/api/refine');
-    final response = await http.post(
-      url,
-      headers: {
-        'Authorization': 'Bearer $accessToken',
-        'Content-Type': 'application/json'
-      },
-      body: jsonEncode({
-        'statement': statement,
-        'statement_type': 'question',
-        // Assuming 'question' as the statement type
-        'additional_message': additionalMessage,
-      }),
-    );
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      return jsonEncode(response.body);
+  static Future<List<dynamic>> refineCompleteAssessment(
+      String name,
+      int teacher,
+      int batch,
+      int course,
+      int totalMarks,
+      String duration,
+      String instruction,
+      List<Map<String, dynamic>> questions) async {
+    try {
+      final accessToken = await storage.read(key: "access_token");
+      final url = Uri.parse('$ipAddress:8000/api/assessment/refine-complete');
+      final response = await http.post(
+        url,
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          "name": name,
+          "teacher": teacher,
+          "batch": batch,
+          "course": course,
+          "total_marks": totalMarks,
+          "duration": duration,
+          "instruction": instruction,
+          "questions": questions,
+        }),
+      );
+      print(response.body);
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body) as List<dynamic>;
+      } else {
+        print(
+            'Failed to refine assessment. Status code: ${response.statusCode}');
+        return [];
+      }
+    } catch (e) {
+      print('Exception while refining assessment: $e');
+      return [];
     }
   }
 }

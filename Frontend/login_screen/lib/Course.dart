@@ -14,6 +14,14 @@ class Course {
   static String? _required_elective;
   static int? _prerequisite;
   static String? _description;
+  static String? _pecContent;
+
+  static String? get pecContent => _pecContent;
+
+  static set pecContent(String? value) {
+    _pecContent = value;
+  }
+
   static int _campus = 0;
 
 

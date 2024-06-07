@@ -5,7 +5,10 @@ import 'package:login_screen/Custom_Widgets/Custom_Text_Style.dart';
 import 'package:login_screen/Custom_Widgets/PermissionBasedButton.dart';
 import 'package:login_screen/Permission.dart';
 import 'Assessment_Profile.dart';
-import 'Custom_Widgets/PermissionBasedIcon.dart'; // Import Permission class
+import 'Batch.dart';
+import 'Course.dart';
+import 'Custom_Widgets/PermissionBasedIcon.dart';
+import 'User.dart'; // Import Permission class
 
 class Assessment_Page extends StatefulWidget {
   @override
@@ -20,8 +23,7 @@ class _Assessment_PageState extends State<Assessment_Page> {
   @override
   void initState() {
     super.initState();
-    // Assessment.fetchAllAssessmentData(11);
-    AssessmentsFuture = Assessment.fetchAssessment();
+    AssessmentsFuture = Assessment.fetchAllAssessments(Batch.id, Course.id, User.id);
     hasEditAssessmentPermissionFuture =
         Permission.searchPermissionByCodename("change_assessment");
     hasAddAssessmentPermissionFuture =
@@ -72,8 +74,7 @@ class _Assessment_PageState extends State<Assessment_Page> {
                               permissionFuture:
                               hasEditAssessmentPermissionFuture,
                               onPressed: () async {
-                                var assessment =
-                                await Assessment.getAssessmentbyId(
+                                var assessment = await Assessment.getAssessmentById(
                                     assessments[index]['id']);
                                 if (assessment != null) {
                                   Assessment.id = assessment['id'];
@@ -94,7 +95,7 @@ class _Assessment_PageState extends State<Assessment_Page> {
                                     if (result != null && result) {
                                       setState(() {
                                         AssessmentsFuture =
-                                            Assessment.fetchAssessment();
+                                            Assessment.fetchAllAssessments(Batch.id, Course.id, User.id);
                                       });
                                     }
                                   });
@@ -102,7 +103,7 @@ class _Assessment_PageState extends State<Assessment_Page> {
                               }),
                           onTap: () async {
 
-                            var assessment = await Assessment.fetchAllAssessmentData(assessments[index]['id']);
+                            var assessment = await Assessment.fetchAllAssessments(Batch.id, Course.id, User.id);
                             if (assessment != null) {
                               Navigator.push(
                                 context,
@@ -112,7 +113,7 @@ class _Assessment_PageState extends State<Assessment_Page> {
                               ).then((result) {
                                 if (result != null && result) {
                                   setState(() {
-                                    AssessmentsFuture = Assessment.fetchAssessment();
+                                    AssessmentsFuture = Assessment.fetchAllAssessments(Batch.id, Course.id, User.id);
                                   });
                                 }
                               });
