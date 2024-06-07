@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:login_screen/Department.dart';
+import 'package:login_screen/Generate_PEO_Page.dart';
 import 'Create_PEO.dart';
 import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
@@ -113,10 +114,11 @@ class _PEO_PageState extends State<PEO_Page> {
             },
           ),
           Custom_Button(onPressedFunction: (){
-
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => Generate_PEO_Page()));
           },
             ButtonWidth: 180,
-            ButtonText: 'Generate PEO',
+            ButtonText: 'Generate PEOs',
             BackgroundColor: Colors.green,
             ForegroundColor: Colors.white,
           ),

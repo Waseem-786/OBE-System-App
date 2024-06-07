@@ -129,18 +129,21 @@ class _University_PageState extends State<University_Page> {
               }
             },
           ),
-          PermissionBasedButton(
-              buttonText: 'Add University',
-              buttonWidth: 200,
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => Create_University(),
-                  ),
-                );
-              },
-              permissionFuture: hasAddUniversityPermissionFuture)
+          Padding(
+            padding: const EdgeInsets.only(top: 12.0),
+            child: PermissionBasedButton(
+                buttonText: 'Add University',
+                buttonWidth: 200,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Create_University(),
+                    ),
+                  );
+                },
+                permissionFuture: hasAddUniversityPermissionFuture),
+          )
         ],
       ),
     );
