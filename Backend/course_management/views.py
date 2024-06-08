@@ -5,7 +5,8 @@ from rest_framework_simplejwt.authentication import JWTStatelessUserAuthenticati
 from user_management.permissions import IsSuper_University_Campus_Department
 from .models import CourseInformation, CourseSchedule, CourseObjective, CourseAssessment, CourseBooks, CourseLearningOutcomes, CourseOutline, WeeklyTopic
 from .serializers import CourseInformationSerializer, CourseScheduleSerializer, CourseObjectiveSerializer, CourseObjectiveListSerializer, CourseAssessmentSerializer, CourseBookSerializer, CourseLearningOutcomesSerializer, CourseOutlineSerializer, WeeklyTopicSerializer, CompleteOutlineSerializer
-from .utils import determine_clo_details, generate_weekly_topics
+from .utils import determine_clo_details, generate_weekly_topics, generate_clos_from_weekly_topics
+from approval_process.models import ApprovalProcess, ApprovalLog, ApprovalStep
 
 # CLO and PLO Mapping View
 from django.http import JsonResponse
@@ -34,29 +35,12 @@ class Course_of_Specific_Campus(generics.ListAPIView):
         queryset = CourseInformation.objects.filter(campus__id=pk)
         return queryset
 
-# Course Learning Outcomes Views
+
 class CourseLearningOutcomesView(generics.CreateAPIView):
     queryset = CourseLearningOutcomes.objects.all()
     serializer_class = CourseLearningOutcomesSerializer
     permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
-
-    def create(self, request, *args, **kwargs):
-        # Manually add CLO or generate via AI
-        if request.data.get('generate', False):
-            # Use AI to generate CLO
-            clo_description = request.data.get('clo_description', '')
-            domain, level, related_plos = determine_clo_details(clo_description)
-            request.data.update({
-                'bloom_taxonomy': domain,
-                'level': level,
-                'plo': related_plos
-            })
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 class CLO_of_Specific_Course(generics.ListAPIView):
     serializer_class = CourseLearningOutcomesSerializer
@@ -73,6 +57,56 @@ class SingleCLO(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = CourseLearningOutcomesSerializer
     permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
+
+class CLOUpdateView(APIView):
+    # Uncomment these lines if you want to enable authentication and permissions
+    # permission_classes = [IsSuper_University_Campus_Department]
+    # authentication_classes = [JWTStatelessUserAuthentication]
+
+    def post(self, request, course_outline_id):
+        update_clos = request.data.get('update_clos', False)
+        user_justification = request.data.get('justification', '')
+
+        if not user_justification:
+            return Response({"error": "Justification is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if update_clos:
+            user_comments = request.data.get('user_comments', '')
+
+            try:
+                clos = generate_clos_from_weekly_topics(course_outline_id, user_comments)
+                course_outline = get_object_or_404(CourseOutline, id=course_outline_id)
+                previous_clos = CourseLearningOutcomes.objects.filter(course=course_outline.course)
+
+
+                # Create an approval process for the update
+                for clo in clos:
+                    initial_step = ApprovalStep.objects.first()  # Assuming steps are predefined and ordered
+                    if initial_step:
+                        ApprovalProcess.objects.create(clo=clo, current_step=initial_step, justification=user_justification)
+                    else:
+                        return Response({"error": "No approval steps defined."}, status=status.HTTP_400_BAD_REQUEST)
+
+                serialized_previous_clos = CourseLearningOutcomesSerializer(previous_clos, many=True).data
+                serialized_new_clos = CourseLearningOutcomesSerializer(clos, many=True).data
+
+                response_data = {
+                    'previous_clos': serialized_previous_clos,
+                    'new_clos': serialized_new_clos,
+                    'justification': user_justification
+                }
+
+                return Response(response_data, status=status.HTTP_200_OK)
+            except ValueError as e:
+                return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            except Exception as e:
+                return Response({"error": "An unexpected error occurred: " + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        else:
+            course_outline = get_object_or_404(CourseOutline, id=course_outline_id)
+            clos = CourseLearningOutcomes.objects.filter(course=course_outline.course)
+
+            serialized_clos = CourseLearningOutcomesSerializer(clos, many=True)
+            return Response(serialized_clos.data, status=status.HTTP_200_OK)
 
 # Course Objectives Views
 class CourseObjectiveCreateView(generics.CreateAPIView):
@@ -229,7 +263,6 @@ class CourseBookCreateView(generics.CreateAPIView):
     permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
 
-
 class CourseBook_SpecificOutline_View(generics.ListAPIView):
     serializer_class = CourseBookSerializer
     permission_classes = [IsSuper_University_Campus_Department]
@@ -263,7 +296,6 @@ class Reference_CourseBook(generics.ListAPIView):
         pk = self.kwargs['pk']
         queryset = CourseBooks.objects.filter(course_outline__id=pk, book_type='Reference')
         return queryset
-
 
 # Weekly Topic Views
 class WeeklyTopicCreateView(generics.CreateAPIView):
@@ -315,43 +347,38 @@ class CompleteOutlineView(APIView):
         serialized_data = CompleteOutlineSerializer(outline)
         return Response(serialized_data.data, status=status.HTTP_200_OK)
 
-# CLO and PLO Mapping View
-from django.http import JsonResponse
-from program_management.models import PEO, PLO, PEO_PLO_Mapping
-
-def get_clo_plo_peo_mappings(request, course_id):
-    data = []
-
-    try:
-        course = CourseInformation.objects.get(id=course_id)
-    except CourseInformation.DoesNotExist:
-        return JsonResponse({'error': 'Course not found'}, status=404)
-
-    clos = CourseLearningOutcomes.objects.filter(course=course)
-    for clo in clos:
-        clo_plos = clo.plo.all()
-        for plo in clo_plos:
-            plo_peos = PEO_PLO_Mapping.objects.filter(plo=plo)
-            for mapping in plo_peos:
-                data.append({
-                    'clo': clo.description,
-                    'plo': plo.name,
-                    'peo': mapping.peo.description,
-                })
-    
-    return JsonResponse(data, safe=False)
 
 # CLO View
 class CLODataView(APIView):
     def post(self, request):
         clo_description = request.data['clo_description']
-        domain, level, related_plos = determine_clo_details(clo_description)
+        domain, level, level_number, related_plos = determine_clo_details(clo_description)
 
         data = {
-            'clo_description': clo_description,
-            'domain': domain,
-            'level': level,
-            'related_plos': related_plos
+            'description': clo_description,
+            'bloom_taxonomy': domain,
+            'level': level_number,
+            'plos': related_plos
         }
 
         return Response(data)
+
+
+
+class GenerateCLOsView(generics.GenericAPIView):
+    permission_classes = [IsSuper_University_Campus_Department]
+    authentication_classes = [JWTStatelessUserAuthentication]
+
+    def post(self, request, *args, **kwargs):
+        # Check if request is to generate CLOs
+        course_outline_id = request.data.get('course_outline_id')
+        user_comments = request.data.get('user_comments', '')
+
+        if not course_outline_id:
+            return Response({"error": "Course outline ID is required to generate CLOs."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            clos_data = generate_clos_from_weekly_topics(course_outline_id, user_comments)
+            return Response(clos_data, status=status.HTTP_200_OK)
+        except ValueError as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

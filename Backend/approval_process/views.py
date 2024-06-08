@@ -1,57 +1,53 @@
-from rest_framework import viewsets, status
-from rest_framework import generics
-from rest_framework.response import Response
-from rest_framework.decorators import action
-from .models import ApprovalChain, ApprovalEntity, Approval
-from .serializers import ApprovalChainSerializer, ApprovalEntitySerializer, ApprovalSerializer
+from rest_framework import generics, status
+from rest_framework.views import APIView, Response
+from .models import ApprovalProcess, ApprovalStep, ApprovalLog
+from .serializers import ApprovalProcessSerializer, ApprovalLogSerializer
+from django.shortcuts import get_object_or_404
 from user_management.models import CustomUser
 
-class ApprovalEntityView(generics.ListCreateAPIView):
-    queryset = ApprovalEntity.objects.all()
-    serializer_class = ApprovalEntitySerializer
+class ApprovalProcessCreateView(generics.CreateAPIView):
+    queryset = ApprovalProcess.objects.all()
+    serializer_class = ApprovalProcessSerializer
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+class ApprovalProcessDetailView(generics.RetrieveUpdateAPIView):
+    queryset = ApprovalProcess.objects.all()
+    serializer_class = ApprovalProcessSerializer
 
-class ApprovalChainViewSet(viewsets.ModelViewSet):
-    queryset = ApprovalChain.objects.all()
-    serializer_class = ApprovalChainSerializer
+class ApprovalProcessActionView(APIView):
+    def post(self, request, pk, action):
+        process = get_object_or_404(ApprovalProcess, pk=pk)
+        user = request.user
 
-class ApprovalViewSet(viewsets.ViewSet):
-    @action(detail=True, methods=['post'])
-    def approve(self, request, pk=None):
-        entity_type = request.data.get('entity_type')
-        user = CustomUser.objects.get(pk=request.user.id)
-        try:
-            approval_entity = ApprovalEntity.objects.get(name=entity_type)
-            approval = Approval.objects.create(
-                entity_id=pk,
-                entity_type=approval_entity,
-                approved_by=user,
-                status=True
-            )
-            approval.save()
-            return Response({'status': 'Approved'}, status=status.HTTP_200_OK)
-        except ApprovalEntity.DoesNotExist:
-            return Response({'error': 'Invalid entity type'}, status=status.HTTP_400_BAD_REQUEST)
+        if process.status != 'pending':
+            return Response({"detail": "This process is already completed."}, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=True, methods=['post'])
-    def reject(self, request, pk=None):
-        entity_type = request.data.get('entity_type')
-        user = CustomUser.objects.get(pk=request.user.id)
-        try:
-            approval_entity = ApprovalEntity.objects.get(name=entity_type)
-            approval = Approval.objects.create(
-                entity_id=pk,
-                entity_type=approval_entity,
-                approved_by=user,
-                status=False
-            )
-            approval.save()
-            return Response({'status': 'Rejected'}, status=status.HTTP_200_OK)
-        except ApprovalEntity.DoesNotExist:
-            return Response({'error': 'Invalid entity type'}, status=status.HTTP_400_BAD_REQUEST)
+        if process.current_step is None:
+            step = ApprovalStep.objects.filter(order=1).first()
+        else:
+            step = process.current_step
+
+        if not step.group.user_set.filter(id=user.id).exists():
+            return Response({"detail": "You are not authorized to perform this action."}, status=status.HTTP_403_FORBIDDEN)
+
+        log = ApprovalLog.objects.create(
+            process=process,
+            step=step,
+            user=user,
+            status=action,
+            comment=request.data.get('comment', '')
+        )
+
+        if action == 'approved':
+            next_step = ApprovalStep.objects.filter(order=step.order + 1).first()
+            if next_step:
+                process.current_step = next_step
+            else:
+                process.status = 'approved'
+                process.current_step = None
+        elif action == 'rejected':
+            process.status = 'rejected'
+            process.current_step = None
+
+        process.save()
+
+        return Response(ApprovalProcessSerializer(process).data)

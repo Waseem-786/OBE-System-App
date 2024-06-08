@@ -1,10 +1,9 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:login_screen/CourseObjective.dart';
-import 'package:login_screen/Create_CLO.dart';
 import 'Course.dart';
 import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Field.dart';
+import 'View_CLOs.dart';
 
 class CreateCourseObjective extends StatefulWidget {
   final bool isFromOutline;
@@ -118,7 +117,7 @@ class _CreateObjectiveState extends State<CreateCourseObjective> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => Create_CLO(isFromOutline: true), // Replace with your next screen
+                              builder: (context) => View_CLOs(isFromOutline: true), // Replace with your next screen
                             ),
                           );
                         } else {

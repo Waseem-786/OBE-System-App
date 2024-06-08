@@ -37,6 +37,7 @@ class CourseLearningOutcomes(models.Model):
     bloom_taxonomy = models.CharField(max_length=20, choices=BLOOM_TAXONOMY_CHOICES)
     level = models.IntegerField()
     plo = models.ManyToManyField(PLO, related_name='clos')
+    course_outline = models.ForeignKey('CourseOutline', on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self) -> str:
         return self.description
@@ -62,6 +63,7 @@ class CourseAssessment(models.Model):
     weight = models.DecimalField(max_digits=5, decimal_places=2)
     clo = models.ManyToManyField(CourseLearningOutcomes, related_name='assessments')
     week = models.ForeignKey('WeeklyTopic', on_delete=models.CASCADE, null=True, blank=True)
+
     def __str__(self):
         return self.name
 
@@ -85,7 +87,6 @@ class WeeklyTopic(models.Model):
     topic = models.CharField(max_length=255)
     description = models.TextField()
     course_outline = models.ForeignKey(CourseOutline, on_delete=models.CASCADE)
-    assessments = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f"Week {self.week_number}: {self.topic}"

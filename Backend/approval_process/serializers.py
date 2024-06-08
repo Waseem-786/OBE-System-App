@@ -1,17 +1,23 @@
 from rest_framework import serializers
-from .models import ApprovalChain, ApprovalEntity, Approval
+from .models import ApprovalStep, ApprovalProcess, ApprovalLog
 
-class ApprovalEntitySerializer(serializers.ModelSerializer):
+class ApprovalStepSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ApprovalEntity
+        model = ApprovalStep
         fields = '__all__'
 
-class ApprovalChainSerializer(serializers.ModelSerializer):
+class ApprovalLogSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField()
+    step = serializers.StringRelatedField()
+
     class Meta:
-        model = ApprovalChain
+        model = ApprovalLog
         fields = '__all__'
 
-class ApprovalSerializer(serializers.ModelSerializer):
+class ApprovalProcessSerializer(serializers.ModelSerializer):
+    logs = ApprovalLogSerializer(many=True, read_only=True)
+    current_step = serializers.StringRelatedField()
+
     class Meta:
-        model = Approval
+        model = ApprovalProcess
         fields = '__all__'

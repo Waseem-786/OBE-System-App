@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:login_screen/Outline.dart';
 import 'Course.dart';
 import 'main.dart';
 
@@ -53,37 +54,41 @@ class CLO {
     _PLOs = value;
   }
 
-  static Future<bool> createCLO(String description, String BT, int BTLevel,
-      int course_id, List<int> plos) async {
+  static Future<bool> createCLO(List<Map<String, dynamic>> closData) async {
     try {
       final accessToken = await storage.read(key: "access_token");
       final url = Uri.parse('$ipAddress:8000/api/clo');
-      final response = await http.post(
-        url,
-        headers: {
-          'Authorization': 'Bearer $accessToken',
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({
-          'description': description,
-          'bloom_taxonomy': BT,
-          'level': BTLevel,
-          'course': course_id,
-          'plo': plos
-        }),
-      );
-      if (response.statusCode == 201) {
-        print('CLO Created successfully');
-        return true;
-      } else {
-        print('Failed to create CLO. Status code: ${response.statusCode}');
-        return false;
+
+      for (var cloData in closData) {
+        final response = await http.post(
+          url,
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode({
+            'description': cloData['description'],
+            'bloom_taxonomy': cloData['bloom_taxonomy'],
+            'level': cloData['level'],
+            'course': cloData['course_id'],
+            'plo': cloData['plos']
+          }),
+        );
+
+        if (response.statusCode != 201) {
+          print('Failed to create CLO. Status code: ${response.statusCode}');
+          return false;
+        }
       }
+
+      print('CLOs Created successfully');
+      return true;
     } catch (e) {
       print('Exception while creating CLO: $e');
       return false;
     }
   }
+
 
   static Future<List<dynamic>> fetchCLO(int CourseId) async {
     final accessToken = await storage.read(key: "access_token");
@@ -92,7 +97,6 @@ class CLO {
       url,
       headers: {'Authorization': 'Bearer $accessToken'},
     );
-
     if (response.statusCode == 200) {
       return jsonDecode(response.body) as List<dynamic>;
     } else {
@@ -149,7 +153,7 @@ class CLO {
       int id, String description, String BT, int BTLevel) async {
     try {
       final accessToken = await storage.read(key: "access_token");
-      final url = Uri.parse('$ipAddress:8000/api/clo/$id');
+      final url = Uri.parse('$ipAddress:8000/api/update/clo/$id');
       final response = await http.patch(
         url,
         headers: {
@@ -175,49 +179,8 @@ class CLO {
     }
   }
 
-  static Future<bool> mapCLOwithPLO(int CLO_id, int PLO_id) async {
-    final accessToken = await storage.read(key: "access_token");
-    final url = Uri.parse('$ipAddress:8000/api/plo/clo/mapping');
-    final Map<String, dynamic> requestBody = {
-      'clo': CLO_id,
-      'plo': PLO_id,
-    };
-    final response = await http.post(
-      url,
-      headers: {
-        'Authorization': 'Bearer $accessToken',
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode(requestBody),
-    );
 
-    if (response.statusCode == 201) {
-      print('CLO with ID $CLO_id mapped to PLO with ID $PLO_id successfully');
-      return true;
-    } else {
-      print('Failed to map CLO with ID $CLO_id to PLO with ID $PLO_id');
-      return false;
-    }
-  }
-
-  static Future<List<Map<String, dynamic>>> fetchMappedCLOPLOData() async {
-    final accessToken = await storage.read(key: "access_token");
-    final url = Uri.parse('$ipAddress:8000/api/plo/clo/mapping');
-    final response = await http.get(
-      url,
-      headers: {'Authorization': 'Bearer $accessToken'},
-    );
-
-    if (response.statusCode == 200) {
-      final List<dynamic> responseData = jsonDecode(response.body);
-      return responseData.map((data) => data as Map<String, dynamic>).toList();
-    } else {
-      throw Exception('Failed to fetch mapped CLOs and PLOs');
-    }
-  }
-
-  static Future<Map<String, dynamic>> fetchCLODetails(
-      String description) async {
+  static Future<Map<String, dynamic>> fetchCLODetails(String description) async {
     final accessToken = await storage.read(key: "access_token");
     final url = Uri.parse('$ipAddress:8000/api/CLOdata');
     final response = await http.post(
@@ -238,4 +201,25 @@ class CLO {
       return {};
     }
   }
+
+  static Future<List<Map<String, dynamic>>> generateCLOs(int courseOutlineId, String userComments) async {
+    final accessToken = await storage.read(key: "access_token");
+    final url = Uri.parse('$ipAddress:8000/api/clo/generate');
+    final response = await http.post(
+      url,
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({'course_outline_id': courseOutlineId, 'user_comments': userComments}),
+    );
+
+    if (response.statusCode == 200) {
+      return List<Map<String, dynamic>>.from(jsonDecode(response.body));
+    } else {
+      print('Failed to generate CLOs');
+      return [];
+    }
+  }
+
 }

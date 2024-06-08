@@ -1,3 +1,4 @@
+import re
 import nltk
 from collections import defaultdict
 from nltk.stem import PorterStemmer
@@ -5,7 +6,7 @@ from nltk.corpus import stopwords
 import openai
 import os
 from django.shortcuts import get_object_or_404
-from .models import CourseInformation, CourseObjective, CourseOutline, WeeklyTopic
+from .models import CourseInformation, CourseObjective, CourseOutline, WeeklyTopic, CourseLearningOutcomes
 from program_management.models import PLO
 from university_management.models import Batch
 from user_management.models import CustomUser
@@ -74,8 +75,20 @@ def determine_bloom_domain_and_level(clo_description):
     if domain_scores:
         best_domain = max(domain_scores, key=domain_scores.get)
         best_level = max(level_scores[best_domain], key=level_scores[best_domain].get)
-        return best_domain, best_level
-    return "Unknown", "Unknown"
+        level_number = _convert_level_to_number(best_level)
+        return best_domain, best_level, level_number
+    return "Unknown", "Unknown", 0
+
+def _convert_level_to_number(level):
+    level_map = {
+        'remember': 1,
+        'understand': 2,
+        'apply': 3,
+        'analyze': 4,
+        'evaluate': 5,
+        'create': 6
+    }
+    return level_map.get(level.lower(), 0)
 
 # Define PLO keywords
 plos_keywords = {
@@ -98,14 +111,91 @@ def get_related_plos(clo_description):
     related_plos = []
     for plo_id, keywords in plos_keywords.items():
         if clo_words.intersection(keywords):
-            plo = get_object_or_404(PLO, id=plo_id)
-            related_plos.append(plo.name)
+            related_plos.append(plo_id)
+            
     return related_plos
 
 def determine_clo_details(clo_description):
-    domain, level = determine_bloom_domain_and_level(clo_description)
+    domain, level, level_number = determine_bloom_domain_and_level(clo_description)
     related_plos = get_related_plos(clo_description)
-    return domain, level, related_plos
+    return domain, level, level_number, related_plos
+
+def generate_clos_from_weekly_topics(course_outline_id, user_comments=""):
+    course_outline = get_object_or_404(CourseOutline, id=course_outline_id)
+    course = course_outline.course
+    
+    # Extract course information
+    course_description = course.description
+    course_objectives = [obj.description for obj in CourseObjective.objects.filter(course=course)]
+    pec_content = course.pec_content
+    
+    # Extract weekly topics
+    weekly_topics = WeeklyTopic.objects.filter(course_outline=course_outline).order_by('week_number')
+    if not weekly_topics.exists():
+        raise ValueError("No weekly topics found for this course outline.")
+    topics_data = "\n".join([f"Week {topic.week_number}: {topic.topic} - {topic.description}" for topic in weekly_topics])
+    
+    # Extract all PLOs
+    all_plos = PLO.objects.all()
+    plo_descriptions = "\n".join([f"{plo.id}: {plo.description}" for plo in all_plos])
+    
+    # Prepare messages for the AI
+    messages = [
+        {"role": "system", "content": "Generate Course Learning Outcomes (CLOs) based on the course details, weekly topics, and PLOs provided."},
+        {"role": "user", "content": f"""
+            Course: {course.title}
+            Course Description: {course_description}
+            Course Objectives: {', '.join(course_objectives)}
+            PEC Content: {pec_content}
+            Weekly Topics: 
+            {topics_data}
+            PLOs:
+            {plo_descriptions}
+            Additional Comments: {user_comments}
+            Please create CLOs that map to at least one of these PLOs and align with the weekly topics, but do not mention PLOs directly in the CLO statements.
+        """}
+    ]
+
+    # OpenAI API key
+    api_key = os.getenv('OPEN_AI_API')
+    if not api_key:
+        raise ValueError("API key is not set or invalid.")
+    openai.api_key = api_key
+    
+    # Call OpenAI API
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=messages,
+            temperature=0.7
+        )
+    except openai.error.OpenAIError as e:
+        raise ValueError(f"OpenAI API request failed: {str(e)}")
+    
+    if response['choices']:
+        generated_text = response['choices'][0]['message']['content']
+        # Clean up the generated CLOs text and remove any mention of PLOs
+        cleaned_text = re.sub(r"^\d+\.\s*", "", generated_text, flags=re.MULTILINE)
+        cleaned_text = re.sub(r"^Course Learning Outcomes:\s*", "", cleaned_text, flags=re.MULTILINE)
+        cleaned_text = re.sub(r'\b(?:aligning with|relating to|mapping to|associated with) PLOs?.*', '', cleaned_text, flags=re.IGNORECASE)
+        clos = [clo.strip() for clo in cleaned_text.split("\n") if clo.strip()]
+        if "Course Learning Outcomes (CLOs):" in clos:
+            clos.remove("Course Learning Outcomes (CLOs):")
+    else:
+        raise ValueError("OpenAI API response did not contain any choices.")
+    
+    # Return generated CLOs with details
+    clos_data = []
+    for clo in clos:
+        domain, level, level_number, related_plos = determine_clo_details(clo)
+        clos_data.append({
+            "description": clo,
+            "bloom_taxonomy": domain,
+            "level": level_number,
+            "plos": related_plos
+        })
+    
+    return clos_data
 
 
 def generate_weekly_topics(course_id, teacher_id, batch_id, user_comments):

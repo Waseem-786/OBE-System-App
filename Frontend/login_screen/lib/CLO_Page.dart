@@ -3,10 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:login_screen/CLO.dart';
 import 'package:login_screen/CLO_Profile.dart';
 import 'package:login_screen/Course.dart';
-
-import 'Create_CLO.dart';
 import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
+import 'View_CLOs.dart';
 
 class CLO_Page extends StatefulWidget {
   @override
@@ -140,27 +139,15 @@ class _CLO_PageState extends State<CLO_Page> {
           ),
           Padding(
             padding: const EdgeInsets.all(30.0),
-            child: Column(
-              children: [
-                Custom_Button(
-                  onPressedFunction: _generateCLOs,
-                  BackgroundColor: Colors.blue,
-                  ForegroundColor: Colors.white,
-                  ButtonText: "Generate CLOs",
-                  ButtonWidth: 180,
-                ),
-                const SizedBox(height: 10),
-                Custom_Button(
-                  onPressedFunction: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => Create_CLO()));
-                  },
-                  BackgroundColor: Colors.green,
-                  ForegroundColor: Colors.white,
-                  ButtonText: "Create CLO",
-                  ButtonWidth: 180,
-                ),
-              ],
+            child: Custom_Button(
+              onPressedFunction: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => View_CLOs()));
+              },
+              BackgroundColor: Colors.green,
+              ForegroundColor: Colors.white,
+              ButtonText: "Create CLO",
+              ButtonWidth: 180,
             ),
           )
         ],

@@ -7,6 +7,7 @@ import 'Course.dart';
 import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Style.dart';
 import 'Custom_Widgets/DropDown.dart';
+import 'Department.dart';
 import 'User.dart';
 
 class Create_Course_Outline extends StatefulWidget {
@@ -27,7 +28,7 @@ class _Create_Course_Outline extends State<Create_Course_Outline> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Department Form Page'),
+        title: const Text('Create Course Outline'),
         backgroundColor: const Color(0xffc19a6b),
       ),
       body: Padding(
@@ -37,7 +38,7 @@ class _Create_Course_Outline extends State<Create_Course_Outline> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             DropDown(
-              fetchData: () => Batch.getBatchBydeptId(User.departmentid),
+              fetchData: () => Batch.getBatchBydeptId(Department.id),
               selectedValue: SelectedBatch,
               label: "Batch",
               hintText: "Select Batch",

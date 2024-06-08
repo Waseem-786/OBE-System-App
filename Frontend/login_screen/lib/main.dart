@@ -32,7 +32,6 @@ import 'CourseObjectivePage.dart';
 import 'Course_Assessment_Page.dart';
 import 'Create_Assessment.dart';
 import 'PEO_Page.dart';
-import 'Show_CLO_PLO_Mapping.dart';
 
 void main() {
   runApp(
@@ -81,7 +80,6 @@ class MyApp extends StatelessWidget {
         '/Course_Schedule_Profile' : (context) => CourseScheduleProfile(),
         '/Create_Course_Schedule': (context) => CreateCourseSchedule(),
         '/Course_Books': (context) => CourseBookPage(),
-        '/Show_CLO_PLO_Mapping': (context) => Show_CLO_PLO_Mapping(),
         '/Weekly_Topics_Page' : (context) => WeeklyTopicsPage(),
         '/Role Page' : (context) => Role_Page(),
         '/Course_Outline_Profile' : (context) => CourseOutlineProfile(),
