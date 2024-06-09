@@ -30,6 +30,8 @@ class _CreateCourseBookState extends State<CreateCourseBook> {
   late TextEditingController BookLinkController;
   String? SelectedBookType;
 
+  List<Map<String, TextEditingController>> bookControllers = [];
+
   @override
   void initState() {
     super.initState();
@@ -40,12 +42,56 @@ class _CreateCourseBookState extends State<CreateCourseBook> {
     BookLinkController =
         TextEditingController(text: widget.BookData?['link'] ?? '');
     SelectedBookType = widget.BookData?['book_type'] ?? null;
+
+    if (widget.isFromOutline) {
+      _addBook();
+    }
+  }
+
+  void _addBook() {
+    setState(() {
+      bookControllers.add({
+        'title': TextEditingController(),
+        'book_type': TextEditingController(),
+        'description': TextEditingController(),
+        'link': TextEditingController(),
+      });
+    });
+  }
+
+  void _removeBook(int index) {
+    setState(() {
+      bookControllers.removeAt(index);
+    });
+  }
+
+  bool _validateFields() {
+    bool isValid = true;
+    if (widget.isFromOutline) {
+      for (var controllers in bookControllers) {
+        if (controllers['title']!.text.isEmpty ||
+            controllers['book_type']!.text.isEmpty ||
+            controllers['description']!.text.isEmpty ||
+            controllers['link']!.text.isEmpty) {
+          isValid = false;
+          break;
+        }
+      }
+    } else {
+      if (BookTitleController.text.isEmpty ||
+          BookDescriptionController.text.isEmpty ||
+          BookLinkController.text.isEmpty ||
+          SelectedBookType == null) {
+        isValid = false;
+      }
+    }
+    return isValid;
   }
 
   @override
   Widget build(BuildContext context) {
     String buttonText =
-        widget.isFromOutline ? 'Next' : (widget.isUpdate ? 'Update' : 'Create');
+    widget.isFromOutline ? 'Next' : (widget.isUpdate ? 'Update' : 'Create');
 
     return Scaffold(
       appBar: AppBar(
@@ -57,148 +103,257 @@ class _CreateCourseBookState extends State<CreateCourseBook> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CustomTextFormField(
-              controller: BookTitleController,
-              label: 'Book Title',
-              hintText: 'Enter Book Title',
-              borderColor: errorColor,
-            ),
-            const SizedBox(height: 20),
-            DropdownButtonFormField<String>(
-              value: SelectedBookType,
-              onChanged: (value) {
-                setState(() {
-                  SelectedBookType = value;
-                });
-              },
-              decoration: InputDecoration(
-                labelText: 'Book Type',
-                hintText: 'Select Book Type',
-                border: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Colors.black12),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                errorBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: errorColor),
-                ),
-              ),
-              items: ['Reference', 'Text'].map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 20),
-            CustomTextFormField(
-              controller: BookDescriptionController,
-              label: 'Book Description',
-              hintText: 'Enter Book Description',
-              borderColor: errorColor,
-            ),
-            const SizedBox(height: 20),
-            CustomTextFormField(
-              controller: BookLinkController,
-              label: 'Book Link',
-              hintText: 'Enter Book Link',
-              borderColor: errorColor,
-            ),
-            const SizedBox(height: 20),
-            Custom_Button(
-              onPressedFunction: () async {
-                if (widget.isUpdate) {
-                  // Show confirmation dialog
-                  bool confirmUpdate = await showDialog(
-                    context: context,
-                    builder: (context) => const UpdateWidget(
-                      title: "Confirm Update",
-                      content: "Are you sure you want to update Book?",
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (widget.isFromOutline) ...[
+                  ...bookControllers.map((controllers) {
+                    int index = bookControllers.indexOf(controllers);
+                    return Card(
+                      elevation: 4,
+                      shadowColor: Colors.black45,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      margin: const EdgeInsets.symmetric(vertical: 10),
+                      child: Padding(
+                        padding: const EdgeInsets.all(15),
+                        child: Column(
+                          children: [
+                            CustomTextFormField(
+                              controller: controllers['title']!,
+                              hintText: 'Enter Book Title',
+                              label: 'Book Title',
+                              borderColor: errorColor,
+                            ),
+                            const SizedBox(height: 20),
+                            DropdownButtonFormField<String>(
+                              value: controllers['book_type']!.text.isEmpty
+                                  ? null
+                                  : controllers['book_type']!.text,
+                              onChanged: (value) {
+                                setState(() {
+                                  controllers['book_type']!.text = value!;
+                                });
+                              },
+                              decoration: InputDecoration(
+                                labelText: 'Book Type',
+                                hintText: 'Select Book Type',
+                                border: OutlineInputBorder(
+                                  borderSide:
+                                  const BorderSide(color: Colors.black12),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: errorColor),
+                                ),
+                              ),
+                              items: ['Reference', 'Text']
+                                  .map((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(value),
+                                );
+                              }).toList(),
+                            ),
+                            const SizedBox(height: 20),
+                            CustomTextFormField(
+                              controller: controllers['description']!,
+                              hintText: 'Enter Book Description',
+                              label: 'Book Description',
+                              borderColor: errorColor,
+                            ),
+                            const SizedBox(height: 20),
+                            CustomTextFormField(
+                              controller: controllers['link']!,
+                              hintText: 'Enter Book Link',
+                              label: 'Book Link',
+                              borderColor: errorColor,
+                            ),
+                            const SizedBox(height: 20),
+                            Custom_Button(
+                              onPressedFunction: () => _removeBook(index),
+                              ButtonIcon: Icons.delete,
+                              ButtonText: "Remove Book",
+                              ButtonWidth: 200,
+                              ForegroundColor: Colors.white,
+                              BackgroundColor: Colors.red,
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                  const SizedBox(height: 20),
+                  Custom_Button(
+                    onPressedFunction: _addBook,
+                    ButtonText: "Add Book",
+                    ButtonIcon: Icons.add,
+                    ForegroundColor: Colors.white,
+                    BackgroundColor: Colors.blue,
+                    ButtonWidth: 170,
+                  ),
+                ] else ...[
+                  CustomTextFormField(
+                    controller: BookTitleController,
+                    label: 'Book Title',
+                    hintText: 'Enter Book Title',
+                    borderColor: errorColor,
+                  ),
+                  const SizedBox(height: 20),
+                  DropdownButtonFormField<String>(
+                    value: SelectedBookType,
+                    onChanged: (value) {
+                      setState(() {
+                        SelectedBookType = value;
+                      });
+                    },
+                    decoration: InputDecoration(
+                      labelText: 'Book Type',
+                      hintText: 'Select Book Type',
+                      border: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.black12),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: errorColor),
+                      ),
                     ),
-                  );
-                  if (!confirmUpdate) {
-                    return; // Cancel the update if user selects 'No' in the dialog
-                  }
-                }
+                    items: ['Reference', 'Text'].map((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 20),
+                  CustomTextFormField(
+                    controller: BookDescriptionController,
+                    label: 'Book Description',
+                    hintText: 'Enter Book Description',
+                    borderColor: errorColor,
+                  ),
+                  const SizedBox(height: 20),
+                  CustomTextFormField(
+                    controller: BookLinkController,
+                    label: 'Book Link',
+                    hintText: 'Enter Book Link',
+                    borderColor: errorColor,
+                  ),
+                ],
+                const SizedBox(height: 20),
+                Custom_Button(
+                  onPressedFunction: () async {
+                    if (widget.isUpdate) {
+                      // Show confirmation dialog
+                      bool confirmUpdate = await showDialog(
+                        context: context,
+                        builder: (context) => const UpdateWidget(
+                          title: "Confirm Update",
+                          content: "Are you sure you want to update Book?",
+                        ),
+                      );
+                      if (!confirmUpdate) {
+                        return; // Cancel the update if user selects 'No' in the dialog
+                      }
+                    }
 
-                String BookTitle = BookTitleController.text;
-                String BookDescription = BookDescriptionController.text;
-                String BookLink = BookLinkController.text;
+                    if (!_validateFields()) {
+                      setState(() {
+                        colorMessage = Colors.red;
+                        errorColor = Colors.red;
+                        errorMessage = 'Please enter all fields';
+                      });
+                      return;
+                    }
 
-                if (BookTitle.isEmpty ||
-                    BookDescription.isEmpty ||
-                    BookLink.isEmpty ||
-                    SelectedBookType == null) {
-                  setState(() {
-                    colorMessage = Colors.red;
-                    errorColor = Colors.red;
-                    errorMessage = 'Please enter all fields';
-                  });
-                } else {
-                  setState(() {
-                    isLoading = true;
-                  });
-                  if (widget.isFromOutline) {
-                    // Navigate to the next screen if coming from outline
-                    Navigator.push(
+                    setState(() {
+                      isLoading = true;
+                    });
+
+                    bool result = true;
+
+                    if (widget.isFromOutline) {
+                      List<Map<String, dynamic>> books = bookControllers
+                          .map((controllers) {
+                        return {
+                          'title': controllers['title']!.text,
+                          'book_type': controllers['book_type']!.text,
+                          'description': controllers['description']!.text,
+                          'link': controllers['link']!.text,
+                          'course_outline': Outline.id,
+                        };
+                      }).toList();
+                      CourseBooks.books = books;
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>
-                                CreateCourseObjective(isFromOutline: true))); // Replace with your next screen
-                  } else {
-                    bool result;
-                    if (widget.isUpdate) {
-                      result = await CourseBooks.updateCourseBook(
-                        widget.BookData?['id'],
-                        BookTitle,
-                        SelectedBookType,
-                        BookDescription,
-                        BookLink,
-                      );
+                          builder: (context) =>
+                              CreateCourseObjective(isFromOutline: true),
+                        ),
+                      ); // Replace with your next screen
                     } else {
-                      result = await CourseBooks.createBook(
-                        BookTitle,
-                        SelectedBookType,
-                        BookDescription,
-                        BookLink,
-                        Outline.id,
-                      );
+                      if (widget.isUpdate) {
+                        result = await CourseBooks.updateCourseBook(
+                          widget.BookData?['id'],
+                          BookTitleController.text,
+                          SelectedBookType!,
+                          BookDescriptionController.text,
+                          BookLinkController.text,
+                        );
+                      } else {
+                        result = await CourseBooks.createBook(
+                          BookTitleController.text,
+                          SelectedBookType!,
+                          BookDescriptionController.text,
+                          BookLinkController.text,
+                          Outline.id,
+                        );
+                      }
+
+                      if (result) {
+                        BookTitleController.clear();
+                        BookDescriptionController.clear();
+                        BookLinkController.clear();
+                        SelectedBookType = null;
+                        setState(() {
+                          isLoading = false;
+                          colorMessage = Colors.green;
+                          errorColor = Colors.black12;
+                          errorMessage = widget.isUpdate
+                              ? 'Course Book Updated successfully'
+                              : 'Course Book Created successfully';
+                        });
+                      } else {
+                        setState(() {
+                          isLoading = false;
+                          colorMessage = Colors.red;
+                          errorMessage = 'Failed to save Course Books';
+                        });
+                      }
                     }
-                    if (result) {
-                      BookTitleController.clear();
-                      BookDescriptionController.clear();
-                      BookLinkController.clear();
-                      SelectedBookType = null;
-                      setState(() {
-                        isLoading = false;
-                        colorMessage = Colors.green;
-                        errorColor = Colors.black12;
-                        errorMessage = widget.isUpdate
-                            ? 'Course Book Updated successfully'
-                            : 'Course Book Created successfully';
-                      });
-                    }
-                  }
-                }
-              },
-              ButtonWidth: 160,
-              ButtonText: buttonText,
+                  },
+                  ButtonWidth: 140,
+                  ButtonIcon: Icons.navigate_next,
+                  ButtonText: buttonText,
+                ),
+                const SizedBox(height: 20),
+                Visibility(
+                  visible: isLoading,
+                  child: const CircularProgressIndicator(),
+                ),
+                errorMessage != null
+                    ? Text(
+                  errorMessage!,
+                  style: CustomTextStyles.bodyStyle(color: colorMessage),
+                )
+                    : const SizedBox(),
+              ],
             ),
-            const SizedBox(height: 20),
-            Visibility(
-              visible: isLoading,
-              child: const CircularProgressIndicator(),
-            ),
-            errorMessage != null
-                ? Text(
-                    errorMessage!,
-                    style: CustomTextStyles.bodyStyle(color: colorMessage),
-                  )
-                : const SizedBox(),
-          ],
+          ),
         ),
       ),
     );

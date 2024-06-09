@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -6,14 +5,14 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'main.dart';
 import 'package:http/http.dart' as http;
 
-class Course_Assessment
-{
-  static int _id =0;
-  static String  _name = '';
-  static int  _count = 0;
-  static double  _weight = 0;
-  static int  _course_outline = 0;
+class Course_Assessment {
+  static int _id = 0;
+  static String _name = '';
+  static int _count = 0;
+  static double _weight = 0;
+  static int _course_outline = 0;
   static List<int?> _clo = [];
+  static List<Map<String, dynamic>> _assessments = [];
 
   static const ipAddress = MyApp.ip;
   static const storage = FlutterSecureStorage(
@@ -27,12 +26,12 @@ class Course_Assessment
   static set id(int value) {
     _id = value;
   }
+
   static String get name => _name;
 
   static set name(String value) {
     _name = value;
   }
-
 
   static int get count => _count;
 
@@ -58,6 +57,11 @@ class Course_Assessment
     _clo = value;
   }
 
+  static List<Map<String, dynamic>> get assessments => _assessments;
+
+  static set assessments(List<Map<String, dynamic>> value) {
+    _assessments = value;
+  }
 
   static Future<bool> createCourseAssessment(
       String name, int count, double weight, int course_outline_id, List clo) async {
@@ -75,7 +79,7 @@ class Course_Assessment
           'count': count,
           'weight': weight,
           'clo': clo,
-          'course_outline' : course_outline_id
+          'course_outline': course_outline_id
         }),
       );
       if (response.statusCode == 201) {
@@ -91,7 +95,8 @@ class Course_Assessment
       return false;
     }
   }
-  static  Future<List<dynamic>> fetchCourseAssessment(int course_outline_id) async {
+
+  static Future<List<dynamic>> fetchCourseAssessment(int course_outline_id) async {
     final accessToken = await storage.read(key: "access_token");
     final url = Uri.parse('$ipAddress:8000/api/outline/$course_outline_id/assessment');
     final response = await http.get(
@@ -106,7 +111,9 @@ class Course_Assessment
       return [];
     }
   }
-  static Future<bool> updateCourseAssessment(int id,String name, int count, double weight, int course_outline_id, List clo) async {
+
+  static Future<bool> updateCourseAssessment(
+      int id, String name, int count, double weight, int course_outline_id, List clo) async {
     try {
       final accessToken = await storage.read(key: "access_token");
       final url = Uri.parse('$ipAddress:8000/api/assessment/$id');
@@ -118,7 +125,7 @@ class Course_Assessment
           'count': count,
           'weight': weight,
           'clo': clo,
-          'course_outline' : course_outline_id
+          'course_outline': course_outline_id
         }),
       );
       if (response.statusCode == 200) {
@@ -133,6 +140,7 @@ class Course_Assessment
       return false;
     }
   }
+
   static Future<bool> deleteCourseAssessment(int id) async {
     try {
       final accessToken = await storage.read(key: "access_token");
@@ -153,7 +161,8 @@ class Course_Assessment
       return false;
     }
   }
-  static  Future<Map<String, dynamic>?> fetchSingleCourseAssessment(int id) async {
+
+  static Future<Map<String, dynamic>?> fetchSingleCourseAssessment(int id) async {
     final accessToken = await storage.read(key: "access_token");
     final url = Uri.parse('$ipAddress:8000/api/assessment/$id');
     final response = await http.get(

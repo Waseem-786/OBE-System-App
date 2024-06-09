@@ -51,12 +51,12 @@ class _CourseOutlineProfileState extends State<CourseOutlineProfile> {
 
   Widget buildCourseContent() {
     final courseInfo = courseOutlineData!['course_info'];
-    final courseSchedule = courseOutlineData!['schedule'];
-    final assessments = courseOutlineData!['assessments'];
-    final books = courseOutlineData!['books'];
-    final objectives = courseOutlineData!['objectives'];
-    final clos = courseOutlineData!['clos'];
-    final weeklyTopics = courseOutlineData!['weekly_topics'];
+    final courseSchedule = courseOutlineData!['course_schedule'];
+    final assessments = courseOutlineData!['course_assessments'];
+    final books = courseOutlineData!['course_books'];
+    final objectives = courseOutlineData!['course_objectives'];
+    final clos = courseOutlineData!['course_clos'];
+    final weeklyTopics = courseOutlineData!['course_weekly_topics'];
 
     return SingleChildScrollView(
       child: Padding(
@@ -328,7 +328,7 @@ class _CourseOutlineProfileState extends State<CourseOutlineProfile> {
 
     weeklyTopicWidgets.add(
       OutlineRow(
-        texts: ["Week", "Topic", "Description/ Lecture Breakdown", "CLO", "Assessment"],
+        texts: ["Week", "Topic", "Description/ Lecture Breakdown"],
         isHeader: true,
         backgroundColor: Colors.blue.shade100,
         columnWidths: [1, 2, 4, 1, 2],
@@ -337,9 +337,9 @@ class _CourseOutlineProfileState extends State<CourseOutlineProfile> {
 
     for (int i = 0; i < weeklyTopics.length; i++) {
       var topic = weeklyTopics[i];
+      print(topic);
       bool isOdd = i % 2 == 1;
       Color bgColor = isOdd ? Colors.blue.shade100 : Colors.transparent;
-      String cloList = topic['clo'].map((clo) => clo).join(", ");
 
       weeklyTopicWidgets.add(
         OutlineRow(
@@ -347,8 +347,6 @@ class _CourseOutlineProfileState extends State<CourseOutlineProfile> {
             topic['week_number'].toString(),
             topic['topic'],
             topic['description'].replaceAll('\n', ', '),
-            cloList,
-            topic['assessments']
           ],
           backgroundColor: bgColor,
           columnWidths: [1, 2, 4, 1, 2],

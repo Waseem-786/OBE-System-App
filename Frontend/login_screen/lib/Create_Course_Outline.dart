@@ -64,16 +64,27 @@ class _Create_Course_Outline extends State<Create_Course_Outline> {
                     isLoading = true;
                   });
                   int BatchId = int.parse(BatchIdString);
-                  Outline.batch = BatchId;
-                  Outline.course = Course.id;
-                  Outline.teacher = User.id;
+                  var outlineData = await Outline.createOutline(Course.id, BatchId, User.id);
 
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CreateCourseSchedule(isFromOutline: true),
-                    ),
-                  );
+                  if (outlineData.isNotEmpty) {
+                    Outline.id = outlineData['id'];
+                    Outline.batch = outlineData['batch'];
+                    Outline.course = outlineData['course'];
+                    Outline.teacher = outlineData['teacher'];
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CreateCourseSchedule(isFromOutline: true),
+                      ),
+                    );
+                  } else {
+                    setState(() {
+                      errorMessage = 'Failed to create outline';
+                      colorMessage = Colors.red;
+                      isLoading = false;
+                    });
+                  }
                 }
               },
               BackgroundColor: Color(0xffc19a6b),

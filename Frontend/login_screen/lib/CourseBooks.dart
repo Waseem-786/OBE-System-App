@@ -42,9 +42,17 @@ class CourseBooks {
     _link = value;
   }
 
-  static const storage = FlutterSecureStorage(
-      aOptions: AndroidOptions(encryptedSharedPreferences: true));
+  static List<Map<String, dynamic>> _books = [];
 
+  static List<Map<String, dynamic>> get books => _books;
+
+  static set books(List<Map<String, dynamic>> value) {
+    _books = value;
+  }
+
+  static const storage = FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+  );
 
   static Future<bool> createBook(String bookTitle, String? bookType, String description, String link, int outlineId) async {
     try {
@@ -77,7 +85,7 @@ class CourseBooks {
     }
   }
 
-  static  Future<List<dynamic>> fetchBooksByOutlineId(int outline_id) async {
+  static Future<List<dynamic>> fetchBooksByOutlineId(int outline_id) async {
     final accessToken = await storage.read(key: "access_token");
     final url = Uri.parse('$ipAddress:8000/api/outline/$outline_id/book');
     final response = await http.get(
@@ -92,7 +100,7 @@ class CourseBooks {
     }
   }
 
-  static  Future<Map<String, dynamic>?> getBookbyId(int id) async {
+  static Future<Map<String, dynamic>?> getBookbyId(int id) async {
     final accessToken = await storage.read(key: "access_token");
     final url = Uri.parse('$ipAddress:8000/api/book/$id');
     final response = await http.get(
@@ -106,7 +114,6 @@ class CourseBooks {
       return {};
     }
   }
-
 
   static Future<bool> deleteBook(int bookId) async {
     try {
@@ -129,7 +136,8 @@ class CourseBooks {
       return false;
     }
   }
-  static Future<bool> updateCourseBook(int id,String bookTitle, String? bookType, String description, String link) async {
+
+  static Future<bool> updateCourseBook(int id, String bookTitle, String? bookType, String description, String link) async {
     try {
       final accessToken = await storage.read(key: "access_token");
       final url = Uri.parse('$ipAddress:8000/api/book/$id');
@@ -156,7 +164,3 @@ class CourseBooks {
     }
   }
 }
-
-
-
-

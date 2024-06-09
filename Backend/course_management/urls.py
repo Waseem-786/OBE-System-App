@@ -23,6 +23,7 @@ urlpatterns = [
     path('user/<int:pk>/outline', views.CourseOutline_SpecificTeacher_View.as_view()),
     path('outline/<int:pk>', views.SingleCourseOutlineView.as_view()),
     path('complete-outline/<int:pk>', views.CompleteOutlineView.as_view()),
+    path('create/complete-outline', views.CreateCompleteOutlineView.as_view()),
 
     path('schedule', views.CourseScheduleCreateView.as_view()),
     path('outline/<int:pk>/schedule', views.CourseSchedule_SpecificOutline_View.as_view()),
@@ -39,6 +40,7 @@ urlpatterns = [
     path('book/<int:pk>', views.SingleCourseBookView.as_view()),
 
     path('weekly-topics', views.WeeklyTopicCreateView.as_view(), name='weekly-topic-list'),
+    path('weekly-topics/generate', views.WeeklyTopicGenerateView.as_view(), name='weekly-topic-list'),
     path('outline/<int:pk>/weekly-topics', views.WeeklyTopic_SpecificOutline_View.as_view()),
     path('weekly-topics/<int:pk>', views.WeeklyTopicRetrieveUpdateDestroy.as_view(), name='weekly-topic-detail'),
 ]

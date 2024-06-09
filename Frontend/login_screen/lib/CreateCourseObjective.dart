@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:login_screen/CourseObjective.dart';
+import 'package:login_screen/Create_Weekly_Topic.dart';
 import 'Course.dart';
 import 'Custom_Widgets/Custom_Button.dart';
 import 'Custom_Widgets/Custom_Text_Field.dart';
@@ -91,7 +92,11 @@ class _CreateObjectiveState extends State<CreateCourseObjective> {
                     ),
                   Custom_Button(
                     onPressedFunction: _addTextField,
-                    ButtonText: 'Add More',
+                    ButtonText: 'Add Objective',
+                    ButtonIcon: Icons.add,
+                    ButtonWidth: 210,
+                    ForegroundColor: Colors.white,
+                    BackgroundColor: Colors.blue,
                   ),
                   const SizedBox(height: 20),
                   Custom_Button(
@@ -112,12 +117,19 @@ class _CreateObjectiveState extends State<CreateCourseObjective> {
                           isLoading = true;
                         });
                         if (widget.isFromOutline) {
+                          // Store the objectives along with the course ID
+                          for (var description in objectiveDescription) {
+                            CourseObjective.objectivesList.add({
+                              'description': description,
+                              'course': Course.id,
+                            });
+                          }
                           CourseObjective.description = objectiveDescription;
                           // Navigate to the next screen if coming from outline
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => View_CLOs(isFromOutline: true), // Replace with your next screen
+                              builder: (context) => CreateWeeklyTopic(isFromOutline: true),
                             ),
                           );
                         } else {
@@ -141,6 +153,8 @@ class _CreateObjectiveState extends State<CreateCourseObjective> {
                       }
                     },
                     ButtonText: buttonText,
+                    ButtonWidth: 140,
+                    ButtonIcon: Icons.navigate_next,
                   ),
                   const SizedBox(height: 20),
                   Visibility(

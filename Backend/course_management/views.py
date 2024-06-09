@@ -199,6 +199,79 @@ class SingleCourseOutlineView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
 
+class CompleteOutlineView(APIView):
+    permission_classes = [IsSuper_University_Campus_Department]
+    authentication_classes = [JWTStatelessUserAuthentication]
+    def get(self, request, pk):
+        outline = get_object_or_404(CourseOutline, id=pk)
+        serialized_data = CompleteOutlineSerializer(outline)
+        return Response(serialized_data.data, status=status.HTTP_200_OK)
+    
+
+class CreateCompleteOutlineView(APIView):
+    permission_classes = [IsSuper_University_Campus_Department]
+    authentication_classes = [JWTStatelessUserAuthentication]
+
+    def post(self, request, *args, **kwargs):
+        print(request.data)
+        course_id = request.data.get('course')
+        batch_id = request.data.get('batch')
+        teacher_id = request.data.get('teacher')
+
+        try:
+            # Check if the course outline exists
+            course_outline = CourseOutline.objects.get(course=course_id, batch=batch_id, teacher=teacher_id)
+        except CourseOutline.DoesNotExist:
+            return Response({"detail": "Course outline does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+
+        objectives_data = request.data.get('objectives', [])
+        clos_data = request.data.get('clos', [])
+        schedule_data = request.data.get('schedule', {})
+        assessments_data = request.data.get('assessments', [])
+        weekly_topics_data = request.data.get('weekly_topics', [])
+        books_data = request.data.get('books', [])
+
+        course = CourseInformation.objects.get(id=course_id)
+
+        # Create and associate objectives
+        for objective_data in objectives_data:
+            objective_data['course'] = course
+            CourseObjective.objects.create(**objective_data)
+
+        # Create and associate CLOs
+        for clo_data in clos_data:
+            plos = clo_data.pop('plo')
+            clo_data['course'] = course
+            clo = CourseLearningOutcomes.objects.create(course_outline=course_outline, **clo_data)
+            clo.plo.set(plos)
+
+        # Create and associate the schedule
+        schedule_data['course_outline'] = course_outline
+        CourseSchedule.objects.create(**schedule_data)
+
+        # Create and associate assessments
+        for assessment_data in assessments_data:
+            clos = assessment_data.pop('clo')
+            assessment_data['course_outline'] = course_outline
+            assessment = CourseAssessment.objects.create(**assessment_data)
+            assessment.clo.set(clos)
+
+        # Create and associate weekly topics
+        for weekly_topic_data in weekly_topics_data:
+            weekly_topic_data['course_outline'] = course_outline
+            WeeklyTopic.objects.create(**weekly_topic_data)
+
+        # Create and associate books
+        for book_data in books_data:
+            book_data['course_outline'] = course_outline
+            CourseBooks.objects.create(**book_data)
+
+        # Return the updated course outline data
+        serializer = CompleteOutlineSerializer(course_outline)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    
+
 # Course Schedule Views
 class CourseScheduleCreateView(generics.CreateAPIView):
     queryset = CourseSchedule.objects.all()
@@ -305,22 +378,35 @@ class WeeklyTopicCreateView(generics.CreateAPIView):
     authentication_classes = [JWTStatelessUserAuthentication]
 
     def create(self, request, *args, **kwargs):
-        if request.data.get('generate', False):
-            course_id = request.data.get('course_id')
-            teacher_id = request.data.get('teacher_id')
-            batch_id = request.data.get('batch_id')
-            user_comments = request.data.get('comments', '')
+        if isinstance(request.data, list):
+            serializer = self.get_serializer(data=request.data, many=True)
+        else:
+            serializer = self.get_serializer(data=request.data)
 
-            try:
-                weekly_topics_objects = generate_weekly_topics(course_id, teacher_id, batch_id, user_comments)
-                serialized_data = WeeklyTopicSerializer(weekly_topics_objects, many=True)
-                return Response(serialized_data.data, status=status.HTTP_201_CREATED)
-            except ValueError as e:
-                return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-            except Exception as e:
-                return Response({"detail": "An unexpected error occurred."+str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        return super().create(request)
+
+class WeeklyTopicGenerateView(generics.GenericAPIView):
+    serializer_class = WeeklyTopicSerializer
+    permission_classes = [IsSuper_University_Campus_Department]
+    authentication_classes = [JWTStatelessUserAuthentication]
+
+    def post(self, request, *args, **kwargs):
+        course_outline_id = request.data.get('course_outline_id')
+        user_comments = request.data.get('comments', '')
+
+        try:
+            weekly_topics_data = generate_weekly_topics(course_outline_id, user_comments)
+            return Response(weekly_topics_data, status=status.HTTP_200_OK)
+        except ValueError as e:
+            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"detail": "An unexpected error occurred: " + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 
 class WeeklyTopic_SpecificOutline_View(generics.ListAPIView):
     serializer_class = WeeklyTopicSerializer
@@ -337,15 +423,6 @@ class WeeklyTopicRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = WeeklyTopicSerializer
     permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
-
-# Complete Outline View
-class CompleteOutlineView(APIView):
-    permission_classes = [IsSuper_University_Campus_Department]
-    authentication_classes = [JWTStatelessUserAuthentication]
-    def get(self, request, pk):
-        outline = get_object_or_404(CourseOutline, id=pk)
-        serialized_data = CompleteOutlineSerializer(outline)
-        return Response(serialized_data.data, status=status.HTTP_200_OK)
 
 
 # CLO View

@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:login_screen/Outline.dart';
@@ -13,6 +12,7 @@ class CLO {
   static int? _level;
   static int? _course;
   static List<int?> _PLOs = [];
+  static List<Map<String, dynamic>> _clos = [];
 
   static const ipAddress = MyApp.ip;
   static const storage = FlutterSecureStorage(
@@ -54,6 +54,12 @@ class CLO {
     _PLOs = value;
   }
 
+  static List<Map<String, dynamic>> get clos => _clos;
+
+  static set clos(List<Map<String, dynamic>> value) {
+    _clos = value;
+  }
+
   static Future<bool> createCLO(List<Map<String, dynamic>> closData) async {
     try {
       final accessToken = await storage.read(key: "access_token");
@@ -88,7 +94,6 @@ class CLO {
       return false;
     }
   }
-
 
   static Future<List<dynamic>> fetchCLO(int CourseId) async {
     final accessToken = await storage.read(key: "access_token");
@@ -179,7 +184,6 @@ class CLO {
     }
   }
 
-
   static Future<Map<String, dynamic>> fetchCLODetails(String description) async {
     final accessToken = await storage.read(key: "access_token");
     final url = Uri.parse('$ipAddress:8000/api/CLOdata');
@@ -221,5 +225,4 @@ class CLO {
       return [];
     }
   }
-
 }

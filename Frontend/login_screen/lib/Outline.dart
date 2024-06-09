@@ -42,7 +42,7 @@ class Outline {
     _teacher = value;
   }
 
-  static Future<bool> createOutline(int course, int batch, int teacher) async {
+  static Future<Map<String, dynamic>> createOutline(int course, int batch, int teacher) async {
     try {
       final accessToken = await storage.read(key: "access_token");
       final url = Uri.parse('$ipAddress:8000/api/outline');
@@ -58,16 +58,17 @@ class Outline {
           'teacher': teacher,
         }),
       );
+
       if (response.statusCode == 201) {
         print('Outline created successfully');
-        return true;
+        return jsonDecode(response.body) as Map<String, dynamic>;
       } else {
         print('Failed to create Outline. Status code: ${response.statusCode}');
-        return false;
+        return {};
       }
     } catch (e) {
       print('Exception while creating Outline: $e');
-      return false;
+      return {};
     }
   }
 
@@ -198,5 +199,55 @@ class Outline {
       return null;
     }
   }
+
+
+  static Future<bool> createCompleteOutline({
+    required int batch,
+    required int teacher,
+    required int course,
+    required List<Map<String, dynamic>> objectives,
+    required List<Map<String, dynamic>> clos,
+    required Map<String, dynamic> schedule,
+    required List<Map<String, dynamic>> assessments,
+    required List<Map<String, dynamic>> weeklyTopics,
+    required List<Map<String, dynamic>> books,
+  }) async {
+    try {
+      final accessToken = await storage.read(key: "access_token");
+      final url = Uri.parse('$ipAddress:8000/api/create/complete-outline');
+      final response = await http.post(
+        url,
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'batch': batch,
+          'teacher': teacher,
+          'course': course,
+          'objectives': objectives,
+          'clos': clos,
+          'schedule': schedule,
+          'assessments': assessments,
+          'weekly_topics': weeklyTopics,
+          'books': books,
+        }),
+      );
+
+      print(response.body);
+      if (response.statusCode == 201) {
+        print('Complete Outline created successfully');
+        return true;
+      } else {
+        print('Failed to create Complete Outline. Status code: ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      print('Exception while creating Complete Outline: $e');
+      return false;
+    }
+  }
+
+
 
 }

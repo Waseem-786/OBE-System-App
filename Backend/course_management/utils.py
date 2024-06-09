@@ -198,33 +198,31 @@ def generate_clos_from_weekly_topics(course_outline_id, user_comments=""):
     return clos_data
 
 
-def generate_weekly_topics(course_id, teacher_id, batch_id, user_comments):
-    course = get_object_or_404(CourseInformation, id=course_id)
-    teacher = get_object_or_404(CustomUser, id=teacher_id)
-    batch = get_object_or_404(Batch, id=batch_id)
-    objectives = CourseObjective.objects.filter(course=course)
-    course_outline = get_object_or_404(CourseOutline, course=course, teacher=teacher, batch=batch)
+
+def generate_weekly_topics(course_outline_id, user_comments):
+    course_outline = get_object_or_404(CourseOutline, id=course_outline_id)
+    objectives = CourseObjective.objects.filter(course=course_outline.course)
 
     course_data = {
-        "course_description": course.description,
+        "course_description": course_outline.course.description,
         "course_objectives": [obj.description for obj in objectives],
-        "pec_content": course.pec_content
+        "pec_content": course_outline.course.pec_content
     }
 
     # Set up the initial system and user messages
     messages = [
-        {"role": "system", "content": "Generate a weekly breakdown of topics for the specified course details."},
+        {"role": "system", "content": "Generate a detailed weekly breakdown of topics for the specified course details."},
         {"role": "user", "content": f"""
             Course Description: {course_data['course_description']}
             Course Objectives: {', '.join(course_data['course_objectives'])}
             Content: {course_data['pec_content']}
             Additional Comments: {user_comments}
-            The course should have topics for weeks 1-7, an exam in week 8, topics for weeks 9-15, and a final exam in week 16.
+            The course should have detailed topics for weeks 1-7, an exam in week 8, detailed topics for weeks 9-15, and a final exam in week 16.
+            Each topic should include a title and a detailed description.
         """}
     ]
 
     api_key = os.getenv('OPEN_AI_API')
-    print(api_key)
     if not api_key:
         raise ValueError("API key is not set or invalid.")
 
@@ -244,20 +242,22 @@ def generate_weekly_topics(course_id, teacher_id, batch_id, user_comments):
     else:
         raise ValueError("OpenAI API response did not contain any choices.")
 
-    WeeklyTopic.objects.filter(course_outline=course_outline).delete()
-
-    weekly_topics_objects = []
-    for week, topic in enumerate(weekly_topics, start=1):
-        if week != 8 and week != 16 and ": " in topic:
-            topic_title, topic_description = topic.split(": ", 1)
-            weekly_topic = WeeklyTopic(
-                week_number=week if week <= 7 else week - 1,
-                topic=topic_title.strip(),
-                description=topic_description.strip(),
-                course_outline=course_outline
-            )
-            weekly_topics_objects.append(weekly_topic)
-
-    WeeklyTopic.objects.bulk_create(weekly_topics_objects)
+    # Process the generated text
+    processed_topics = []
+    current_topic = {}
     
-    return weekly_topics_objects
+    for line in weekly_topics:
+        if line.startswith("Week "):
+            if current_topic:
+                processed_topics.append(current_topic)
+                current_topic = {}
+            current_topic['week_number'] = int(re.search(r'\d+', line).group())
+        elif line.startswith("Topic: "):
+            current_topic['topic'] = line.replace("Topic: ", "").strip()
+        elif line.startswith("Description: "):
+            current_topic['description'] = line.replace("Description: ", "").strip()
+
+    if current_topic:
+        processed_topics.append(current_topic)
+    
+    return processed_topics

@@ -24,6 +24,8 @@ class CourseObjective {
     aOptions: AndroidOptions(encryptedSharedPreferences: true),
   );
 
+  static List<Map<String, dynamic>> objectivesList = [];
+
   static Future<bool> createCourseObjective(List<String?> description, int courseId) async {
     try {
       final accessToken = await storage.read(key: "access_token");

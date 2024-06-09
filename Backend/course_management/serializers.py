@@ -63,12 +63,13 @@ class WeeklyTopicSerializer(serializers.ModelSerializer):
 class ObjectivesSerializer(serializers.ModelSerializer):
     class Meta:
         model = CourseObjective
-        fields = ['id', 'description']
+        fields = ['id', 'description', 'course']
 
 class CLOsSerializer(serializers.ModelSerializer):
     class Meta:
         model = CourseLearningOutcomes
         fields = '__all__'
+
 
 class CompleteOutlineSerializer(serializers.ModelSerializer):
     batch_name = serializers.CharField(source='batch.name', read_only=True)
@@ -79,13 +80,33 @@ class CompleteOutlineSerializer(serializers.ModelSerializer):
     teacher_last_name = serializers.CharField(source='teacher.last_name', read_only=True)
 
     course_info = CourseInformationSerializer(source='course', read_only=True)
-    objectives = ObjectivesSerializer(source='course.courseobjective_set', many=True, read_only=True)
-    clos = CLOsSerializer(source='course.courselearningoutcomes_set', many=True, read_only=True)
-    schedule = CourseScheduleSerializer(source='courseschedule', read_only=True)
-    assessments = CourseAssessmentSerializer(source='courseassessment_set', many=True, read_only=True)
-    weekly_topics = WeeklyTopicSerializer(source='weeklytopic_set', many=True, read_only=True)
-    books = CourseBookSerializer(source='coursebooks_set', many=True, read_only=True)
+    objectives = ObjectivesSerializer(many=True, required=True, write_only=True)
+    clos = CLOsSerializer(many=True, required=True, write_only=True)
+    schedule = CourseScheduleSerializer(required=True, write_only=True)
+    assessments = CourseAssessmentSerializer(many=True, required=True, write_only=True)
+    weekly_topics = WeeklyTopicSerializer(many=True, required=True, write_only=True)
+    books = CourseBookSerializer(many=True, required=True, write_only=True)
+
+    course_objectives = ObjectivesSerializer(source='course.courseobjective_set', many=True, read_only=True)
+    course_clos = CLOsSerializer(source='course.courselearningoutcomes_set', many=True, read_only=True)
+    course_schedule = CourseScheduleSerializer(source='courseschedule', read_only=True)
+    course_assessments = CourseAssessmentSerializer(source='courseassessment_set', many=True, read_only=True)
+    course_weekly_topics = WeeklyTopicSerializer(source='weeklytopic_set', many=True, read_only=True)
+    course_books = CourseBookSerializer(source='coursebooks_set', many=True, read_only=True)
 
     class Meta:
         model = CourseOutline
-        fields = ['id', 'batch', 'batch_name', 'university_name', 'campus_name', 'department_name', 'teacher', 'teacher_first_name', 'teacher_last_name', 'course_info', 'objectives', 'clos', 'schedule', 'assessments', 'weekly_topics', 'books']
+        fields = ['id', 'batch', 'course', 'batch_name', 'university_name', 'campus_name', 'department_name', 'teacher', 'teacher_first_name', 'teacher_last_name', 'course_info', 'objectives', 'clos', 'schedule', 'assessments', 'weekly_topics', 'books', 'course_objectives', 'course_clos', 'course_schedule', 'course_assessments', 'course_weekly_topics', 'course_books']
+
+    def validate(self, data):
+        """
+        Perform custom validation if needed.
+        """
+        # Add custom validation logic here if needed
+        return data
+
+    def to_representation(self, instance):
+        """
+        Serialize the instance data.
+        """
+        return super().to_representation(instance)

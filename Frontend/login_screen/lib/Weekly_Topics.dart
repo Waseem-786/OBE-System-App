@@ -12,6 +12,7 @@ class WeeklyTopics {
   static List<dynamic>? _clo;
   static String? _assessments;
   static int? _course_outline;
+  static List<Map<String, dynamic>> weeklyTopics = [];
 
   static int? get id => _id;
 
@@ -63,7 +64,7 @@ class WeeklyTopics {
       int courseOutlineId) async {
     final accessToken = await storage.read(key: 'access_token');
     final url =
-        Uri.parse('$ipAddress:8000/api/outline/$courseOutlineId/weekly-topics');
+    Uri.parse('$ipAddress:8000/api/outline/$courseOutlineId/weekly-topics');
     try {
       final response = await http.get(
         url,
@@ -123,9 +124,9 @@ class WeeklyTopics {
     }
   }
 
-  static Future<List<dynamic>> generateWeeklyTopics(int courseId, int teacherId, int batchId, String comments) async {
+  static Future<List<Map<String, dynamic>>> generateWeeklyTopics(int course_outline_id, String comments) async {
     final accessToken = await storage.read(key: 'access_token');
-    final url = Uri.parse('$ipAddress:8000/api/weekly-topics');
+    final url = Uri.parse('$ipAddress:8000/api/weekly-topics/generate');
     try {
       final response = await http.post(
         url,
@@ -134,15 +135,12 @@ class WeeklyTopics {
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
-          'generate': true,
-          'course_id': courseId,
-          'teacher_id': teacherId,
-          'batch_id': batchId,
+          'course_outline_id': course_outline_id,
           'comments': comments,
         }),
       );
-      if (response.statusCode == 201) {
-        return jsonDecode(response.body) as List<dynamic>;
+      if (response.statusCode == 200) {
+        return List<Map<String, dynamic>>.from(jsonDecode(response.body));
       } else {
         print('Failed to generate weekly topics. Status Code: ${response.statusCode} : ${response.body}');
         return [];
@@ -153,4 +151,30 @@ class WeeklyTopics {
     }
   }
 
+  static Future<bool> createWeeklyTopics(int course_outline_id, List<Map<String, dynamic>> topics) async {
+    final accessToken = await storage.read(key: 'access_token');
+    final url = Uri.parse('$ipAddress:8000/api/weekly-topics');
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'course_outline_id': course_outline_id,
+          'topics': topics,
+        }),
+      );
+      if (response.statusCode == 201) {
+        return true;
+      } else {
+        print('Failed to create weekly topics. Status Code: ${response.statusCode} : ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      print('Exception while creating weekly topics: $e');
+      return false;
+    }
+  }
 }

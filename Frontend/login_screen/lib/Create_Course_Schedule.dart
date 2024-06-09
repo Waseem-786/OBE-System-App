@@ -4,6 +4,7 @@ import 'package:login_screen/Create_Course_Assessment_Page.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Button.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Field.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Style.dart';
+import 'package:login_screen/Outline.dart';
 
 class CreateCourseSchedule extends StatefulWidget {
   final bool isFromOutline;
@@ -103,6 +104,7 @@ class CreateCourseScheduleState extends State<CreateCourseSchedule> {
                           Course_Schedule.lab_hours_per_week = labHours;
                           Course_Schedule.discusion_hours_per_week = discussionHours;
                           Course_Schedule.office_hours_per_week = officeHours;
+                          Course_Schedule.course_outline = Outline.id;
                           Navigator.push(context, MaterialPageRoute(builder: (context) => Create_Course_Assessment_Page(isFromOutline: true)));
                         } else {
                           bool created = await Course_Schedule.createCourseSchedule(3, lectureHours!, labHours!, discussionHours!, officeHours!);

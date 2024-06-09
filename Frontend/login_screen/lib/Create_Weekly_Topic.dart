@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:login_screen/Course.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Button.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Style.dart';
+import 'package:login_screen/Outline.dart';
 import 'package:login_screen/User.dart';
 import 'package:login_screen/Weekly_Topics.dart';
+import 'package:login_screen/View_CLOs.dart';
 
 class CreateWeeklyTopic extends StatefulWidget {
   final bool isFromOutline;
@@ -22,10 +24,11 @@ class CreateWeeklyTopicState extends State<CreateWeeklyTopic> {
   Color errorColor = Colors.black12;
   String buttonText = 'Generate Weekly Topics';
 
-  List<dynamic> weeklyTopics = [];
+  List<Map<String, dynamic>> weeklyTopics = [];
 
   @override
   Widget build(BuildContext context) {
+    String nextButtonText = widget.isFromOutline ? 'Next' : 'Create';
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xffc19a6b),
@@ -55,9 +58,26 @@ class CreateWeeklyTopicState extends State<CreateWeeklyTopic> {
                   ),
                 Custom_Button(
                   onPressedFunction: _showCommentsDialog,
-                  ButtonWidth: 280,
-                  ButtonHeight: 50,
+                  ButtonWidth: 300,
                   ButtonText: buttonText,
+                  ButtonIcon: Icons.generating_tokens,
+                  BackgroundColor: Colors.blue,
+                ),
+                const SizedBox(height: 20),
+                Custom_Button(
+                  onPressedFunction: () {
+                    if (widget.isFromOutline && weeklyTopics.isEmpty) {
+                      setState(() {
+                        errorMessage = 'Please generate weekly topics first';
+                        colorMessage = Colors.red;
+                      });
+                    } else {
+                      widget.isFromOutline ? _storeWeeklyTopicsAndNavigate() : _createWeeklyTopics();
+                    }
+                  },
+                  ButtonWidth: 140,
+                  ButtonText: nextButtonText,
+                  ButtonIcon: Icons.navigate_next,
                 ),
               ],
             ),
@@ -110,11 +130,17 @@ class CreateWeeklyTopicState extends State<CreateWeeklyTopic> {
     });
 
     try {
-      List<dynamic> topics = await WeeklyTopics.generateWeeklyTopics(4, User.id, 2, comments);
-
+      List<dynamic> topics = await WeeklyTopics.generateWeeklyTopics(Outline.id, comments);
       setState(() {
         isLoading = false;
-        weeklyTopics = topics;
+        weeklyTopics = topics.map((topic) {
+          return {
+            'week_number': topic['week_number'] ?? '',
+            'topic': topic['topic'] ?? 'No Topic',
+            'description': topic['description'] ?? 'No Description',
+            'course_outline': Outline.id,
+          } as Map<String, dynamic>;
+        }).toList();
         buttonText = 'Regenerate Weekly Topics';  // Change button text after topics are generated
       });
     } catch (e) {
@@ -126,6 +152,60 @@ class CreateWeeklyTopicState extends State<CreateWeeklyTopic> {
     }
   }
 
+  Future<void> _createWeeklyTopics() async {
+    if (weeklyTopics.isEmpty) {
+      setState(() {
+        errorMessage = 'Please generate weekly topics first';
+        colorMessage = Colors.red;
+      });
+      return;
+    }
+
+    setState(() {
+      isLoading = true;
+      errorMessage = null;
+    });
+
+    try {
+      bool success = await WeeklyTopics.createWeeklyTopics(Outline.id, weeklyTopics);
+
+      setState(() {
+        isLoading = false;
+        if (success) {
+          errorMessage = 'Weekly topics created successfully';
+          colorMessage = Colors.green;
+          weeklyTopics.clear(); // Clear the list after creation
+        } else {
+          errorMessage = 'Failed to create weekly topics';
+          colorMessage = Colors.red;
+        }
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+        errorMessage = 'Failed to create weekly topics';
+        colorMessage = Colors.red;
+      });
+    }
+  }
+
+  void _storeWeeklyTopicsAndNavigate() {
+    if (weeklyTopics.isEmpty) {
+      setState(() {
+        errorMessage = 'Please generate weekly topics first';
+        colorMessage = Colors.red;
+      });
+      return;
+    }
+
+    // Store weekly topics data in a static or singleton class
+    WeeklyTopics.weeklyTopics = weeklyTopics;
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => View_CLOs(isFromOutline: true)),
+    );
+  }
+
   List<Widget> _buildWeeklyTopicList() {
     return weeklyTopics.map((topic) {
       return Card(
@@ -133,15 +213,15 @@ class CreateWeeklyTopicState extends State<CreateWeeklyTopic> {
         margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
         child: ListTile(
           title: Text(
-            topic['topic'],
+            topic['topic'] ?? 'No Topic',
             style: CustomTextStyles.headingStyle(fontSize: 16),
           ),
           subtitle: Text(
-            topic['description'],
+            topic['description'] ?? 'No Description',
             style: CustomTextStyles.bodyStyle(),
           ),
           trailing: Text(
-            'Week ${topic['week_number']}',
+            'Week ${topic['week_number'] ?? ''}',
             style: CustomTextStyles.bodyStyle(),
           ),
         ),
