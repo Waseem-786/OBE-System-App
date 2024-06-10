@@ -32,12 +32,16 @@ import 'CourseObjectivePage.dart';
 import 'Course_Assessment_Page.dart';
 import 'Create_Assessment.dart';
 import 'PEO_Page.dart';
+import 'User_Registration.dart';
 
 void main() {
   runApp(
       MultiProvider(
           providers: [
             ChangeNotifierProvider(create: (_) => AssessmentProvider()),
+
+             // Add the selection provider
+
           ],
           child: MyApp(),
 
