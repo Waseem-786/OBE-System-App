@@ -36,34 +36,17 @@ class Custom_Button extends StatelessWidget {
           ),
         ),
         child: ButtonIcon != null
-            ? Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              ButtonIcon,
-              color: ForegroundColor ?? Colors.white,
-            ),
-            SizedBox(width: 8), // spacing between icon and text
-            Flexible(
-              child: Text(
+            ? Icon(
+          ButtonIcon,
+          color: ForegroundColor ?? Colors.red,
+        )
+            : Text(
                 '$ButtonText',
                 style: CustomTextStyles.bodyStyle(
                   fontSize: 18,
                   color: ForegroundColor ?? Colors.white,
                 ),
-                overflow: TextOverflow.ellipsis,
               ),
-            ),
-          ],
-        )
-            : Text(
-          '$ButtonText',
-          style: CustomTextStyles.bodyStyle(
-            fontSize: 18,
-            color: ForegroundColor ?? Colors.white,
-          ),
-        ),
       ),
     );
   }

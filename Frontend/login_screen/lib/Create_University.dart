@@ -147,10 +147,11 @@ class _Create_UniversityState extends State<Create_University> {
                               }
                               await _showCommentDialog();
                               if (comment != null && comment!.isNotEmpty) {
-                                RefinedMissionStatement = await University.fetchMissionData(
+                                var response = await University.fetchMissionData(
                                     UniversityMissionController.text.toString(),
                                     "mission",
                                     comment!);
+                                RefinedMissionStatement =   response['refined_statement'];
                                 setState(() {});
                               }
                             },
@@ -158,7 +159,7 @@ class _Create_UniversityState extends State<Create_University> {
                             ForegroundColor: Colors.white,
                             ButtonIcon: Icons.generating_tokens,
                             ButtonHeight: 35,
-                            ButtonWidth: 50,
+                            ButtonWidth: 60,
                           ),
                         ],
                       ),
@@ -197,10 +198,11 @@ class _Create_UniversityState extends State<Create_University> {
                               }
                               await _showCommentDialog();
                               if (comment != null && comment!.isNotEmpty) {
-                                RefinedVisionStatement = await University.fetchMissionData(
+                                var response = await University.fetchMissionData(
                                     UniversityVisionController.text.toString(),
                                     "vision",
                                     comment!);
+                                RefinedVisionStatement =   response['refined_statement'];
                                 setState(() {});
                               }
                             },
@@ -208,7 +210,7 @@ class _Create_UniversityState extends State<Create_University> {
                             ForegroundColor: Colors.white,
                             ButtonIcon: Icons.generating_tokens,
                             ButtonHeight: 35,
-                            ButtonWidth: 50,
+                            ButtonWidth: 60,
                           ),
                         ],
                       ),
@@ -232,9 +234,7 @@ class _Create_UniversityState extends State<Create_University> {
                             }
 
                             String UniversityName = UniversityNameController.text;
-                            String UniversityMission =
-                            RefinedMissionStatement != null
-                                ? RefinedMissionStatement.toString()
+                            String UniversityMission = RefinedMissionStatement != null ? RefinedMissionStatement.toString()
                                 : UniversityMissionController.text;
                             String UniversityVision = RefinedVisionStatement != null
                                 ? RefinedVisionStatement.toString()
