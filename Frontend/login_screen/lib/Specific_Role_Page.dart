@@ -86,55 +86,6 @@ class _Specific_Role_PageState extends State<Specific_Role_Page> {
                                 CustomTextStyles.bodyStyle(fontSize: 17)),
                           ),
 
-                          onTap: () async {
-                            // Ensure batches[index]['id'] is not null before proceeding
-                            if (roles[index]['id'] != null) {
-                              // Call getBatchbyBatchId only if id is not null
-                              var role = await Role.getRolebyRoleId(roles[index]['id']);
-                              if (role != null) {
-
-                                Role.id=role['id'];
-                                if(User.isUniLevel()){
-                                  Role.university_id=role['university'];
-                                  Role.university_name=role['university_name'];
-                                }
-                                if(User.iscampusLevel()){
-                                  Role.university_id=role['university'];
-                                  Role.university_name=role['university_name'];
-                                  Role.campus_id=role['campus'];
-                                  Role.campus_name=role['campus_name'];
-                                }
-                                if(User.isdeptLevel()){
-                                  Role.university_id=role['university'];
-                                  Role.university_name=role['university_name'];
-                                  Role.campus_id=role['campus'];
-                                  Role.campus_name=role['campus_name'];
-                                  Role.department_id=role['department'];
-                                  Role.department_name=role['department_name'];
-                                }
-                                Role.name=role['group_name'];
-                                Role.user=role['user'];
-                                Role.group_permissions=role['group_permissions'];
-
-
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute<bool>(
-                                    builder: (context) => RoleProfile(),
-                                  ),
-                                ).then((result) {
-                                  if (result != null && result) {
-                                    // Set the state of the page here
-                                    setState(() {
-                                      // roleFuture = Role.fetchTopLevelRoles();
-                                      roleFuture=Role.getUserGroups(SelectedUser.id);
-                                      // roleFuture=Role.fetchUniLevelRoles(University.id);
-                                    });
-                                  }
-                                });
-                              }
-                            }
-                          },
 
                         ),
                       );
