@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:login_screen/CLO.dart';
+import 'package:login_screen/CLO_Update_Report.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Button.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Field.dart';
 import 'package:login_screen/Outline.dart';
@@ -9,8 +10,9 @@ import 'Custom_Widgets/Custom_Text_Style.dart';
 
 class Create_CLO extends StatefulWidget {
   final bool isFromOutline;
+  final String? justification;
 
-  Create_CLO({this.isFromOutline = false});
+  Create_CLO({this.isFromOutline = false, this.justification});
 
   @override
   State<Create_CLO> createState() => _Create_CLOState();
@@ -105,7 +107,7 @@ class _Create_CLOState extends State<Create_CLO> {
     });
   }
 
-  Future<void> _createCLOs() async {
+  Future<void> _submitCLOs() async {
     bool allFieldsValid = true;
 
     List<Map<String, dynamic>> closData = [];
@@ -144,31 +146,44 @@ class _Create_CLOState extends State<Create_CLO> {
       isLoading = true;
     });
 
-    bool success = await CLO.createCLO(closData);
+    if (widget.justification != null && widget.justification!.isNotEmpty) {
+      Map<String, dynamic> updateResult = await CLO.updateCLO(Course.id, widget.justification!, closData);
 
-    if (success) {
-      setState(() {
-        // Clear fields and reset to default state
-        cloControllers = [TextEditingController()];
-        selectedBloomTaxonomies = [null];
-        selectedBTLevels = [null];
-        selectedPLOs = [[]];
-        isFieldValid = [true];
-        isLoading = false;
-        colorMessage = Colors.green;
-        errorColor = Colors.black12;
-        errorMessage = 'CLOs Created successfully';
-      });
+      // Extract previous CLOs, new CLOs, and justification from the update result
+      List<Map<String, dynamic>> previousCLOs = (updateResult['previous_clos'] as List<dynamic>).cast<Map<String, dynamic>>();
+      List<Map<String, dynamic>> newCLOs = (updateResult['new_clos'] as List<dynamic>).cast<Map<String, dynamic>>();
+      String justification = updateResult['justification'];
+      Navigator.push(context, MaterialPageRoute(builder: (context) => CLO_Update_Report(previousCLOs: previousCLOs, newCLOs: newCLOs, justification: justification)));
 
-      Navigator.pop(context);  // Go back to View_CLOs page
     } else {
-      setState(() {
-        isLoading = false;
-        colorMessage = Colors.red;
-        errorColor = Colors.red;
-        errorMessage = 'Failed to create CLOs';
-      });
+      bool success;
+      success = await CLO.createCLO(closData);
+      if (success) {
+        setState(() {
+          // Clear fields and reset to default state
+          cloControllers = [TextEditingController()];
+          selectedBloomTaxonomies = [null];
+          selectedBTLevels = [null];
+          selectedPLOs = [[]];
+          isFieldValid = [true];
+          isLoading = false;
+          colorMessage = Colors.green;
+          errorColor = Colors.black12;
+          errorMessage = widget.justification != null ? 'CLOs Updated successfully' : 'CLOs Created successfully';
+        });
+
+        Navigator.pop(context);  // Go back to View_CLOs page
+      } else {
+        setState(() {
+          isLoading = false;
+          colorMessage = Colors.red;
+          errorColor = Colors.red;
+          errorMessage = widget.justification != null ? 'Failed to update CLOs' : 'Failed to create CLOs';
+        });
+      }
     }
+
+
   }
 
   Future<void> _showGenerateCLOPopup() async {
@@ -213,7 +228,7 @@ class _Create_CLOState extends State<Create_CLO> {
 
   @override
   Widget build(BuildContext context) {
-    String buttonText = widget.isFromOutline ? 'Next' : 'Create CLO';
+    String buttonText = widget.justification != null && widget.justification!.isNotEmpty ? 'Update CLO' : 'Create CLO';
 
     return Scaffold(
       appBar: AppBar(
@@ -269,26 +284,21 @@ class _Create_CLOState extends State<Create_CLO> {
                             padding: const EdgeInsets.all(8.0),
                             child: Column(
                               children: [
-                                Stack(
-                                  alignment: Alignment.centerRight,
-                                  children: [
-                                    CustomTextFormField(
-                                      controller: cloControllers[index],
-                                      hintText: 'Enter CLO Description',
-                                      label: 'Enter CLO Description',
-                                      maxLines: 5,
-                                      borderColor: isFieldValid[index] ? Colors.black12 : Colors.red,
-                                    ),
-                                    IconButton(
-                                      icon: Icon(Icons.search),
-                                      onPressed: () => _fetchCLODetails(index),
-                                    ),
-                                  ],
+                                CustomTextFormField(
+                                  controller: cloControllers[index],
+                                  borderColor: Colors.black,
+                                  hintText: 'Enter CLO Description',
+                                  label: 'CLO Description',
+                                  maxLines: 5,
+                                  suffixIcon: Icons.search,
+                                  onSuffixIconPressed: () {
+                                    _fetchCLODetails(index);
+                                  },
                                 ),
                                 const SizedBox(height: 10),
                                 TextFormField(
                                   decoration: InputDecoration(
-                                    labelText: 'Bloom Taxonomy',
+                                    labelText: 'Bloom\'s Taxonomy',
                                     border: OutlineInputBorder(
                                       borderSide: BorderSide(
                                         color: isFieldValid[index] ? Colors.black12 : Colors.red,
@@ -358,8 +368,8 @@ class _Create_CLOState extends State<Create_CLO> {
                       ),
                       const SizedBox(height: 20),
                       Custom_Button(
-                        onPressedFunction: _createCLOs,
-                        ButtonWidth: 180,
+                        onPressedFunction: _submitCLOs,
+                        ButtonWidth: 200,
                         ButtonText: buttonText,
                         ButtonIcon: Icons.check,
                         ForegroundColor: Colors.white,

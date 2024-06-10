@@ -11,7 +11,8 @@ class CustomTextFormField extends StatelessWidget {
   final bool? passField;
   final TextInputType? Keyboard_Type;
   final VoidCallback? onSuffixIconPressed;
-  final int? maxLines; // Added maxLines property
+  final int? maxLines;
+  final ValueChanged<String>? onChanged;
 
   const CustomTextFormField({
     Key? key,
@@ -24,7 +25,8 @@ class CustomTextFormField extends StatelessWidget {
     this.passField,
     this.Keyboard_Type,
     this.onSuffixIconPressed,
-    this.maxLines, // Added maxLines parameter
+    this.maxLines,
+    this.onChanged, // Added onChanged parameter
   }) : super(key: key);
 
   @override
@@ -32,7 +34,7 @@ class CustomTextFormField extends StatelessWidget {
     return TextFormField(
       controller: controller,
       obscureText: passField ?? false,
-      maxLines: maxLines ?? 1, // Default to 1 line if maxLines is not provided
+      maxLines: maxLines ?? 1,
       validator: (value) {
         if (value == null || value.isEmpty) {
           return 'Please Enter ${label}';
@@ -43,7 +45,7 @@ class CustomTextFormField extends StatelessWidget {
         prefixIcon: prefixIcon != null ? Icon(prefixIcon) : null,
         suffixIcon: suffixIcon != null
             ? IconButton(
-          icon: Icon(suffixIcon, color: Colors.black),
+          icon: Icon(suffixIcon, color: Colors.blue),
           onPressed: onSuffixIconPressed,
         )
             : null,
@@ -57,18 +59,19 @@ class CustomTextFormField extends StatelessWidget {
         hintStyle: CustomTextStyles.bodyStyle(color: Colors.grey),
         border: OutlineInputBorder(
           borderSide: BorderSide(
-            color: borderColor ?? Colors.black12, // Default border color
+            color: borderColor ?? Colors.black12,
           ),
           borderRadius: BorderRadius.circular(10),
         ),
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(
-            color: borderColor ?? Colors.black12, // Default border color
+            color: borderColor ?? Colors.black12,
           ),
           borderRadius: BorderRadius.circular(10),
         ),
       ),
       keyboardType: Keyboard_Type,
+      onChanged: onChanged,
     );
   }
 }

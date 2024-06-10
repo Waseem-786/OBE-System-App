@@ -9,7 +9,7 @@ urlpatterns = [
     path('clo', views.CourseLearningOutcomesView.as_view()),
     path('course/<int:pk>/clo', views.CLO_of_Specific_Course.as_view()),
     path('clo/<int:pk>', views.SingleCLO.as_view()),
-    path('clo/update/<int:course_outline_id>', views.CLOUpdateView.as_view()),
+    path('clo/update', views.CLOUpdateView.as_view()),
     path('CLOdata', views.CLODataView.as_view()),
     path('clo/generate', views.GenerateCLOsView.as_view()),
 
