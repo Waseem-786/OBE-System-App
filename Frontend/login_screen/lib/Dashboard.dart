@@ -123,6 +123,10 @@ class _Dashboard_PageState extends State<Dashboard_Page> {
           } else if (User.isSuperUser) {
             screenNames.add("University_Select");
           }
+        } else if (permission['codename'] == "view_approvalchain") {
+          headings.add("Approval Chain");
+          icons.add(FontAwesomeIcons.pencil);
+          screenNames.add("Approval_Chain");
         }
       }
 

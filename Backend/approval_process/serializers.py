@@ -1,23 +1,29 @@
 from rest_framework import serializers
-from .models import ApprovalStep, ApprovalProcess, ApprovalLog
+from .models import ApprovalChain, CLOUpdateRequest, ApprovalProcess, ApprovalChainStep, ApprovalStep
 
 class ApprovalStepSerializer(serializers.ModelSerializer):
     class Meta:
         model = ApprovalStep
         fields = '__all__'
 
-class ApprovalLogSerializer(serializers.ModelSerializer):
-    user = serializers.StringRelatedField()
-    step = serializers.StringRelatedField()
+class ApprovalChainStepSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ApprovalChainStep
+        fields = '__all__'
+
+class ApprovalChainSerializer(serializers.ModelSerializer):
+    steps = ApprovalChainStepSerializer(many=True, read_only=True)
 
     class Meta:
-        model = ApprovalLog
+        model = ApprovalChain
+        fields = '__all__'
+
+class CLOUpdateRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CLOUpdateRequest
         fields = '__all__'
 
 class ApprovalProcessSerializer(serializers.ModelSerializer):
-    logs = ApprovalLogSerializer(many=True, read_only=True)
-    current_step = serializers.StringRelatedField()
-
     class Meta:
         model = ApprovalProcess
         fields = '__all__'
