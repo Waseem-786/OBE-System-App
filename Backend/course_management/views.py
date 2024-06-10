@@ -58,55 +58,56 @@ class SingleCLO(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsSuper_University_Campus_Department]
     authentication_classes = [JWTStatelessUserAuthentication]
 
+
+
 class CLOUpdateView(APIView):
     # Uncomment these lines if you want to enable authentication and permissions
     # permission_classes = [IsSuper_University_Campus_Department]
     # authentication_classes = [JWTStatelessUserAuthentication]
 
-    def post(self, request, course_outline_id):
-        update_clos = request.data.get('update_clos', False)
+    def post(self, request):
+        course_id = request.data.get('course_id')
         user_justification = request.data.get('justification', '')
+        new_clos_data = request.data.get('clos', [])
+
+        if not course_id:
+            return Response({"error": "Course ID is required."}, status=status.HTTP_400_BAD_REQUEST)
 
         if not user_justification:
             return Response({"error": "Justification is required."}, status=status.HTTP_400_BAD_REQUEST)
 
-        if update_clos:
-            user_comments = request.data.get('user_comments', '')
+        try:
+            # Fetch the course
+            course = get_object_or_404(CourseInformation, id=course_id)
 
-            try:
-                clos = generate_clos_from_weekly_topics(course_outline_id, user_comments)
-                course_outline = get_object_or_404(CourseOutline, id=course_outline_id)
-                previous_clos = CourseLearningOutcomes.objects.filter(course=course_outline.course)
+            # Fetch previous CLOs
+            previous_clos = CourseLearningOutcomes.objects.filter(course=course)
+
+            # Prepare new CLOs data (without creating instances)
+            new_clos = [{
+                'description': clo_data.get('description'),
+                'bloom_taxonomy': clo_data.get('bloom_taxonomy'),
+                'level': clo_data.get('level'),
+                'plo': clo_data.get('plo', [])  # Default to empty list if 'plo' is not provided
+            } for clo_data in new_clos_data]
+
+            # Serialize previous CLOs
+            serialized_previous_clos = CourseLearningOutcomesSerializer(previous_clos, many=True).data
+
+            # Prepare response data
+            response_data = {
+                'previous_clos': serialized_previous_clos,
+                'new_clos': new_clos,
+                'justification': user_justification
+            }
+
+            return Response(response_data, status=status.HTTP_200_OK)
+        except ValueError as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"error": "An unexpected error occurred: " + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-                # Create an approval process for the update
-                for clo in clos:
-                    initial_step = ApprovalStep.objects.first()  # Assuming steps are predefined and ordered
-                    if initial_step:
-                        ApprovalProcess.objects.create(clo=clo, current_step=initial_step, justification=user_justification)
-                    else:
-                        return Response({"error": "No approval steps defined."}, status=status.HTTP_400_BAD_REQUEST)
-
-                serialized_previous_clos = CourseLearningOutcomesSerializer(previous_clos, many=True).data
-                serialized_new_clos = CourseLearningOutcomesSerializer(clos, many=True).data
-
-                response_data = {
-                    'previous_clos': serialized_previous_clos,
-                    'new_clos': serialized_new_clos,
-                    'justification': user_justification
-                }
-
-                return Response(response_data, status=status.HTTP_200_OK)
-            except ValueError as e:
-                return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-            except Exception as e:
-                return Response({"error": "An unexpected error occurred: " + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        else:
-            course_outline = get_object_or_404(CourseOutline, id=course_outline_id)
-            clos = CourseLearningOutcomes.objects.filter(course=course_outline.course)
-
-            serialized_clos = CourseLearningOutcomesSerializer(clos, many=True)
-            return Response(serialized_clos.data, status=status.HTTP_200_OK)
 
 # Course Objectives Views
 class CourseObjectiveCreateView(generics.CreateAPIView):

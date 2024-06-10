@@ -1,8 +1,0 @@
-Change Endpoint for getting and creating groups
-
---> CLOs Change Justification Document
-
-
-
---> Approval Process Dynamically
---> Assessment Creation (Assignment, Quiz, Mid, Final...)

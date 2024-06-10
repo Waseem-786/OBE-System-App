@@ -154,35 +154,41 @@ class CLO {
     }
   }
 
-  static Future<bool> updateCLO(
-      int id, String description, String BT, int BTLevel) async {
+  static Future<Map<String, dynamic>> updateCLO(int courseId, String justification, List<Map<String, dynamic>> closData) async {
     try {
       final accessToken = await storage.read(key: "access_token");
-      final url = Uri.parse('$ipAddress:8000/api/update/clo/$id');
-      final response = await http.patch(
+      final url = Uri.parse('$ipAddress:8000/api/clo/update');
+      final response = await http.post(
         url,
         headers: {
           'Authorization': 'Bearer $accessToken',
           'Content-Type': 'application/json'
         },
         body: jsonEncode({
-          'description': description,
-          'bloom_taxonomy': BT,
-          'level': BTLevel,
+          'course_id': courseId,
+          'justification': justification,
+          'clos': closData
         }),
       );
+
       if (response.statusCode == 200) {
         print('CLO updated successfully');
-        return true;
+
+        // Parse response body to get previous CLOs, new CLOs, and justification
+        Map<String, dynamic> responseData = jsonDecode(response.body);
+
+        return responseData;
       } else {
         print('Failed to update CLO. Status code: ${response.statusCode}');
-        return false;
+        return {};
       }
     } catch (e) {
       print('Exception while updating CLO: $e');
-      return false;
+      return {};
     }
   }
+
+
 
   static Future<Map<String, dynamic>> fetchCLODetails(String description) async {
     final accessToken = await storage.read(key: "access_token");

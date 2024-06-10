@@ -62,10 +62,67 @@ class _View_CLOsState extends State<View_CLOs> {
     }
   }
 
-  void _showUpdateCLOForm() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => Create_CLO()),
+  void _showCreateOrUpdateCLOForm(bool isUpdate) {
+    if (isUpdate) {
+      _showJustificationDialog();
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Create_CLO()),
+      );
+    }
+  }
+
+  Future<void> _showJustificationDialog() async {
+    TextEditingController justificationController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Justification for CLO Update"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text("Please provide a justification for updating the CLOs:"),
+              SizedBox(height: 10),
+              TextField(
+                controller: justificationController,
+                maxLines: 5,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: 'Enter justification',
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text("Submit"),
+              onPressed: () {
+                if (justificationController.text.isNotEmpty) {
+                  Navigator.of(context).pop();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Create_CLO(
+                        isFromOutline: widget.isFromOutline,
+                        justification: justificationController.text,
+                      ),
+                    ),
+                  );
+                }
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -91,7 +148,6 @@ class _View_CLOsState extends State<View_CLOs> {
     final weeklyTopics = WeeklyTopics.weeklyTopics;
     final books = CourseBooks.books;
 
-
     final success = await Outline.createCompleteOutline(
       batch: batch,
       teacher: teacher,
@@ -114,7 +170,6 @@ class _View_CLOsState extends State<View_CLOs> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to create Complete Outline')));
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -182,8 +237,8 @@ class _View_CLOsState extends State<View_CLOs> {
                   }).toList(),
                   const SizedBox(height: 30),
                   Custom_Button(
-                    onPressedFunction: _showUpdateCLOForm,
-                    ButtonText: "Update CLOs",
+                    onPressedFunction: () => _showCreateOrUpdateCLOForm(existingCLOs.isNotEmpty),
+                    ButtonText: existingCLOs.isNotEmpty ? "Update CLOs" : "Create CLOs",
                     ButtonIcon: Icons.update,
                     ForegroundColor: Colors.white,
                     BackgroundColor: Colors.purple,
