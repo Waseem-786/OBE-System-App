@@ -1,13 +1,9 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:login_screen/Create_Role.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Field.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Style.dart';
 import 'package:login_screen/Dashboard.dart';
-import 'package:login_screen/Outline.dart';
 import 'package:login_screen/Token.dart';
 import 'Custom_Widgets/Custom_Button.dart';
 
@@ -26,12 +22,6 @@ class _LoginPageState extends State<LoginPage> {
 
   bool passfield = true;
   IconData suffixIcon = Icons.visibility_off;
-
-  void initState() {
-    var a = Outline.createOutline(2, 3, 4);
-    super.initState();
-    // _handleTokenVerification();
-  }
 
   @override
   Widget build(BuildContext context) {
