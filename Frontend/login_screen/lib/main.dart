@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:login_screen/Add_Group_Permission.dart';
-import 'package:login_screen/Approval_Process.dart';
 import 'package:login_screen/Assessments.dart';
 import 'package:login_screen/BatchPage.dart';
 import 'package:login_screen/CLO_Page.dart';
@@ -26,10 +25,12 @@ import 'package:login_screen/Splash_Screen.dart';
 import 'package:login_screen/Weekly_Topics_Page.dart';
 import 'package:provider/provider.dart';
 import 'Add_Group_User.dart';
+import 'Approval_Chain.dart';
 import 'Assessment_Page.dart';
 import 'Batch_Select.dart';
 import 'CourseObjectivePage.dart';
 import 'Course_Assessment_Page.dart';
+import 'Create_Approval_Chain.dart';
 import 'Create_Assessment.dart';
 import 'PEO_Page.dart';
 
@@ -38,6 +39,7 @@ void main() {
       MultiProvider(
           providers: [
             ChangeNotifierProvider(create: (_) => AssessmentProvider()),
+            ChangeNotifierProvider(create: (_) => RoleProvider()),
           ],
           child: MyApp(),
 
@@ -68,7 +70,7 @@ class MyApp extends StatelessWidget {
         '/PEO_Page': (context) => PEO_Page(),
         '/Batch_Management': (context) => BatchPage(),
         '/Course_Page': (context) => Course_Page(),
-        '/Approval_Process': (context) => Approval_Process(),
+        '/Approval_Chain': (context) => Approval_Chain(),
         '/Assessments': (context) => Assessments(),
         '/User_Management': (context) => User_Management(),
         '/University_Page': (context) => University_Page(),

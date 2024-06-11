@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:login_screen/Role.dart';
+import 'package:login_screen/SelectedUser.dart';
 import 'package:login_screen/User_Profile.dart';
 
 import 'Custom_Widgets/Custom_Text_Style.dart';
@@ -86,6 +87,22 @@ class _Group_UsersState extends State<Group_Users> {
                                     ),
                                   ),
                                   onTap: () async {
+
+                                    SelectedUser.id = user['id'];
+                                    SelectedUser.firstName = user['first_name'];
+                                    SelectedUser.lastName = user['last_name'];
+                                    SelectedUser.username = user['username'];
+                                    SelectedUser.email = user['email'];
+                                    SelectedUser.universityid = user['university'] ?? '';
+                                    SelectedUser.campusid = user['campus'] ?? '';
+                                    SelectedUser.departmentid = user['department'] ?? '';
+                                    SelectedUser.universityName = user['university_name'] ?? '';
+                                    SelectedUser.campusName = user['campus_name'] ?? '';
+                                    SelectedUser.departmentName = user['department_name'] ?? '';
+                                    // SelectedUser.isSuperUser = user['is_superuser'];
+
+
+
                                     Navigator.push(context, MaterialPageRoute(builder: (context)=>User_Profile()));
                                   },
                                 ),

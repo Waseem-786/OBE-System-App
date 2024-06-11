@@ -79,71 +79,43 @@ class _User_ProfileState extends State<User_Profile> {
   }
 
   List<Widget> _buildUserInfoCards() {
+    List<Widget> cards = [];
 
-    if(SelectedUser.isSuperUser){
-      return [
-        DetailCard(label: "First Name", value: SelectedUser.firstName, icon:
-        Icons.account_circle),
-        DetailCard(label: "Last Name", value: SelectedUser.lastName, icon:
-        Icons.account_circle,),
-        DetailCard(label: "Username", value: SelectedUser.username, icon: Icons
-            .verified_user),
-        DetailCard(label: "Email", value: SelectedUser.email, icon: Icons.email),
-      ];
+    // Add common user details
+    cards.addAll([
+      DetailCard(label: "First Name", value: SelectedUser.firstName, icon: Icons.account_circle),
+      DetailCard(label: "Last Name", value: SelectedUser.lastName, icon: Icons.account_circle),
+      DetailCard(label: "Username", value: SelectedUser.username, icon: Icons.verified_user),
+      DetailCard(label: "Email", value: SelectedUser.email, icon: Icons.email),
+    ]);
 
+    if (SelectedUser.isUniLevel()) {
+      // Add university-related details
+      cards.add(DetailCard(label: "University", value: SelectedUser.universityName, icon: Icons.school));
+    } else if (SelectedUser.iscampusLevel()) {
+      // Add campus-related details
+      cards.add(DetailCard(label: "University", value: SelectedUser.universityName, icon: Icons.school));
+      if (SelectedUser.campusName != null && SelectedUser.campusName.isNotEmpty) {
+        cards.add(DetailCard(label: "Campus", value: SelectedUser.campusName, icon: Icons.school));
+      }
+    } else if (!SelectedUser.isSuperUser) {
+      // Add department-related details
+      if (SelectedUser.universityName != null && SelectedUser.universityName.isNotEmpty) {
+        cards.add(DetailCard(label: "Campus", value: SelectedUser.universityName, icon:
+        Icons.school));
+      }
+      if (SelectedUser.campusName != null && SelectedUser.campusName.isNotEmpty) {
+        cards.add(DetailCard(label: "Campus", value: SelectedUser.campusName, icon: Icons.school));
+      }
+      if (SelectedUser.departmentName != null && SelectedUser.departmentName.isNotEmpty) {
+        cards.add(DetailCard(label: "Department", value: SelectedUser.departmentName, icon: Icons.school));
+      }
     }
-    else if(SelectedUser.isUniLevel()){
 
-      return [
-        DetailCard(label: "First Name", value: SelectedUser.firstName, icon:
-        Icons.account_circle),
-        DetailCard(label: "Last Name", value: SelectedUser.lastName, icon:
-        Icons.account_circle,),
-        DetailCard(label: "Username", value: SelectedUser.username, icon: Icons
-            .verified_user),
-        DetailCard(label: "Email", value: SelectedUser.email, icon: Icons.email),
-
-        DetailCard(label: "University", value: SelectedUser.universityName,
-            icon: Icons.school),
-      ];
-    }
-    else if(SelectedUser.iscampusLevel()){
-
-      return [
-
-        DetailCard(label: "First Name", value: SelectedUser.firstName, icon:
-        Icons.account_circle),
-        DetailCard(label: "Last Name", value: SelectedUser.lastName, icon:
-        Icons.account_circle,),
-        DetailCard(label: "Username", value: SelectedUser.username, icon: Icons
-            .verified_user),
-        DetailCard(label: "Email", value: SelectedUser.email, icon: Icons.email),
-        DetailCard(label: "University", value: SelectedUser.universityName,
-            icon: Icons.school),
-        DetailCard(label: "Campus", value: SelectedUser.campusName,icon: Icons.school),
-
-      ];
-
-    }
-    else{
-
-      return [
-        DetailCard(label: "First Name", value: SelectedUser.firstName, icon:
-        Icons.account_circle),
-        DetailCard(label: "Last Name", value: SelectedUser.lastName, icon:
-        Icons.account_circle,),
-        DetailCard(label: "Username", value: SelectedUser.username, icon: Icons
-            .verified_user),
-        DetailCard(label: "Email", value: SelectedUser.email, icon: Icons.email),
-        DetailCard(label: "University", value: SelectedUser.universityName,
-            icon: Icons.school),
-        DetailCard(label: "Campus", value: SelectedUser.campusName,icon: Icons.school),
-        DetailCard(label: "Department", value: SelectedUser.departmentName,icon: Icons
-            .school),
-
-      ];
-    }
+    return cards;
   }
+
+
 
   Widget _actionButtons() {
     return Column(

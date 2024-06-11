@@ -1,8 +1,9 @@
 from django.urls import path
-from .views import ApprovalProcessCreateView, ApprovalProcessDetailView, ApprovalProcessActionView
+from . import views
 
 urlpatterns = [
-    path('approval-process', ApprovalProcessCreateView.as_view(), name='approval-process-create'),
-    path('approval-process/<int:pk>', ApprovalProcessDetailView.as_view(), name='approval-process-detail'),
-    path('approval-process/<int:pk>/<str:action>', ApprovalProcessActionView.as_view(), name='approval-process-action'),
+    path('approval-chain', views.ApprovalChainCreateView.as_view(), name='create_approval_chain'),   
+    path('approval-chains/<int:campus_id>', views.ApprovalChainByCampusView.as_view()),
+    path('clo-update-request', views.CLOUpdateRequestCreateView.as_view(), name='create_clo_update_request'),   
+    path('approve-reject-process/<int:pk>', views.ApprovalProcessUpdateView.as_view(), name='approve_reject_process'),   
 ]

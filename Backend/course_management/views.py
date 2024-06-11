@@ -6,11 +6,7 @@ from user_management.permissions import IsSuper_University_Campus_Department
 from .models import CourseInformation, CourseSchedule, CourseObjective, CourseAssessment, CourseBooks, CourseLearningOutcomes, CourseOutline, WeeklyTopic
 from .serializers import CourseInformationSerializer, CourseScheduleSerializer, CourseObjectiveSerializer, CourseObjectiveListSerializer, CourseAssessmentSerializer, CourseBookSerializer, CourseLearningOutcomesSerializer, CourseOutlineSerializer, WeeklyTopicSerializer, CompleteOutlineSerializer
 from .utils import determine_clo_details, generate_weekly_topics, generate_clos_from_weekly_topics
-from approval_process.models import ApprovalProcess, ApprovalLog, ApprovalStep
 
-# CLO and PLO Mapping View
-from django.http import JsonResponse
-from program_management.models import PEO, PLO, PEO_PLO_Mapping
 
 # Course Information Views
 class CourseInformationView(generics.ListCreateAPIView):

@@ -6,9 +6,9 @@ import 'package:multi_select_flutter/util/multi_select_item.dart';
 import 'package:multi_select_flutter/util/multi_select_list_type.dart';
 
 class MultiSelectField extends StatefulWidget {
-  final List<Map<String, dynamic>> options; // Updated to accept a list of objects containing both name and ID
-  final List<int> selectedOptions; // Updated to store IDs
-  final ValueChanged<List<int>> onSelectionChanged; // Updated to pass IDs instead of names
+  final List<Map<String, dynamic>> options;
+  final List<int> selectedOptions;
+  final ValueChanged<List<int>> onSelectionChanged;
   final Text buttonText;
   final Widget title;
   final String displayKey;
@@ -28,7 +28,7 @@ class MultiSelectField extends StatefulWidget {
 }
 
 class _MultiSelectFieldState extends State<MultiSelectField> {
-  late List<int> _selectedOptions; // Updated to store IDs
+  late List<int> _selectedOptions;
 
   @override
   void initState() {
@@ -40,44 +40,44 @@ class _MultiSelectFieldState extends State<MultiSelectField> {
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-        MultiSelectBottomSheetField(
-          initialChildSize: 0.4,
-          listType: MultiSelectListType.CHIP,
-          searchable: true,
-          buttonText: widget.buttonText,
-          title: widget.title,
-          items: widget.options
-              .map((option) => MultiSelectItem<int>(option['id'], option[widget.displayKey])) // Use dynamic key
-              .toList(),
-          onConfirm: (values) {
-            setState(() {
-              _selectedOptions = values.cast<int>();
-            });
-            widget.onSelectionChanged(_selectedOptions);
-          },
-          chipDisplay: MultiSelectChipDisplay(
-            onTap: (value) {
+        if (widget.options.isEmpty)
+          CircularProgressIndicator() // Show loading indicator while options are being fetched
+        else
+          MultiSelectBottomSheetField(
+            initialChildSize: 0.4,
+            listType: MultiSelectListType.CHIP,
+            searchable: true,
+            buttonText: widget.buttonText,
+            title: widget.title,
+            items: widget.options
+                .map((option) => MultiSelectItem<int>(option['id'], option[widget.displayKey]))
+                .toList(),
+            onConfirm: (values) {
               setState(() {
-                _selectedOptions.remove(value);
+                _selectedOptions = values.cast<int>();
               });
               widget.onSelectionChanged(_selectedOptions);
             },
-            chipColor: Colors.green, // Background color of chips
-            textStyle: TextStyle(color: Colors.white), // Text color of chips
-            // Icon to show before the chip label
-            //iconColor: Colors.white, // Color of the icon
+            chipDisplay: MultiSelectChipDisplay(
+              onTap: (value) {
+                setState(() {
+                  _selectedOptions.remove(value);
+                });
+                widget.onSelectionChanged(_selectedOptions);
+              },
+              chipColor: Colors.green,
+              textStyle: TextStyle(color: Colors.white),
+            ),
           ),
-        ),
-        _selectedOptions.isEmpty
-            ? Container(
-          padding: EdgeInsets.all(10),
-          alignment: Alignment.centerLeft,
-          child: Text(
-            "None selected",
-            style: TextStyle(color: Colors.black54),
+        if (_selectedOptions.isEmpty)
+          Container(
+            padding: EdgeInsets.all(10),
+            alignment: Alignment.centerLeft,
+            child: Text(
+              "None selected",
+              style: TextStyle(color: Colors.black54),
+            ),
           ),
-        )
-            : Container()
       ],
     );
   }
