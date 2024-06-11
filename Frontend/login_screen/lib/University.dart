@@ -155,7 +155,7 @@ class University {
       return false;
     }
   }
-  static Future<String> fetchMissionData(String statement, String statement_type, String additional_message) async {
+  static Future<Map<String, dynamic>> fetchMissionData(String statement, String statement_type, String additional_message) async {
     final accessToken = await storage.read(key: "access_token");
     final url = Uri.parse('$ipAddress:8000/api/refine');
     final response = await http.post(
@@ -170,12 +170,14 @@ class University {
         'additional_message': additional_message,
       }),
     );
+    print(response.body);
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
-
     } else {
-      return jsonEncode(response.body);
+      print('Failed to fetch data: ${response.body}');
+      return {};
     }
   }
+
 }
 
