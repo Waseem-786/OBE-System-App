@@ -72,6 +72,8 @@ class BaseSuperUserPermission(BasePermission):
     
     def has_permission(self, request, view):
         is_superuser = CustomUser.objects.filter(pk=request.user.pk, is_superuser__in=[True]).exists()
+        if is_superuser:
+            return True
         group_objects = self.get_group_objects()
         if not group_objects:
             # If no required group exists, return False
@@ -79,7 +81,7 @@ class BaseSuperUserPermission(BasePermission):
 
         user = get_object_or_404(CustomUser, id=request.user.id)
         group_exists = any(user in group.user.all() for group in group_objects)
-        return is_superuser or group_exists
+        return group_exists
 
 class IsSuper_University(BaseSuperUserPermission):
     """

@@ -88,26 +88,26 @@ WSGI_APPLICATION = 'OBE.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-DATABASES = {
-    'default': {
-        'ENGINE': 'djongo',
-        'ENFORCE_SCHEMA': False,
-        'NAME': 'OBE_DB', 
-    }
-}
-
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'djongo',
 #         'ENFORCE_SCHEMA': False,
 #         'NAME': 'OBE_DB', 
-#         'CLIENT': {
-#             'host': 'mongodb+srv://Waseem134:Nustian%40786@cluster0.mb1mhsf.mongodb.net/OBE_DB',
-#             'username': 'Waseem134',
-#             'password': 'Nustian@786',
-#         }
 #     }
 # }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'djongo',
+        'ENFORCE_SCHEMA': False,
+        'NAME': 'OBE_DB', 
+        'CLIENT': {
+            'host': 'mongodb+srv://Waseem134:Nustian%40786@cluster0.mb1mhsf.mongodb.net/OBE_DB',
+            'username': 'Waseem134',
+            'password': 'Nustian@786',
+        }
+    }
+}
 
 
 # Password validation

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Field.dart';
 import 'package:login_screen/Custom_Widgets/UpdateWidget.dart';
 import 'Campus.dart';
@@ -141,27 +142,29 @@ class _Create_CampusState extends State<Create_Campus> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Custom_Button(
-                        onPressedFunction: () async {
-                          if (CampusMissionController.text.isEmpty) {
-                            _showErrorSnackBar("Please enter the University Mission field");
-                            return;
-                          }
-                          await _showCommentDialog();
-                          if (comment != null && comment!.isNotEmpty) {
-                            var response = await Campus.fetchMissionData(
-                                CampusMissionController.text.toString(),
-                                "mission",
-                                comment!);
-                            RefinedMissionStatement =   response['refined_statement'];
-                            setState(() {});
-                          }
-                        },
-                        BackgroundColor: Colors.green,
-                        ForegroundColor: Colors.white,
-                        ButtonIcon: Icons.generating_tokens,
-                        ButtonHeight: 35,
-                        ButtonWidth: 50,
+                      SizedBox(
+                        width: 80,
+                        height: 35,
+                        child: Custom_Button(
+                          onPressedFunction: () async {
+                            if (CampusMissionController.text.isEmpty) {
+                              _showErrorSnackBar("Please enter the University Mission field");
+                              return;
+                            }
+                            await _showCommentDialog();
+                            if (comment != null && comment!.isNotEmpty) {
+                              var response = await Campus.fetchMissionData(
+                                  CampusMissionController.text.toString(),
+                                  "mission",
+                                  comment!);
+                              RefinedMissionStatement =   response['refined_statement'];
+                              setState(() {});
+                            }
+                          },
+                          BackgroundColor: Colors.green,
+                          ForegroundColor: Colors.white,
+                          ButtonIcon: Icons.generating_tokens,
+                        ),
                       ),
                     ],
                   ),
@@ -193,27 +196,29 @@ class _Create_CampusState extends State<Create_Campus> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Custom_Button(
-                        onPressedFunction: () async {
-                          if (CampusVisionController.text.isEmpty) {
-                            _showErrorSnackBar("Please enter the University Vision field");
-                            return;
-                          }
-                          await _showCommentDialog();
-                          if (comment != null && comment!.isNotEmpty) {
-                            var response = await Campus.fetchMissionData(
-                                CampusVisionController.text.toString(),
-                                "vision",
-                                comment!);
-                            RefinedVisionStatement =   response['refined_statement'];
-                            setState(() {});
-                          }
-                        },
-                        BackgroundColor: Colors.green,
-                        ForegroundColor: Colors.white,
-                        ButtonIcon: Icons.generating_tokens,
-                        ButtonHeight: 35,
-                        ButtonWidth: 50,
+                      SizedBox(
+                        width: 80,
+                        height: 35,
+                        child: Custom_Button(
+                          onPressedFunction: () async {
+                            if (CampusVisionController.text.isEmpty) {
+                              _showErrorSnackBar("Please enter the University Vision field");
+                              return;
+                            }
+                            await _showCommentDialog();
+                            if (comment != null && comment!.isNotEmpty) {
+                              var response = await Campus.fetchMissionData(
+                                  CampusVisionController.text.toString(),
+                                  "vision",
+                                  comment!);
+                              RefinedVisionStatement =   response['refined_statement'];
+                              setState(() {});
+                            }
+                          },
+                          BackgroundColor: Colors.green,
+                          ForegroundColor: Colors.white,
+                          ButtonIcon: Icons.generating_tokens,
+                        ),
                       ),
                     ],
                   ),

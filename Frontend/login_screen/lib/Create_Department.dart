@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:login_screen/Campus.dart';
 import 'package:login_screen/Custom_Widgets/Custom_Text_Field.dart';
 import 'Custom_Widgets/Custom_Button.dart';
@@ -135,27 +136,29 @@ class _Create_DepartmentState extends State<Create_Department> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Custom_Button(
-                        onPressedFunction: () async {
-                          if (DepartmentMissionController.text.isEmpty) {
-                            _showErrorSnackBar("Please enter the University Mission field");
-                            return;
-                          }
-                          await _showCommentDialog();
-                          if (comment != null && comment!.isNotEmpty) {
-                            var response = await Department.fetchMissionData(
-                                DepartmentMissionController.text.toString(),
-                                "mission",
-                                comment!);
-                            RefinedMissionStatement =   response['refined_statement'];
-                            setState(() {});
-                          }
-                        },
-                        BackgroundColor: Colors.green,
-                        ForegroundColor: Colors.white,
-                        ButtonIcon: Icons.generating_tokens,
-                        ButtonHeight: 35,
-                        ButtonWidth: 50,
+                      SizedBox(
+                        width: 80,
+                        height: 35,
+                        child: Custom_Button(
+                          onPressedFunction: () async {
+                            if (DepartmentMissionController.text.isEmpty) {
+                              _showErrorSnackBar("Please enter the University Mission field");
+                              return;
+                            }
+                            await _showCommentDialog();
+                            if (comment != null && comment!.isNotEmpty) {
+                              var response = await Department.fetchMissionData(
+                                  DepartmentMissionController.text.toString(),
+                                  "mission",
+                                  comment!);
+                              RefinedMissionStatement =   response['refined_statement'];
+                              setState(() {});
+                            }
+                          },
+                          BackgroundColor: Colors.green,
+                          ForegroundColor: Colors.white,
+                          ButtonIcon: Icons.generating_tokens,
+                        ),
                       ),
                     ],
                   ),
@@ -182,27 +185,29 @@ class _Create_DepartmentState extends State<Create_Department> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Custom_Button(
-                        onPressedFunction: () async {
-                          if (DepartmentVisionController.text.isEmpty) {
-                            _showErrorSnackBar("Please enter the University Vision field");
-                            return;
-                          }
-                          await _showCommentDialog();
-                          if (comment != null && comment!.isNotEmpty) {
-                            var response = await Department.fetchMissionData(
-                                DepartmentVisionController.text.toString(),
-                                "vision",
-                                comment!);
-                            RefinedVisionStatement =   response['refined_statement'];
-                            setState(() {});
-                          }
-                        },
-                        BackgroundColor: Colors.green,
-                        ForegroundColor: Colors.white,
-                        ButtonIcon: Icons.generating_tokens,
-                        ButtonHeight: 35,
-                        ButtonWidth: 50,
+                      SizedBox(
+                        width: 80,
+                        height: 35,
+                        child: Custom_Button(
+                          onPressedFunction: () async {
+                            if (DepartmentVisionController.text.isEmpty) {
+                              _showErrorSnackBar("Please enter the University Vision field");
+                              return;
+                            }
+                            await _showCommentDialog();
+                            if (comment != null && comment!.isNotEmpty) {
+                              var response = await Department.fetchMissionData(
+                                  DepartmentVisionController.text.toString(),
+                                  "vision",
+                                  comment!);
+                              RefinedVisionStatement =   response['refined_statement'];
+                              setState(() {});
+                            }
+                          },
+                          BackgroundColor: Colors.green,
+                          ForegroundColor: Colors.white,
+                          ButtonIcon: Icons.generating_tokens,
+                        ),
                       ),
                     ],
                   ),

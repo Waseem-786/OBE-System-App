@@ -35,18 +35,26 @@ class Custom_Button extends StatelessWidget {
             borderRadius: BorderRadius.circular(8.0), // Border radius
           ),
         ),
-        child: ButtonIcon != null
-            ? Icon(
-          ButtonIcon,
-          color: ForegroundColor ?? Colors.red,
-        )
-            : Text(
-                '$ButtonText',
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (ButtonIcon != null) ...[
+              Icon(
+                ButtonIcon,
+                color: ForegroundColor ?? Colors.white,
+              ),
+              SizedBox(width: 8.0), // Space between icon and text
+            ],
+            if (ButtonText != null)
+              Text(
+                ButtonText!,
                 style: CustomTextStyles.bodyStyle(
                   fontSize: 18,
                   color: ForegroundColor ?? Colors.white,
                 ),
               ),
+          ],
+        ),
       ),
     );
   }

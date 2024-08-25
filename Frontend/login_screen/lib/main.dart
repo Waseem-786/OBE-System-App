@@ -48,7 +48,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  static const String ip = 'http://192.168.0.114';
+  static const String ip = 'http://192.168.10.100';
 
   const MyApp({super.key});
 
